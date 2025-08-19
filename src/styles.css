@@ -145,17 +145,19 @@ body {
 
 .gradient-bg {
   position: absolute;
-  top: -20%;
-  left: -20%;
-  width: 140%;
-  height: 140%;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  border-radius: 50%;
   background: 
-    radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.3) 0%, transparent 60%),
-    radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.25) 0%, transparent 55%),
-    radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.2) 0%, transparent 50%),
-    radial-gradient(circle at 90% 90%, rgba(236, 72, 153, 0.15) 0%, transparent 45%),
-    radial-gradient(circle at 10% 10%, rgba(245, 158, 11, 0.1) 0%, transparent 40%);
-  animation: gradientShift 12s ease-in-out infinite;
+    radial-gradient(circle at 30% 70%, rgba(59, 130, 246, 0.4) 0%, transparent 50%),
+    radial-gradient(circle at 70% 30%, rgba(139, 92, 246, 0.35) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.25) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.2) 0%, transparent 35%),
+    radial-gradient(circle at 20% 20%, rgba(245, 158, 11, 0.15) 0%, transparent 30%);
+  animation: gradientFloat 15s ease-in-out infinite;
+  filter: blur(1px);
 }
 
 .gradient-bg::before {
@@ -845,18 +847,22 @@ body {
   }
 }
 
-@keyframes gradientShift {
+@keyframes gradientFloat {
   0%, 100% {
-    transform: rotate(0deg) scale(1) translate(0, 0);
+    transform: translate(0, 0) scale(1);
+    opacity: 0.8;
   }
   25% {
-    transform: rotate(90deg) scale(1.05) translate(20px, -20px);
+    transform: translate(10vw, -5vh) scale(1.1);
+    opacity: 0.9;
   }
   50% {
-    transform: rotate(180deg) scale(0.95) translate(-20px, 20px);
+    transform: translate(-5vw, 10vh) scale(0.95);
+    opacity: 0.7;
   }
   75% {
-    transform: rotate(270deg) scale(1.1) translate(20px, 20px);
+    transform: translate(8vw, 8vh) scale(1.05);
+    opacity: 0.85;
   }
 }
 
@@ -941,4 +947,63 @@ body {
 .scroll-indicator:hover {
   transform: scale(1.2);
   color: var(--accent-hover);
+}
+
+/* ===== Responsive Hero Animations ===== */
+@media (max-width: 768px) {
+  /* Mobile-optimized gradients */
+  .gradient-bg {
+    top: -30%;
+    left: -30%;
+    width: 160%;
+    height: 160%;
+    background: 
+      radial-gradient(circle at 30% 70%, rgba(59, 130, 246, 0.5) 0%, transparent 50%),
+      radial-gradient(circle at 70% 30%, rgba(139, 92, 246, 0.4) 0%, transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.3) 0%, transparent 40%);
+    animation: gradientFloatMobile 12s ease-in-out infinite;
+    filter: blur(0.5px);
+  }
+}
+
+@media (min-width: 2560px) {
+  /* 4K+ displays - prevent rectangle visibility */
+  .gradient-bg {
+    top: -60%;
+    left: -60%;
+    width: 220%;
+    height: 220%;
+    filter: blur(2px);
+  }
+  
+  /* Override animation for large screens */
+  @keyframes gradientFloat {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+      opacity: 0.6;
+    }
+    25% {
+      transform: translate(8vw, -3vh) scale(1.08);
+      opacity: 0.7;
+    }
+    50% {
+      transform: translate(-4vw, 8vh) scale(0.98);
+      opacity: 0.5;
+    }
+    75% {
+      transform: translate(6vw, 6vh) scale(1.03);
+      opacity: 0.65;
+    }
+  }
+}
+
+@keyframes gradientFloatMobile {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translate(5vw, 5vh) scale(1.05);
+    opacity: 0.8;
+  }
 }
