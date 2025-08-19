@@ -30,6 +30,19 @@ const ProjectCard = ({ project, index }) => {
             ))}
           </div>
 
+          {project.features && (
+            <div className="project-features">
+              <h4 className="features-title">Características principales:</h4>
+              <ul className="features-list">
+                {project.features.slice(0, 3).map((feature, featureIndex) => (
+                  <li key={featureIndex} className="feature-item">
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <div className="project-links">
             {project.github && project.github !== '#' && (
               <a
