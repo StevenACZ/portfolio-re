@@ -42,39 +42,26 @@ const Portfolio = () => {
       history.scrollRestoration = 'manual';
     }
     
-    // Múltiples métodos para asegurar scroll al top
+    // Asegurar scroll al top
     const scrollToTop = () => {
       window.scrollTo(0, 0);
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
     };
     
-    // Ejecutar inmediatamente
     scrollToTop();
     
-    // También ejecutar después de un pequeño delay
-    setTimeout(scrollToTop, 10);
-    
-    // Make GSAP available globally for compatibility
-    window.gsap = gsap;
-    window.ScrollTrigger = ScrollTrigger;
-    window.ScrollToPlugin = ScrollToPlugin;
     
     // Registrar plugins GSAP
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-    // Delay más largo para asegurar que DOM esté listo y scroll esté en top
+    // Inicializar animaciones cuando DOM esté listo
     const timer = setTimeout(() => {
-      scrollToTop(); // Una vez más antes de inicializar
       initializeAnimations();
-    }, 150);
+    }, 100);
 
     // Manejar redimensionamiento de ventana
     const handleResize = () => {
-      // Scroll al top cuando se redimensiona
-      scrollToTop();
-      
-      // Refrescar ScrollTrigger después de redimensionar
       setTimeout(() => {
         ScrollTrigger.refresh();
       }, 100);
@@ -91,17 +78,7 @@ const Portfolio = () => {
   }, []);
 
   const initializeAnimations = () => {
-    const { gsap, ScrollTrigger } = window;
 
-    // Verificación final: asegurar que estemos en top antes de inicializar
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-
-    console.log('Inicializando animaciones GSAP...');
-    console.log('GSAP disponible:', !!window.gsap);
-    console.log('ScrollTrigger disponible:', !!window.ScrollTrigger);
-    console.log('ScrollToPlugin disponible:', !!window.ScrollToPlugin);
 
     // Configurar performance para mobile
     const isMobile = window.innerWidth <= 768;
@@ -300,12 +277,10 @@ const Portfolio = () => {
     // Refresh ScrollTrigger
     ScrollTrigger.refresh();
 
-    console.log('Animaciones GSAP inicializadas correctamente');
   };
 
   // Función para smooth scroll
   const scrollToSection = (sectionRef) => {
-    console.log('Intentando scroll a:', sectionRef.current);
 
     if (sectionRef.current) {
       // Calcular altura real del navbar con margen adicional
@@ -313,30 +288,22 @@ const Portfolio = () => {
       const navbarHeight = navbarRef.current
         ? navbarRef.current.offsetHeight
         : 80;
-      console.log('Altura del navbar:', navbarHeight);
 
       // Obtener posición exacta de la sección
       const sectionRect = sectionRef.current.getBoundingClientRect();
       const currentScrollY = window.pageYOffset;
       const targetY = sectionRect.top + currentScrollY;
 
-      console.log('Posición de la sección:', targetY);
-      console.log(
-        'Offset que se aplicará:',
-        sectionRef === heroRef ? 0 : navbarHeight
-      );
 
-      if (window.gsap && window.gsap.plugins?.ScrollToPlugin) {
-        console.log('GSAP y ScrollTo disponibles, ejecutando scroll...');
+      if (gsap && gsap.plugins?.ScrollToPlugin) {
 
-        window.gsap.to(window, {
+        gsap.to(window, {
           duration: 1.5,
           scrollTo: {
             y: targetY - (sectionRef === heroRef ? 0 : navbarHeight),
             autoKill: false,
           },
           ease: 'power2.inOut',
-          onComplete: () => console.log('Scroll GSAP completado'),
         });
       } else {
         console.warn('GSAP ScrollTo no disponible, usando scroll nativo');
@@ -350,14 +317,12 @@ const Portfolio = () => {
           behavior: 'smooth',
         });
 
-        console.log('Scroll nativo a posición:', finalTargetY);
       }
     }
   };
 
   // Función específica para el scroll indicator
   const handleScrollIndicatorClick = () => {
-    console.log('Click en scroll indicator, navegando a proyectos...');
     scrollToSection(projectsRef);
   };
 
