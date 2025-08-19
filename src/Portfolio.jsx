@@ -37,6 +37,24 @@ const Portfolio = () => {
   ];
 
   useEffect(() => {
+    // Prevenir restauración automática del scroll del navegador
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    
+    // Múltiples métodos para asegurar scroll al top
+    const scrollToTop = () => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+    
+    // Ejecutar inmediatamente
+    scrollToTop();
+    
+    // También ejecutar después de un pequeño delay
+    setTimeout(scrollToTop, 10);
+    
     // Make GSAP available globally for compatibility
     window.gsap = gsap;
     window.ScrollTrigger = ScrollTrigger;
@@ -45,20 +63,40 @@ const Portfolio = () => {
     // Registrar plugins GSAP
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-    // Pequeño delay para asegurar que DOM esté listo
+    // Delay más largo para asegurar que DOM esté listo y scroll esté en top
     const timer = setTimeout(() => {
+      scrollToTop(); // Una vez más antes de inicializar
       initializeAnimations();
-    }, 100);
+    }, 150);
+
+    // Manejar redimensionamiento de ventana
+    const handleResize = () => {
+      // Scroll al top cuando se redimensiona
+      scrollToTop();
+      
+      // Refrescar ScrollTrigger después de redimensionar
+      setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 100);
+    };
+
+    window.addEventListener('resize', handleResize);
 
     // Cleanup al desmontar
     return () => {
       clearTimeout(timer);
+      window.removeEventListener('resize', handleResize);
       ScrollTrigger.getAll().forEach((st) => st.kill());
     };
   }, []);
 
   const initializeAnimations = () => {
     const { gsap, ScrollTrigger } = window;
+
+    // Verificación final: asegurar que estemos en top antes de inicializar
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
 
     console.log('Inicializando animaciones GSAP...');
     console.log('GSAP disponible:', !!window.gsap);
