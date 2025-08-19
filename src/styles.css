@@ -379,7 +379,7 @@ body {
 
 .hero-description {
   font-size: clamp(1rem, 2vw, 1.25rem);
-  color: var(--text-muted);
+  color: var(--text-primary); /* Cambiar a blanco para mejor contraste con fondo colorido */
   max-width: 600px;
   margin: 0 auto;
   opacity: 1;

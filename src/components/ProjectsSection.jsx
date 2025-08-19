@@ -111,23 +111,31 @@ const ProjectsSection = ({ projects = [] }) => {
 
         // Fase 0: Título visible inmediatamente, luego se desvanece hacia arriba
         if (currentPhase === 0) {
+          // Calcular distancia dinámica para el título (un poco más dramática)
+          const navbarHeight = 80;
+          const buffer = 150; // Buffer más grande para el título, más dramático
+          const titleMaxDistance =
+            window.innerHeight / 2 + navbarHeight + buffer;
+
           gsap.to(header, {
             opacity: Math.max(0, 1 - phaseLocalProgress * 1.8), // Desvanecimiento más rápido
-            y: -350 * phaseLocalProgress, // Movimiento hacia arriba mientras desaparece
+            y: -titleMaxDistance * phaseLocalProgress, // Movimiento dinámico hacia arriba
             duration: 0.2, // Animación más rápida
             ease: 'power2.out', // Cambio a power2.out para mejor efecto de salida
           });
 
-          // Ocultar proyectos - mantenerlos en centro
+          // Ocultar proyectos - mantener en su posición actual
           projects.forEach((_, index) => {
             const card = section.querySelector(`[data-project="${index}"]`);
             if (card) {
+              const currentY = gsap.getProperty(card, 'y');
               gsap.to(card, {
                 opacity: 0,
-                y: 0, // Mantener en centro, no mover hacia abajo
+                y: currentY, // Mantener posición actual, no resetear
                 duration: 0.4,
                 ease: 'power2.inOut',
                 overwrite: true, // Prevenir conflictos
+                clearProps: false, // Mantener las propiedades de posición
               });
             }
           });
@@ -168,10 +176,17 @@ const ProjectsSection = ({ projects = [] }) => {
               } else {
                 // Proyectos anteriores: aparecen en centro y desaparecen hacia arriba
                 const easedOpacity = Math.sin(phaseLocalProgress * Math.PI);
+
+                // Calcular distancia dinámica basada en viewport
+                const navbarHeight = 80; // Altura del navbar
+                const buffer = 20; // Buffer para asegurar desaparición antes del navbar
+                const maxDistance =
+                  window.innerHeight / 2 + navbarHeight + buffer;
+
                 const yPosition =
                   phaseLocalProgress <= 0.5
                     ? 0 // Primera mitad: mantener en centro mientras aparece
-                    : -150 * ((phaseLocalProgress - 0.5) * 2); // Segunda mitad: mover hacia arriba mientras desaparece
+                    : -maxDistance * ((phaseLocalProgress - 0.5) * 2); // Segunda mitad: mover hacia arriba dinámicamente
 
                 gsap.to(card, {
                   opacity: easedOpacity,
@@ -179,16 +194,28 @@ const ProjectsSection = ({ projects = [] }) => {
                   duration: 0.4,
                   ease: 'power3.out',
                   overwrite: true, // Prevenir conflictos de animaciones
+                  onComplete: () => {
+                    // Si el proyecto está completamente desaparecido, fijar su posición final
+                    if (easedOpacity <= 0.01 && yPosition < 0) {
+                      gsap.set(card, {
+                        y: yPosition,
+                        opacity: 0,
+                        clearProps: false, // No limpiar las propiedades, mantener la posición
+                      });
+                    }
+                  },
                 });
               }
             } else {
-              // Otros proyectos ocultos - mantener en centro, no mover hacia abajo
+              // Otros proyectos ocultos - mantener en su posición actual, no resetear
+              const currentY = gsap.getProperty(card, 'y');
               gsap.to(card, {
                 opacity: 0,
-                y: 0, // Mantener en centro en lugar de mover a 50px abajo
+                y: currentY, // Mantener la posición Y actual, no mover a otra posición
                 duration: 0.4,
                 ease: 'power2.inOut',
                 overwrite: true, // Prevenir conflictos
+                clearProps: false, // No limpiar las propiedades para mantener posición
               });
             }
           });
