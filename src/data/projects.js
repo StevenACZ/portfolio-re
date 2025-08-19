@@ -16,14 +16,5 @@ export const projects = [
     image: '/placeholder-buenmouse.jpg', // Cambiar por tu imagen real
     github: '#', // Cambiar por tu repo real
     demo: '#'   // Cambiar por tu demo real
-  },
-  {
-    id: 3,
-    title: 'TaskFlow',
-    description: 'Task management system with real-time collaboration and progress tracking.',
-    tech: ['React', 'Firebase', 'Material-UI', 'PWA'],
-    image: '/placeholder-taskflow.jpg', // Cambiar por tu imagen real
-    github: '#', // Cambiar por tu repo real
-    demo: '#'   // Cambiar por tu demo real
   }
 ];

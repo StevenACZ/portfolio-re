@@ -9,9 +9,12 @@ import {
   Calendar,
   MapPin,
 } from 'lucide-react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { projects } from './data/projects';
 import { experiences } from './data/experiences';
-import ProjectPresentation from './components/ProjectPresentation';
+import ProjectsSection from './components/ProjectsSection';
 
 
 const Portfolio = () => {
@@ -34,26 +37,24 @@ const Portfolio = () => {
   ];
 
   useEffect(() => {
-    // Verificar que GSAP esté disponible
-    if (typeof window !== 'undefined' && window.gsap && window.ScrollTrigger) {
-      // Registrar plugins GSAP
-      window.gsap.registerPlugin(window.ScrollTrigger, window.ScrollToPlugin);
+    // Make GSAP available globally for compatibility
+    window.gsap = gsap;
+    window.ScrollTrigger = ScrollTrigger;
+    window.ScrollToPlugin = ScrollToPlugin;
+    
+    // Registrar plugins GSAP
+    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
-      // Pequeño delay para asegurar que DOM esté listo
-      const timer = setTimeout(() => {
-        initializeAnimations();
-      }, 100);
+    // Pequeño delay para asegurar que DOM esté listo
+    const timer = setTimeout(() => {
+      initializeAnimations();
+    }, 100);
 
-      // Cleanup al desmontar
-      return () => {
-        clearTimeout(timer);
-        if (window.ScrollTrigger) {
-          window.ScrollTrigger.getAll().forEach((st) => st.kill());
-        }
-      };
-    } else {
-      console.warn('GSAP no está disponible. Verificar carga de CDN.');
-    }
+    // Cleanup al desmontar
+    return () => {
+      clearTimeout(timer);
+      ScrollTrigger.getAll().forEach((st) => st.kill());
+    };
   }, []);
 
   const initializeAnimations = () => {
@@ -164,8 +165,7 @@ const Portfolio = () => {
       });
     }
 
-    // Project presentation handled by ProjectPresentation component
-    // No need for project card animations here
+    // Project presentation handled by ImmersiveProjectScroll component
 
     // Timeline line draw animation
     gsap.fromTo(
@@ -410,9 +410,7 @@ const Portfolio = () => {
 
       {/* Projects Section */}
       <section ref={projectsRef} className="projects">
-        <div className="container">
-          <ProjectPresentation projects={projects} />
-        </div>
+        <ProjectsSection projects={projects} />
       </section>
 
       {/* Timeline Section */}
