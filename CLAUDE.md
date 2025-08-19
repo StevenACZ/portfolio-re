@@ -183,10 +183,63 @@ heroTl
 - Footer: "¡Trabajemos juntos!" → "Let's work together!"
 - Data files: All project descriptions and experience details translated
 
+### 8. Magic Scroll System - ProjectsSection (CRITICAL COMPONENT)
+**⚠️ WARNING: NEVER REMOVE OR SIMPLIFY - Core portfolio functionality**
+
+The ProjectsSection component implements a sophisticated pinned scroll system that is the centerpiece of the portfolio experience. This system creates a cinematic, Apple-like presentation where projects appear and disappear in phases as the user scrolls.
+
+#### Core Architecture:
+```javascript
+// Phase-based scroll system with dynamic animations
+const totalPhases = 1 + projects.length; // Header + each project
+const totalHeight = (totalPhases - 0.5) * window.innerHeight;
+
+ScrollTrigger.create({
+  trigger: section,
+  start: 'top top',
+  end: `+=${totalHeight}`,
+  pin: true,
+  pinSpacing: true,
+  scrub: 1,
+  onUpdate: (self) => {
+    const progress = self.progress;
+    const phaseProgress = progress * totalPhases;
+    const currentPhase = Math.floor(phaseProgress);
+    // Complex phase-based animations...
+  }
+});
+```
+
+#### Animation Phases:
+1. **Phase 0**: Title appears, then fades up with dramatic distance calculation
+2. **Phase 1-N**: Each project appears in center, then moves up and disappears
+3. **Final Phase**: Last project stays visible
+
+#### Key Features:
+- **Viewport-based calculations**: Dynamic distances based on window.innerHeight
+- **Navbar-aware positioning**: Calculates navbar height + buffer for smooth transitions
+- **Progressive reveal**: Projects appear individually with fade + movement
+- **Responsive design**: Mobile adaptations maintain functionality
+- **Performance optimized**: Uses GSAP for 60fps animations
+
+#### Critical Implementation Details:
+- Uses `pinSpacing: true` for proper scroll behavior
+- `scrub: 1` for smooth scroll-linked animations
+- Dynamic `titleMaxDistance` calculation prevents viewport overflow
+- Phase progress mapping with `Math.floor()` for discrete transitions
+- Easing functions: `power2.out` for exits, `power3.out` for entrances
+
+#### Files Involved:
+- `src/components/ProjectsSection.jsx` (257 lines) - Main component logic
+- `src/styles/ProjectsSection.css` (380 lines) - Specialized styling
+- Integrated into Portfolio.jsx at line 407
+
+This system took multiple sessions to perfect and represents the most complex animation system in the portfolio. Any modifications should be done with extreme caution and thorough testing.
+
 ## Technical Considerations
 
 ### Performance
-- GSAP CDN loading for faster initial load
+- GSAP npm package (no CDN dependencies for better bundling)
 - Lazy loading for scroll-triggered animations
 - Mobile-optimized animation settings
 - Accessibility support with `prefers-reduced-motion`
