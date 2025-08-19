@@ -1,26 +1,18 @@
 export const experiences = [
   {
     id: 1,
-    title: 'Senior Full Stack Developer',
-    company: 'TechFlow Solutions',
-    period: '2023 - Present',
-    location: 'Remote',
-    description: 'Development of web and mobile applications using React, Swift, and Node.js. Technical leadership of a team of 4 developers.'
+    title: 'Frontend Developer Junior',
+    company: 'Alicorp',
+    period: '2020',
+    location: 'Peru',
+    description: 'Developed "Llegamos a tu casa" project using modern web technologies. Collaborated in layout creation and functionality implementation with HTML, CSS, TailwindCSS, JavaScript, React, VueJS, Next.js & Nuxt.js.'
   },
   {
     id: 2,
-    title: 'iOS Developer',
-    company: 'Mobile Innovations',
-    period: '2022 - 2023',
-    location: 'Lima, Peru',
-    description: 'Native iOS application development with Swift and SwiftUI. Implementation of MVVM and Clean Architecture patterns.'
-  },
-  {
-    id: 3,
     title: 'Frontend Developer',
-    company: 'StartupLab',
-    period: '2021 - 2022',
+    company: 'Crack The Code',
+    period: '2021 - 2023',
     location: 'Lima, Peru',
-    description: 'User interface development with React and TypeScript. Implementation of responsive designs and performance optimization.'
+    description: 'Platform transformation and enhancement using React and TypeScript with SEO optimization. Developed company intranet (Backoffice) and integrated events from Facebook and Google APIs into the main website. Transitioned from part-time to full-time role.'
   }
 ];
