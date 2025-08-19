@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { projects } from './data/projects';
 import { experiences } from './data/experiences';
+import ProjectPresentation from './components/ProjectPresentation';
 
 
 const Portfolio = () => {
@@ -163,28 +164,8 @@ const Portfolio = () => {
       });
     }
 
-    // Proyectos reveal animation
-    gsap.fromTo(
-      '.project-card',
-      {
-        y: 100,
-        opacity: 0,
-        scale: 0.8,
-      },
-      {
-        y: 0,
-        opacity: 1,
-        scale: 1,
-        duration: 0.8,
-        stagger: 0.2,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: projectsRef.current,
-          start: 'top 85%',
-          toggleActions: 'play none none reverse',
-        },
-      }
-    );
+    // Project presentation handled by ProjectPresentation component
+    // No need for project card animations here
 
     // Timeline line draw animation
     gsap.fromTo(
@@ -430,37 +411,7 @@ const Portfolio = () => {
       {/* Projects Section */}
       <section ref={projectsRef} className="projects">
         <div className="container">
-          <h2 className="section-title">Featured Projects</h2>
-          <div className="projects-grid">
-            {projects.map((project) => (
-              <div key={project.id} className="project-card">
-                <div className="project-image">
-                  <img src={project.image} alt={project.title} />
-                  <div className="project-overlay">
-                    <div className="project-links">
-                      <a href={project.github} className="project-link">
-                        <Github size={20} />
-                      </a>
-                      <a href={project.demo} className="project-link">
-                        <ExternalLink size={20} />
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div className="project-content">
-                  <h3 className="project-title">{project.title}</h3>
-                  <p className="project-description">{project.description}</p>
-                  <div className="project-tech">
-                    {project.tech.map((tech, index) => (
-                      <span key={index} className="tech-tag">
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <ProjectPresentation projects={projects} />
         </div>
       </section>
 
