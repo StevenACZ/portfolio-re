@@ -87,9 +87,11 @@ const ProjectsSection = ({ projects = [] }) => {
     const totalPhases = 1 + projects.length;
     const totalHeight = (totalPhases - 0.5) * window.innerHeight; // Reducir ligeramente para mejor control
 
+    const projectsHeader = section.querySelector('.projects-header');
+
     ScrollTrigger.create({
       trigger: section,
-      start: 'top top', // Inicio directo sin gap
+      start: 'top+=6rem top', // Pin starts when header reaches top (accounting for header height)
       end: `+=${totalHeight}`,
       pin: true,
       pinSpacing: true, // Restaurar el pin spacing para que funcione el scroll fijo
