@@ -63,7 +63,12 @@ const ProjectCard = memo(({ project, index }) => {
               onClick={hasValidLinks ? handleImageClick : undefined}
             >
               {project.image ? (
-                <img src={project.image} alt={project.title} />
+                <img 
+                  src={project.image} 
+                  alt={project.title}
+                  loading="lazy"
+                  decoding="async"
+                />
               ) : (
                 <div className="project-placeholder">
                   <span>{project.title}</span>
@@ -118,6 +123,8 @@ const ProjectCard = memo(({ project, index }) => {
   );
 });
 
+ProjectCard.displayName = 'ProjectCard';
+
 const ProjectsSection = ({ projects = [] }) => {
   const sectionRef = useRef(null);
 
@@ -145,8 +152,6 @@ const ProjectsSection = ({ projects = [] }) => {
 
     // Main pinned section with extended height for scroll snap behavior
     // Use memoized values for performance
-
-    const projectsHeader = section.querySelector('.projects-header');
 
     ScrollTrigger.create({
       trigger: section,

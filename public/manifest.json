@@ -1,0 +1,20 @@
+{
+  "name": "Steven Coaila Zaa - Portfolio",
+  "short_name": "Steven ACZ",
+  "description": "Full Stack Developer Portfolio - React, Swift, and modern web/mobile development",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ],
+  "categories": ["portfolio", "developer", "technology"],
+  "lang": "en",
+  "dir": "ltr"
+}

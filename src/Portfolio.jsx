@@ -2,11 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import Typewriter from 'typewriter-effect';
 import {
   Github,
-  ExternalLink,
   Linkedin,
   Mail,
   ChevronDown,
-  Calendar,
   MapPin,
 } from 'lucide-react';
 import { gsap } from 'gsap';
@@ -58,13 +56,20 @@ const Portfolio = () => {
       initializeAnimations();
     }, 100);
 
-    // Manejar redimensionamiento de ventana con debounce optimizado
+    // Manejar redimensionamiento de ventana con debounce optimizado para INP
     let resizeTimeout;
     const handleResize = () => {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
-        ScrollTrigger.refresh();
-      }, 250);
+        // Use requestIdleCallback for better INP if available, otherwise setTimeout
+        if (window.requestIdleCallback) {
+          window.requestIdleCallback(() => {
+            ScrollTrigger.refresh();
+          });
+        } else {
+          ScrollTrigger.refresh();
+        }
+      }, 150); // Reduced from 250ms to 150ms for faster response
     };
 
     window.addEventListener('resize', handleResize, { passive: true });
@@ -282,12 +287,20 @@ const Portfolio = () => {
 
       if (gsap && gsap.plugins?.ScrollToPlugin) {
         gsap.to(window, {
-          duration: 1.5,
+          duration: 1.2, // Slightly faster for better INP
           scrollTo: {
             y: targetY - (sectionRef === heroRef ? 0 : navbarHeight),
             autoKill: false,
           },
           ease: 'power2.inOut',
+          onComplete: () => {
+            // Yield to main thread after scroll complete
+            if (window.requestIdleCallback) {
+              window.requestIdleCallback(() => {
+                ScrollTrigger.refresh();
+              });
+            }
+          }
         });
       } else {
         console.warn('GSAP ScrollTo no disponible, usando scroll nativo');
@@ -363,7 +376,7 @@ const Portfolio = () => {
         </div>
         <div className="hero-content">
           <h1 className="hero-title">
-            <span className="hero-greeting">Hello, I'm</span>
+            <span className="hero-greeting">Hello, I&apos;m</span>
             <span className="hero-name">Steven</span>
           </h1>
           <h2 className="hero-subtitle">
@@ -433,9 +446,9 @@ const Portfolio = () => {
         <div className="container">
           <div className="footer-content">
             <div className="footer-info">
-              <h3>Let's work together!</h3>
+              <h3>Let&apos;s work together!</h3>
               <p>
-                I'm always open to new projects and interesting opportunities.
+                I&apos;m always open to new projects and interesting opportunities.
               </p>
             </div>
             <div className="footer-links">
@@ -447,6 +460,7 @@ const Portfolio = () => {
                 href="https://www.linkedin.com/in/stevenacz/"
                 className="footer-link"
                 target="_blank"
+                rel="noreferrer"
               >
                 <Linkedin size={20} />
                 <span>LinkedIn</span>
@@ -455,6 +469,7 @@ const Portfolio = () => {
                 href="https://github.com/StevenACZ"
                 className="footer-link"
                 target="_blank"
+                rel="noreferrer"
               >
                 <Github size={20} />
                 <span>GitHub</span>
