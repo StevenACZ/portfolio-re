@@ -1,7 +1,7 @@
 {
   "name": "steven-portfolio",
   "version": "1.0.0",
-  "description": "Portfolio web de Steven Coaila Zaa - Full Stack Developer",
+  "description": "Portfolio website of Steven Coaila Zaa - Full Stack Developer specializing in React, Swift, and modern web/mobile development",
   "main": "index.js",
   "scripts": {
     "dev": "vite",

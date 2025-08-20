@@ -28,17 +28,29 @@ Modern portfolio website for Steven Coaila Zaa, a Full Stack Developer specializ
 ```
 portfolio/
 ├── public/
-│   └── vite.svg                 # Vite default icon
+│   ├── favicon.ico              # Site icon
+│   ├── og-image.jpg             # Social media preview image (1920x1080)
+│   ├── robots.txt               # Search engine instructions
+│   ├── sitemap.xml              # Site structure for SEO
+│   ├── .htaccess                # Apache server configuration
+│   ├── buen-mouse.jpg           # Project image
+│   └── peso-tracker.webp        # Project image
 ├── src/
-│   ├── Portfolio.jsx            # Main component (588 lines)
+│   ├── Portfolio.jsx            # Main component with navigation and sections
 │   ├── main.jsx                 # React entry point
 │   ├── styles.css               # Global styles and animations
+│   ├── components/
+│   │   └── ProjectsSection.jsx  # Magic scroll system (284 lines)
+│   ├── styles/
+│   │   └── ProjectsSection.css  # Project section styling (602 lines)
 │   └── data/
-│       ├── projects.js          # Project data (3 projects)
+│       ├── projects.js          # Project data (2 projects)
 │       └── experiences.js       # Work experience data (3 positions)
-├── index.html                   # HTML template with GSAP CDN
+├── index.html                   # HTML template with complete SEO meta tags
 ├── package.json                 # Dependencies and scripts
-├── vite.config.js              # Vite configuration
+├── vite.config.js              # Optimized build configuration
+├── nginx.conf.example           # Nginx server configuration example
+├── DEPLOYMENT.md               # Complete deployment guide
 └── CLAUDE.md                   # This documentation file
 ```
 
@@ -71,9 +83,8 @@ portfolio/
 - **Project Data**: Modular data structure in separate file
 
 **Current Projects**:
-- PesoTracker (Swift, SwiftUI, Core Data, Charts)
-- BuenMouse (React, TypeScript, Electron, Node.js)
-- TaskFlow (React, Firebase, Material-UI, PWA)
+- PesoTracker (Swift, SwiftUI, JWT, Cloudflare) - GitHub + Demo links
+- BuenMouse (Swift, SwiftUI, CGEvent, AppleScript) - GitHub only
 
 ### 4. Experience Timeline
 - **Visual Timeline**: Animated line that draws on scroll
@@ -86,10 +97,54 @@ portfolio/
 - iOS Developer at Mobile Innovations (2022 - 2023)  
 - Frontend Developer at StartupLab (2021 - 2022)
 
-### 5. Footer/Contact Section
+### 5. Interactive Project Overlays
+- **Desktop Hover**: Displays overlay with GitHub/demo links on mouse hover
+- **Mobile Tap**: First tap shows overlay, second tap navigates to selected link
+- **Dynamic Interaction**: Only visible projects are interactive (pointer-events management)
+- **Visual Feedback**: Subtle overlay with glassmorphism effects and circular icons
+- **Link Configuration**: Project-specific links (GitHub only vs GitHub + Demo)
+
+### 6. Apple-Style Magnetic Scroll System
+- **Magnetic Zones**: Projects "stick" for extended viewing like Apple presentations
+- **Extended Duration**: Each project gets 1.8x viewport height for scroll pacing
+- **Progress Compression**: 60% middle zone slows scroll significantly (magnetic effect)
+- **Phase-based Transitions**: 30% appearing → 40% magnetic zone → 30% disappearing
+- **Bidirectional**: Works smoothly scrolling up and down
+- **Interactive During Scroll**: Overlays remain functional in magnetic zones
+
+### 7. Footer/Contact Section
 - **Contact Information**: Email, LinkedIn, GitHub links
 - **Call-to-Action**: "Let's work together!" message
 - **Copyright**: Professional footer with rights attribution
+
+## SEO & Production Optimizations
+
+### Meta Tags & Social Media
+- **Complete HTML Meta Tags**: Title, description, keywords, author, robots
+- **Open Graph Protocol**: Facebook, LinkedIn preview optimization
+- **Twitter Cards**: Summary with large image for Twitter shares
+- **Structured Data**: JSON-LD schema for rich snippets and search results
+- **Social Media Image**: og-image.jpg (1920x1080) with hero section screenshot
+
+### Search Engine Optimization
+- **Robots.txt**: Search engine crawling instructions with social media permissions
+- **Sitemap.xml**: Complete site structure for search engine indexing
+- **Canonical URLs**: All URLs point to stevenacz.com domain
+- **Meta Descriptions**: Optimized for click-through rates and keywords
+- **Semantic HTML**: Proper heading hierarchy and landmark elements
+
+### Build & Performance Optimizations
+- **Code Splitting**: Separate vendor chunks (React, GSAP, UI libraries)
+- **Asset Optimization**: Gzipped bundles (~115kb total initial load)
+- **Bundle Analysis**: Manual chunks for optimal caching strategy
+- **Production Config**: Minification, tree-shaking, and asset optimization
+- **Preview Server**: Configured for production testing
+
+### Expected Performance Metrics
+- **Lighthouse Performance**: 95+ target score
+- **SEO Score**: 100 (complete optimization)
+- **Accessibility**: 95+ with proper ARIA and semantic HTML
+- **Best Practices**: 95+ with security headers and modern standards
 
 ## Animation System (GSAP)
 
@@ -186,13 +241,13 @@ heroTl
 ### 8. Magic Scroll System - ProjectsSection (CRITICAL COMPONENT)
 **⚠️ WARNING: NEVER REMOVE OR SIMPLIFY - Core portfolio functionality**
 
-The ProjectsSection component implements a sophisticated pinned scroll system that is the centerpiece of the portfolio experience. This system creates a cinematic, Apple-like presentation where projects appear and disappear in phases as the user scrolls.
+The ProjectsSection component implements a sophisticated pinned scroll system with Apple-style magnetic zones that is the centerpiece of the portfolio experience. This system creates a cinematic presentation where projects appear, stick for extended viewing, then disappear in phases as the user scrolls.
 
 #### Core Architecture:
 ```javascript
-// Phase-based scroll system with dynamic animations
+// Phase-based scroll system with magnetic zones
 const totalPhases = 1 + projects.length; // Header + each project
-const totalHeight = (totalPhases - 0.5) * window.innerHeight;
+const totalHeight = totalPhases * 1.8 * window.innerHeight; // Extended for magnetic zones
 
 ScrollTrigger.create({
   trigger: section,
