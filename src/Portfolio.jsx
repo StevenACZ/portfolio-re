@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import Typewriter from 'typewriter-effect';
 import {
   Github,
@@ -10,9 +10,13 @@ import {
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
+import { useGSAP } from '@gsap/react';
 import { projects } from './data/projects';
 import { experiences } from './data/experiences';
 import ProjectsSection from './components/ProjectsSection';
+
+// Register GSAP plugins
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, useGSAP);
 
 const Portfolio = () => {
   const heroRef = useRef(null);
@@ -21,6 +25,7 @@ const Portfolio = () => {
   const timelineRef = useRef(null);
   const footerRef = useRef(null);
   const navbarRef = useRef(null);
+  const containerRef = useRef(null);
   const [activeSection, setActiveSection] = useState('hero');
 
   // Configurar typewriter con palabras más impactantes
@@ -32,6 +37,18 @@ const Portfolio = () => {
     'React Specialist',
     'Mobile App Creator',
   ];
+
+  // useGSAP hook for modern React GSAP integration
+  const { contextSafe } = useGSAP(() => {
+    // Initialize animations when DOM is ready
+    const timer = setTimeout(() => {
+      initializeAnimations();
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, { scope: containerRef });
 
   useEffect(() => {
     // Prevenir restauración automática del scroll del navegador
@@ -61,15 +78,18 @@ const Portfolio = () => {
     const handleResize = () => {
       clearTimeout(resizeTimeout);
       resizeTimeout = setTimeout(() => {
-        // Use requestIdleCallback for better INP if available, otherwise setTimeout
+        // Use requestIdleCallback for better INP and Core Web Vitals
         if (window.requestIdleCallback) {
           window.requestIdleCallback(() => {
             ScrollTrigger.refresh();
-          });
+          }, { timeout: 200 }); // Add timeout fallback
         } else {
-          ScrollTrigger.refresh();
+          // Fallback for browsers without requestIdleCallback
+          setTimeout(() => {
+            ScrollTrigger.refresh();
+          }, 16); // ~1 frame delay
         }
-      }, 150); // Reduced from 250ms to 150ms for faster response
+      }, 100); // Reduced for better responsiveness
     };
 
     window.addEventListener('resize', handleResize, { passive: true });
@@ -171,6 +191,7 @@ const Portfolio = () => {
           end: 'bottom top',
           scrub: 1,
           refreshPriority: -10,
+          fastScrollEnd: true, // Better mobile performance
         },
       });
     }
@@ -192,6 +213,7 @@ const Portfolio = () => {
           trigger: timelineRef.current,
           start: 'top 75%',
           toggleActions: 'play none none reverse',
+          fastScrollEnd: true, // Better mobile performance
         },
       }
     );
@@ -213,6 +235,7 @@ const Portfolio = () => {
           trigger: timelineRef.current,
           start: 'top 65%',
           toggleActions: 'play none none reverse',
+          fastScrollEnd: true, // Better mobile performance
         },
       }
     );
@@ -233,6 +256,7 @@ const Portfolio = () => {
           trigger: footerRef.current,
           start: 'top 90%',
           toggleActions: 'play none none reverse',
+          fastScrollEnd: true, // Better mobile performance
         },
       }
     );
@@ -272,8 +296,8 @@ const Portfolio = () => {
     // ScrollTrigger se actualizará automáticamente con las configuraciones de performance
   };
 
-  // Función para smooth scroll
-  const scrollToSection = (sectionRef) => {
+  // Función para smooth scroll usando contextSafe
+  const scrollToSection = useCallback(contextSafe((sectionRef) => {
     if (sectionRef.current) {
       // Usar altura del navbar desde CSS custom property
       const navbarHeight = navbarRef.current
@@ -315,15 +339,15 @@ const Portfolio = () => {
         });
       }
     }
-  };
+  }), [heroRef, navbarRef, contextSafe]);
 
-  // Función específica para el scroll indicator
-  const handleScrollIndicatorClick = () => {
+  // Función específica para el scroll indicator usando contextSafe
+  const handleScrollIndicatorClick = useCallback(contextSafe(() => {
     scrollToSection(projectsRef);
-  };
+  }), [scrollToSection, projectsRef, contextSafe]);
 
   return (
-    <div className="portfolio">
+    <div ref={containerRef} className="portfolio">
       {/* Navbar */}
       <nav ref={navbarRef} className="navbar">
         <div className="navbar-container">

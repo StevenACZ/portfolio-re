@@ -1,11 +1,12 @@
 import React, { useRef, useEffect, useState, memo, useMemo } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useGSAP } from '@gsap/react';
 import { Github, ExternalLink } from 'lucide-react';
 import '../styles/ProjectsSection.css';
 
-// Register GSAP plugin
-gsap.registerPlugin(ScrollTrigger);
+// Register GSAP plugins
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const ProjectCard = memo(({ project, index }) => {
   const isEven = useMemo(() => index % 2 === 0, [index]);
@@ -132,7 +133,7 @@ const ProjectsSection = ({ projects = [] }) => {
   const totalPhases = useMemo(() => 1 + projects.length, [projects.length]);
   const totalHeight = useMemo(() => totalPhases * 1.8 * window.innerHeight, [totalPhases]);
 
-  useEffect(() => {
+  useGSAP(() => {
     if (!projects.length) return;
 
     const section = sectionRef.current;
@@ -162,6 +163,8 @@ const ProjectsSection = ({ projects = [] }) => {
       scrub: 1,
       anticipatePin: 1,
       refreshPriority: -1,
+      fastScrollEnd: true, // Better mobile performance
+      invalidateOnRefresh: true, // Refresh calculations on resize
       onUpdate: (self) => {
         const progress = self.progress;
         const phaseProgress = progress * totalPhases;
@@ -322,14 +325,8 @@ const ProjectsSection = ({ projects = [] }) => {
       },
     });
 
-    return () => {
-      ScrollTrigger.getAll().forEach((st) => {
-        if (st.trigger && section.contains(st.trigger)) {
-          st.kill();
-        }
-      });
-    };
-  }, [projects, totalPhases, totalHeight]);
+    // Cleanup handled automatically by useGSAP
+  }, { dependencies: [projects, totalPhases, totalHeight] });
 
   if (!projects.length) {
     return (
