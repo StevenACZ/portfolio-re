@@ -32,7 +32,7 @@ const ProjectCard = ({ project, index }) => {
 
           {project.features && (
             <div className="project-features">
-              <h4 className="features-title">Características principales:</h4>
+              <h4 className="features-title">Key Features:</h4>
               <ul className="features-list">
                 {project.features.slice(0, 3).map((feature, featureIndex) => (
                   <li key={featureIndex} className="feature-item">
@@ -68,14 +68,16 @@ const ProjectCard = ({ project, index }) => {
         </div>
 
         <div className="project-visual">
-          <div className="project-image">
-            {project.image ? (
-              <img src={project.image} alt={project.title} />
-            ) : (
-              <div className="project-placeholder">
-                <span>{project.title}</span>
-              </div>
-            )}
+          <div className="project-showcase">
+            <div className="project-image">
+              {project.image ? (
+                <img src={project.image} alt={project.title} />
+              ) : (
+                <div className="project-placeholder">
+                  <span>{project.title}</span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -100,10 +102,10 @@ const ProjectsSection = ({ projects = [] }) => {
     projects.forEach((_, index) => {
       const card = section.querySelector(`[data-project="${index}"]`);
       if (!card) return;
-      gsap.set(card, { opacity: 0, y: 0 }); // Iniciar en centro, no en posición 50px abajo
+      gsap.set(card, { opacity: 0, y: 0 }); // Start at center, not at 50px below position
     });
 
-    // Sección pinned principal
+    // Main pinned section
     const totalPhases = 1 + projects.length;
     const totalHeight = (totalPhases - 0.5) * window.innerHeight; // Reducir ligeramente para mejor control
 
@@ -122,41 +124,40 @@ const ProjectsSection = ({ projects = [] }) => {
         const currentPhase = Math.floor(phaseProgress);
         const phaseLocalProgress = phaseProgress - currentPhase;
 
-        // Fase 0: Título visible inmediatamente, luego se desvanece hacia arriba
+        // Phase 0: Title visible immediately, then fades upward
         if (currentPhase === 0) {
-          // Calcular distancia dinámica para el título (un poco más dramática)
+          // Calculate dynamic distance for title (slightly more dramatic)
           const navbarHeight = 80;
-          const buffer = 150; // Buffer más grande para el título, más dramático
+          const buffer = 150; // Larger buffer for title, more dramatic
           const titleMaxDistance =
             window.innerHeight / 2 + navbarHeight + buffer;
 
           gsap.to(header, {
-            opacity: Math.max(0, 1 - phaseLocalProgress * 1.8), // Desvanecimiento más rápido
-            y: -titleMaxDistance * phaseLocalProgress, // Movimiento dinámico hacia arriba
-            duration: 0.2, // Animación más rápida
+            opacity: Math.max(0, 1 - phaseLocalProgress * 1.8), // Faster fade
+            y: -titleMaxDistance * phaseLocalProgress, // Dynamic upward movement
+            duration: 0.2, // Faster animation
             ease: 'power2.out', // Cambio a power2.out para mejor efecto de salida
           });
 
-          // Ocultar proyectos - mantener en su posición actual
+          // Hide projects - maintain current position
           projects.forEach((_, index) => {
             const card = section.querySelector(`[data-project="${index}"]`);
             if (card) {
               const currentY = gsap.getProperty(card, 'y');
               gsap.to(card, {
                 opacity: 0,
-                y: currentY, // Mantener posición actual, no resetear
+                y: currentY, // Maintain current position, don't reset
                 duration: 0.4,
                 ease: 'power2.inOut',
                 overwrite: true, // Prevenir conflictos
-                clearProps: false, // Mantener las propiedades de posición
               });
             }
           });
         }
 
-        // Fases de proyectos
+        // Project phases
         else if (currentPhase >= 1 && currentPhase <= projects.length) {
-          // Título completamente oculto
+          // Title completely hidden
           gsap.to(header, {
             opacity: 0,
             y: -30,
@@ -187,19 +188,19 @@ const ProjectsSection = ({ projects = [] }) => {
                   ease: 'power3.out',
                 });
               } else {
-                // Proyectos anteriores: aparecen en centro y desaparecen hacia arriba
+                // Previous projects: appear in center and disappear upward
                 const easedOpacity = Math.sin(phaseLocalProgress * Math.PI);
 
-                // Calcular distancia dinámica basada en viewport
+                // Calculate dynamic distance based on viewport
                 const navbarHeight = 80; // Altura del navbar
-                const buffer = 20; // Buffer para asegurar desaparición antes del navbar
+                const buffer = 20; // Buffer to ensure disappearance before navbar
                 const maxDistance =
                   window.innerHeight / 2 + navbarHeight + buffer;
 
                 const yPosition =
                   phaseLocalProgress <= 0.5
                     ? 0 // Primera mitad: mantener en centro mientras aparece
-                    : -maxDistance * ((phaseLocalProgress - 0.5) * 2); // Segunda mitad: mover hacia arriba dinámicamente
+                    : -maxDistance * ((phaseLocalProgress - 0.5) * 2); // Second half: move upward dynamically
 
                 gsap.to(card, {
                   opacity: easedOpacity,
@@ -207,28 +208,18 @@ const ProjectsSection = ({ projects = [] }) => {
                   duration: 0.4,
                   ease: 'power3.out',
                   overwrite: true, // Prevenir conflictos de animaciones
-                  onComplete: () => {
-                    // Si el proyecto está completamente desaparecido, fijar su posición final
-                    if (easedOpacity <= 0.01 && yPosition < 0) {
-                      gsap.set(card, {
-                        y: yPosition,
-                        opacity: 0,
-                        clearProps: false, // No limpiar las propiedades, mantener la posición
-                      });
-                    }
-                  },
+
                 });
               }
             } else {
-              // Otros proyectos ocultos - mantener en su posición actual, no resetear
+              // Other hidden projects - maintain current position, don't reset
               const currentY = gsap.getProperty(card, 'y');
               gsap.to(card, {
                 opacity: 0,
-                y: currentY, // Mantener la posición Y actual, no mover a otra posición
+                y: currentY, // Maintain current Y position, don't move to another position
                 duration: 0.4,
                 ease: 'power2.inOut',
                 overwrite: true, // Prevenir conflictos
-                clearProps: false, // No limpiar las propiedades para mantener posición
               });
             }
           });
