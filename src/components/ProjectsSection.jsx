@@ -136,9 +136,9 @@ const ProjectsSection = ({ projects = [] }) => {
       card.classList.add('hidden'); // Initially all projects are hidden
     });
 
-    // Main pinned section
+    // Main pinned section with extended height for scroll snap behavior
     const totalPhases = 1 + projects.length;
-    const totalHeight = (totalPhases - 0.5) * window.innerHeight; // Reducir ligeramente para mejor control
+    const totalHeight = totalPhases * 1.8 * window.innerHeight; // Extended height for magnetic scroll zones
 
     const projectsHeader = section.querySelector('.projects-header');
 
@@ -155,7 +155,16 @@ const ProjectsSection = ({ projects = [] }) => {
         const progress = self.progress;
         const phaseProgress = progress * totalPhases;
         const currentPhase = Math.floor(phaseProgress);
-        const phaseLocalProgress = phaseProgress - currentPhase;
+        let phaseLocalProgress = phaseProgress - currentPhase;
+        
+        // Create magnetic zones: each project stays visible longer
+        // Map linear progress to a curve that creates "snap zones"
+        if (phaseLocalProgress > 0.2 && phaseLocalProgress < 0.8) {
+          // In the middle 60% of each phase, slow down the progress significantly
+          const normalizedMiddle = (phaseLocalProgress - 0.2) / 0.6; // Map 0.2-0.8 to 0-1
+          const slowProgress = normalizedMiddle * 0.3; // Compress to 30% of normal speed
+          phaseLocalProgress = 0.2 + slowProgress; // Remap back to phase space
+        }
 
         // Phase 0: Title visible immediately, then fades upward
         if (currentPhase === 0) {
@@ -221,18 +230,20 @@ const ProjectsSection = ({ projects = [] }) => {
 
             if (index === projectIndex) {
               if (index === projects.length - 1) {
-                // Último proyecto: aparece y se mantiene
-                const easedProgress = gsap.utils.mapRange(
-                  0,
-                  1,
-                  0,
-                  1,
-                  phaseLocalProgress
-                );
+                // Último proyecto: aparece y se mantiene con zona magnética
+                let easedProgress;
+                if (phaseLocalProgress <= 0.5) {
+                  // Primera mitad: aparece gradualmente
+                  easedProgress = gsap.utils.mapRange(0, 0.5, 0, 1, phaseLocalProgress);
+                } else {
+                  // Segunda mitad: permanece visible (zona magnética)
+                  easedProgress = 1;
+                }
+                
                 gsap.to(card, {
                   opacity: easedProgress,
                   y: 0, // Último proyecto se mantiene en centro
-                  duration: 0.5,
+                  duration: 0.3,
                   ease: 'power3.out',
                 });
 
@@ -243,26 +254,35 @@ const ProjectsSection = ({ projects = [] }) => {
                   card.classList.add('hidden');
                 }
               } else {
-                // Previous projects: appear in center and disappear upward
-                const easedOpacity = Math.sin(phaseLocalProgress * Math.PI);
-
-                // Calculate dynamic distance based on viewport
-                const navbarHeight = 80; // Altura del navbar
-                const buffer = 20; // Buffer to ensure disappearance before navbar
-                const maxDistance =
-                  window.innerHeight / 2 + navbarHeight + buffer;
-
-                const yPosition =
-                  phaseLocalProgress <= 0.5
-                    ? 0 // Primera mitad: mantener en centro mientras aparece
-                    : -maxDistance * ((phaseLocalProgress - 0.5) * 2); // Second half: move upward dynamically
+                // Previous projects: appear in center with extended visible zone
+                let easedOpacity, yPosition;
+                
+                if (phaseLocalProgress <= 0.3) {
+                  // First 30%: appearing
+                  easedOpacity = gsap.utils.mapRange(0, 0.3, 0, 1, phaseLocalProgress);
+                  yPosition = 0;
+                } else if (phaseLocalProgress <= 0.7) {
+                  // Middle 40%: fully visible (magnetic zone)
+                  easedOpacity = 1;
+                  yPosition = 0;
+                } else {
+                  // Last 30%: disappearing upward
+                  const exitProgress = gsap.utils.mapRange(0.7, 1, 0, 1, phaseLocalProgress);
+                  easedOpacity = 1 - exitProgress;
+                  
+                  // Calculate dynamic distance based on viewport
+                  const navbarHeight = 80;
+                  const buffer = 20;
+                  const maxDistance = window.innerHeight / 2 + navbarHeight + buffer;
+                  yPosition = -maxDistance * exitProgress;
+                }
 
                 gsap.to(card, {
                   opacity: easedOpacity,
                   y: yPosition,
-                  duration: 0.4,
+                  duration: 0.3,
                   ease: 'power3.out',
-                  overwrite: true, // Prevenir conflictos de animaciones
+                  overwrite: true,
                 });
 
                 // Enable interactions based on opacity
