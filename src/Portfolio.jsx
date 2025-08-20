@@ -58,18 +58,21 @@ const Portfolio = () => {
       initializeAnimations();
     }, 100);
 
-    // Manejar redimensionamiento de ventana
+    // Manejar redimensionamiento de ventana con debounce optimizado
+    let resizeTimeout;
     const handleResize = () => {
-      setTimeout(() => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
         ScrollTrigger.refresh();
-      }, 100);
+      }, 250);
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize, { passive: true });
 
     // Cleanup al desmontar
     return () => {
       clearTimeout(timer);
+      clearTimeout(resizeTimeout);
       window.removeEventListener('resize', handleResize);
       ScrollTrigger.getAll().forEach((st) => st.kill());
     };
@@ -150,16 +153,7 @@ const Portfolio = () => {
         '-=0.3'
       );
 
-    // Scroll indicator bounce
-    if (scrollIndicatorRef.current) {
-      gsap.to(scrollIndicatorRef.current, {
-        y: 10,
-        duration: 1,
-        ease: 'power2.inOut',
-        repeat: -1,
-        yoyo: true,
-      });
-    }
+    // Scroll indicator bounce moved to CSS for better performance
 
     // Parallax effect mejorado (solo en desktop)
     if (!isMobile) {
@@ -270,18 +264,16 @@ const Portfolio = () => {
       });
     });
 
-    // Refresh ScrollTrigger
-    ScrollTrigger.refresh();
+    // ScrollTrigger se actualizará automáticamente con las configuraciones de performance
   };
 
   // Función para smooth scroll
   const scrollToSection = (sectionRef) => {
     if (sectionRef.current) {
-      // Calcular altura real del navbar con margen adicional
-      // const navbarHeight = navbarRef.current ? navbarRef.current.offsetHeight + 10 : 90;
+      // Usar altura del navbar desde CSS custom property
       const navbarHeight = navbarRef.current
         ? navbarRef.current.offsetHeight
-        : 80;
+        : parseInt(getComputedStyle(document.documentElement).getPropertyValue('--navbar-height')) || 80;
 
       // Obtener posición exacta de la sección
       const sectionRect = sectionRef.current.getBoundingClientRect();

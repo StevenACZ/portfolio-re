@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, memo, useMemo } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Github, ExternalLink } from 'lucide-react';
@@ -7,15 +7,18 @@ import '../styles/ProjectsSection.css';
 // Register GSAP plugin
 gsap.registerPlugin(ScrollTrigger);
 
-const ProjectCard = ({ project, index }) => {
-  const isEven = index % 2 === 0;
+const ProjectCard = memo(({ project, index }) => {
+  const isEven = useMemo(() => index % 2 === 0, [index]);
   const [overlayActive, setOverlayActive] = useState(false);
 
   const handleImageClick = () => {
     setOverlayActive(!overlayActive);
   };
 
-  const hasValidLinks = (project.github && project.github !== '#') || (project.demo && project.demo !== '#');
+  const hasValidLinks = useMemo(() => 
+    (project.github && project.github !== '#') || (project.demo && project.demo !== '#'),
+    [project.github, project.demo]
+  );
 
   return (
     <div
@@ -113,10 +116,14 @@ const ProjectCard = ({ project, index }) => {
       </div>
     </div>
   );
-};
+});
 
 const ProjectsSection = ({ projects = [] }) => {
   const sectionRef = useRef(null);
+
+  // Memoize calculations that don't change between renders
+  const totalPhases = useMemo(() => 1 + projects.length, [projects.length]);
+  const totalHeight = useMemo(() => totalPhases * 1.8 * window.innerHeight, [totalPhases]);
 
   useEffect(() => {
     if (!projects.length) return;
@@ -137,8 +144,7 @@ const ProjectsSection = ({ projects = [] }) => {
     });
 
     // Main pinned section with extended height for scroll snap behavior
-    const totalPhases = 1 + projects.length;
-    const totalHeight = totalPhases * 1.8 * window.innerHeight; // Extended height for magnetic scroll zones
+    // Use memoized values for performance
 
     const projectsHeader = section.querySelector('.projects-header');
 
@@ -169,7 +175,7 @@ const ProjectsSection = ({ projects = [] }) => {
         // Phase 0: Title visible immediately, then fades upward
         if (currentPhase === 0) {
           // Calculate dynamic distance for title (slightly more dramatic)
-          const navbarHeight = 80;
+          const navbarHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--navbar-height')) || 80;
           const buffer = 150; // Larger buffer for title, more dramatic
           const titleMaxDistance =
             window.innerHeight / 2 + navbarHeight + buffer;
@@ -271,7 +277,7 @@ const ProjectsSection = ({ projects = [] }) => {
                   easedOpacity = 1 - exitProgress;
                   
                   // Calculate dynamic distance based on viewport
-                  const navbarHeight = 80;
+                  const navbarHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--navbar-height')) || 80;
                   const buffer = 20;
                   const maxDistance = window.innerHeight / 2 + navbarHeight + buffer;
                   yPosition = -maxDistance * exitProgress;
@@ -318,7 +324,7 @@ const ProjectsSection = ({ projects = [] }) => {
         }
       });
     };
-  }, [projects]);
+  }, [projects, totalPhases, totalHeight]);
 
   if (!projects.length) {
     return (
