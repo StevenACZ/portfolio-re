@@ -14,6 +14,8 @@ import { useGSAP } from '@gsap/react';
 import { projects } from './data/projects';
 import { experiences } from './data/experiences';
 import ProjectsSection from './components/ProjectsSection';
+import HeroSection from './components/HeroSection';
+import './styles/HeroSection.css';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, useGSAP);
@@ -388,47 +390,10 @@ const Portfolio = () => {
           </div>
         </div>
       </nav>
-      {/* Hero Section */}
-      <section ref={heroRef} className="hero">
-        <div className="hero-bg">
-          <div className="particles">
-            {[...Array(50)].map((_, i) => (
-              <div key={i} className={`particle particle-${i % 3}`}></div>
-            ))}
-          </div>
-          <div className="gradient-bg"></div>
-        </div>
-        <div className="hero-content">
-          <h1 className="hero-title">
-            <span className="hero-greeting">Hello, I&apos;m</span>
-            <span className="hero-name">Steven</span>
-          </h1>
-          <h2 className="hero-subtitle">
-            <span className="typewriter-text">
-              <Typewriter
-                options={{
-                  strings: typewriterWords,
-                  autoStart: true,
-                  loop: true,
-                  delay: 80,
-                  deleteSpeed: 30,
-                  pauseFor: 3000,
-                }}
-              />
-            </span>
-          </h2>
-          <p className="hero-description">
-            Creating innovative digital experiences with cutting-edge technology
-          </p>
-        </div>
-        <div
-          ref={scrollIndicatorRef}
-          className="scroll-indicator"
-          onClick={handleScrollIndicatorClick}
-        >
-          <ChevronDown size={24} />
-        </div>
-      </section>
+      {/* Hero Section - New 3D Interactive Version */}
+      <div ref={heroRef}>
+        <HeroSection onScrollIndicatorClick={handleScrollIndicatorClick} />
+      </div>
 
       {/* Projects Section */}
       <section ref={projectsRef} className="projects">
