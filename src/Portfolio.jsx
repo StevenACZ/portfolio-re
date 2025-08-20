@@ -16,7 +16,6 @@ import { projects } from './data/projects';
 import { experiences } from './data/experiences';
 import ProjectsSection from './components/ProjectsSection';
 
-
 const Portfolio = () => {
   const heroRef = useRef(null);
   const scrollIndicatorRef = useRef(null);
@@ -29,11 +28,11 @@ const Portfolio = () => {
   // Configurar typewriter con palabras más impactantes
   const typewriterWords = [
     'Full Stack Developer',
-    'Swift Developer', 
+    'Swift Developer',
     'Creative Problem Solver',
     'UX Enthusiast',
     'React Specialist',
-    'Mobile App Creator'
+    'Mobile App Creator',
   ];
 
   useEffect(() => {
@@ -41,17 +40,16 @@ const Portfolio = () => {
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
     }
-    
+
     // Asegurar scroll al top
     const scrollToTop = () => {
       window.scrollTo(0, 0);
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
     };
-    
+
     scrollToTop();
-    
-    
+
     // Registrar plugins GSAP
     gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
@@ -78,8 +76,6 @@ const Portfolio = () => {
   }, []);
 
   const initializeAnimations = () => {
-
-
     // Configurar performance para mobile
     const isMobile = window.innerWidth <= 768;
     const reducedMotion = window.matchMedia(
@@ -113,7 +109,7 @@ const Portfolio = () => {
         {
           y: 50,
           opacity: 0,
-          scale: 0.9
+          scale: 0.9,
         },
         {
           y: 0,
@@ -135,7 +131,7 @@ const Portfolio = () => {
           opacity: 1,
           duration: 0.8,
           ease: 'power3.out',
-          delay: 0.5  // Delay para que termine la animación del nombre
+          delay: 0.5, // Delay para que termine la animación del nombre
         },
         '-=0.5'
       )
@@ -276,12 +272,10 @@ const Portfolio = () => {
 
     // Refresh ScrollTrigger
     ScrollTrigger.refresh();
-
   };
 
   // Función para smooth scroll
   const scrollToSection = (sectionRef) => {
-
     if (sectionRef.current) {
       // Calcular altura real del navbar con margen adicional
       // const navbarHeight = navbarRef.current ? navbarRef.current.offsetHeight + 10 : 90;
@@ -294,9 +288,7 @@ const Portfolio = () => {
       const currentScrollY = window.pageYOffset;
       const targetY = sectionRect.top + currentScrollY;
 
-
       if (gsap && gsap.plugins?.ScrollToPlugin) {
-
         gsap.to(window, {
           duration: 1.5,
           scrollTo: {
@@ -316,7 +308,6 @@ const Portfolio = () => {
           top: finalTargetY,
           behavior: 'smooth',
         });
-
       }
     }
   };
@@ -325,7 +316,6 @@ const Portfolio = () => {
   const handleScrollIndicatorClick = () => {
     scrollToSection(projectsRef);
   };
-
 
   return (
     <div className="portfolio">
@@ -462,13 +452,18 @@ const Portfolio = () => {
                 <span>scoaila@proton.me</span>
               </a>
               <a
-                href="https://linkedin.com/in/steven-coaila"
+                href="https://www.linkedin.com/in/stevenacz/"
                 className="footer-link"
+                target="_blank"
               >
                 <Linkedin size={20} />
                 <span>LinkedIn</span>
               </a>
-              <a href="https://github.com/stevencoaila" className="footer-link">
+              <a
+                href="https://github.com/StevenACZ"
+                className="footer-link"
+                target="_blank"
+              >
                 <Github size={20} />
                 <span>GitHub</span>
               </a>
