@@ -1,6 +1,7 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Github, ExternalLink } from 'lucide-react';
 import '../styles/ProjectsSection.css';
 
 // Register GSAP plugin
@@ -8,6 +9,13 @@ gsap.registerPlugin(ScrollTrigger);
 
 const ProjectCard = ({ project, index }) => {
   const isEven = index % 2 === 0;
+  const [overlayActive, setOverlayActive] = useState(false);
+
+  const handleImageClick = () => {
+    setOverlayActive(!overlayActive);
+  };
+
+  const hasValidLinks = (project.github && project.github !== '#') || (project.demo && project.demo !== '#');
 
   return (
     <div
@@ -47,12 +55,56 @@ const ProjectCard = ({ project, index }) => {
 
         <div className="project-visual">
           <div className="project-showcase">
-            <div className="project-image">
+            <div 
+              className={`project-image ${hasValidLinks ? 'interactive' : ''} ${overlayActive ? 'overlay-active' : ''}`}
+              onClick={hasValidLinks ? handleImageClick : undefined}
+            >
               {project.image ? (
                 <img src={project.image} alt={project.title} />
               ) : (
                 <div className="project-placeholder">
                   <span>{project.title}</span>
+                </div>
+              )}
+              
+              {hasValidLinks && (
+                <div className="project-overlay">
+                  <div className="overlay-links">
+                    {project.github && project.github !== '#' && (
+                      <a
+                        href={project.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="overlay-link"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // On mobile, prevent navigation if overlay is not active
+                          if (window.innerWidth <= 768 && !overlayActive) {
+                            e.preventDefault();
+                          }
+                        }}
+                      >
+                        <Github size={24} />
+                      </a>
+                    )}
+                    {project.demo && project.demo !== '#' && (
+                      <a
+                        href={project.demo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="overlay-link"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // On mobile, prevent navigation if overlay is not active
+                          if (window.innerWidth <= 768 && !overlayActive) {
+                            e.preventDefault();
+                          }
+                        }}
+                      >
+                        <ExternalLink size={24} />
+                      </a>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -81,6 +133,7 @@ const ProjectsSection = ({ projects = [] }) => {
       const card = section.querySelector(`[data-project="${index}"]`);
       if (!card) return;
       gsap.set(card, { opacity: 0, y: 0 }); // Start at center, not at 50px below position
+      card.classList.add('hidden'); // Initially all projects are hidden
     });
 
     // Main pinned section
@@ -112,12 +165,21 @@ const ProjectsSection = ({ projects = [] }) => {
           const titleMaxDistance =
             window.innerHeight / 2 + navbarHeight + buffer;
 
+          const opacity = Math.max(0, 1 - phaseLocalProgress * 1.8);
+          
           gsap.to(header, {
-            opacity: Math.max(0, 1 - phaseLocalProgress * 1.8), // Faster fade
+            opacity: opacity,
             y: -titleMaxDistance * phaseLocalProgress, // Dynamic upward movement
             duration: 0.2, // Faster animation
-            ease: 'power2.out', // Cambio a power2.out para mejor efecto de salida
+            ease: 'power2.out',
           });
+
+          // Toggle pointer-events based on opacity
+          if (opacity < 0.1) {
+            header.classList.add('hidden');
+          } else {
+            header.classList.remove('hidden');
+          }
 
           // Hide projects - maintain current position
           projects.forEach((_, index) => {
@@ -131,6 +193,9 @@ const ProjectsSection = ({ projects = [] }) => {
                 ease: 'power2.inOut',
                 overwrite: true, // Prevenir conflictos
               });
+
+              // Disable interactions during phase 0
+              card.classList.add('hidden');
             }
           });
         }
@@ -144,6 +209,9 @@ const ProjectsSection = ({ projects = [] }) => {
             duration: 0.4,
             ease: 'power2.inOut',
           });
+
+          // Ensure header has no pointer events during project phases
+          header.classList.add('hidden');
 
           const projectIndex = currentPhase - 1;
 
@@ -167,6 +235,13 @@ const ProjectsSection = ({ projects = [] }) => {
                   duration: 0.5,
                   ease: 'power3.out',
                 });
+
+                // Enable interactions for visible project
+                if (easedProgress > 0.1) {
+                  card.classList.remove('hidden');
+                } else {
+                  card.classList.add('hidden');
+                }
               } else {
                 // Previous projects: appear in center and disappear upward
                 const easedOpacity = Math.sin(phaseLocalProgress * Math.PI);
@@ -188,8 +263,14 @@ const ProjectsSection = ({ projects = [] }) => {
                   duration: 0.4,
                   ease: 'power3.out',
                   overwrite: true, // Prevenir conflictos de animaciones
-
                 });
+
+                // Enable interactions based on opacity
+                if (easedOpacity > 0.1) {
+                  card.classList.remove('hidden');
+                } else {
+                  card.classList.add('hidden');
+                }
               }
             } else {
               // Other hidden projects - maintain current position, don't reset
@@ -201,6 +282,9 @@ const ProjectsSection = ({ projects = [] }) => {
                 ease: 'power2.inOut',
                 overwrite: true, // Prevenir conflictos
               });
+
+              // Disable interactions for hidden projects
+              card.classList.add('hidden');
             }
           });
         }
