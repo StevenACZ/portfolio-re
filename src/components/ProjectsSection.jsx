@@ -43,28 +43,6 @@ const ProjectCard = ({ project, index }) => {
             </div>
           )}
 
-          <div className="project-links">
-            {project.github && project.github !== '#' && (
-              <a
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="project-link"
-              >
-                GitHub
-              </a>
-            )}
-            {project.demo && project.demo !== '#' && (
-              <a
-                href={project.demo}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="project-link"
-              >
-                Demo
-              </a>
-            )}
-          </div>
         </div>
 
         <div className="project-visual">
