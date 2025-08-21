@@ -90,11 +90,15 @@ jspm_packages/
 # FuseBox cache
 .fusebox/
 
-# DynamoDB Local files
-.dynamodb/
+# DynamoDB Local files (removed - not needed for frontend portfolio)
+# .dynamodb/
 
 # TernJS port file
 .tern-port
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+
+# Test results and Playwright
+test-results/
+.playwright-mcp/

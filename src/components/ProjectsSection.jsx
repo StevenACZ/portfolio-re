@@ -1,8 +1,9 @@
-import React, { useRef, useEffect, useState, memo, useMemo } from 'react';
+import React, { useRef, useState, memo, useMemo } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import { Github, ExternalLink } from 'lucide-react';
+import LazyImage from './LazyImage';
 import '../styles/ProjectsSection.css';
 
 // Register GSAP plugins
@@ -64,11 +65,13 @@ const ProjectCard = memo(({ project, index }) => {
               onClick={hasValidLinks ? handleImageClick : undefined}
             >
               {project.image ? (
-                <img 
+                <LazyImage 
                   src={project.image} 
-                  alt={project.title}
-                  loading="lazy"
-                  decoding="async"
+                  alt={project.alt || project.title}
+                  className="project-lazy-image"
+                  skeletonHeight="300px"
+                  threshold={0.2}
+                  fadeInDuration={400}
                 />
               ) : (
                 <div className="project-placeholder">
@@ -212,9 +215,10 @@ const ProjectsSection = ({ projects = [] }) => {
               gsap.to(card, {
                 opacity: 0,
                 y: currentY, // Maintain current position, don't reset
-                duration: 0.4,
-                ease: 'power2.inOut',
-                overwrite: true, // Prevenir conflictos
+                duration: 0.25, // Synchronized duration
+                ease: 'power2.out', // Consistent easing
+                overwrite: 'auto',
+                immediateRender: false,
               });
 
               // Disable interactions during phase 0
@@ -229,8 +233,10 @@ const ProjectsSection = ({ projects = [] }) => {
           gsap.to(header, {
             opacity: 0,
             y: -30,
-            duration: 0.4,
-            ease: 'power2.inOut',
+            duration: 0.25, // Synchronized duration
+            ease: 'power2.out', // Consistent easing
+            overwrite: 'auto',
+            immediateRender: false,
           });
 
           // Ensure header has no pointer events during project phases
@@ -280,9 +286,9 @@ const ProjectsSection = ({ projects = [] }) => {
                   easedOpacity = 1;
                   yPosition = 0;
                 } else {
-                  // Last 30%: disappearing upward
-                  const exitProgress = gsap.utils.mapRange(0.7, 1, 0, 1, phaseLocalProgress);
-                  easedOpacity = 1 - exitProgress;
+                  // Last 20%: disappearing upward (reduced overlap)
+                  const exitProgress = gsap.utils.mapRange(0.8, 1, 0, 1, phaseLocalProgress);
+                  easedOpacity = Math.max(0, 1 - exitProgress);
                   
                   // Calculate dynamic distance based on viewport
                   const navbarHeight = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--navbar-height')) || 80;
@@ -294,13 +300,14 @@ const ProjectsSection = ({ projects = [] }) => {
                 gsap.to(card, {
                   opacity: easedOpacity,
                   y: yPosition,
-                  duration: 0.3,
-                  ease: 'power3.out',
-                  overwrite: true,
+                  duration: 0.25, // Synchronized duration
+                  ease: 'power2.out', // Consistent easing
+                  overwrite: 'auto',
+                  immediateRender: false,
                 });
 
-                // Enable interactions based on opacity
-                if (easedOpacity > 0.1) {
+                // Enable interactions based on opacity (more aggressive threshold)
+                if (easedOpacity > 0.05) {
                   card.classList.remove('hidden');
                 } else {
                   card.classList.add('hidden');
@@ -312,9 +319,10 @@ const ProjectsSection = ({ projects = [] }) => {
               gsap.to(card, {
                 opacity: 0,
                 y: currentY, // Maintain current Y position, don't move to another position
-                duration: 0.4,
-                ease: 'power2.inOut',
-                overwrite: true, // Prevenir conflictos
+                duration: 0.25, // Synchronized duration
+                ease: 'power2.out', // Consistent easing
+                overwrite: 'auto',
+                immediateRender: false,
               });
 
               // Disable interactions for hidden projects

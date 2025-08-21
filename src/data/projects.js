@@ -6,6 +6,7 @@ export const projects = [
       'macOS application for weight tracking with JWT authentication, intelligent cache, progress photos, and Cloudflare-optimized API. MVVM architecture with SwiftUI.',
     tech: ['Swift', 'SwiftUI', 'JWT', 'Cloudflare', 'Combine', 'Core Graphics'],
     image: '/peso-tracker.webp',
+    alt: 'PesoTracker macOS application interface showing weight tracking dashboard with charts, progress photos, and Swift SwiftUI design by Steven Coaila Zaa',
     github: 'https://github.com/StevenACZ/peso-tracker',
     demo: 'https://peso.stevenacz.com',
     features: [
@@ -30,7 +31,8 @@ export const projects = [
       'Accessibility APIs',
       'UserDefaults',
     ],
-    image: '/buen-mouse.jpg',
+    image: '/buen-mouse.webp',
+    alt: 'BuenMouse macOS productivity app interface showing mouse enhancement settings and gesture recognition features built with Swift by Steven Coaila Zaa',
     github: 'https://github.com/StevenACZ/BuenMouse',
     features: [
       'System-level event interception with CGEventTap',

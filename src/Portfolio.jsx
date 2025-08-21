@@ -1,54 +1,57 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import Typewriter from 'typewriter-effect';
-import {
-  Github,
-  Linkedin,
-  Mail,
-  ChevronDown,
-  MapPin,
-} from 'lucide-react';
+import React, { useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { useGSAP } from '@gsap/react';
 import { projects } from './data/projects';
 import { experiences } from './data/experiences';
-import ProjectsSection from './components/ProjectsSection';
+import { useScrollToSection } from './hooks/useScrollToSection';
+import { useScrollSpy } from './hooks/useScrollSpy';
+import SEOHead from './components/SEOHead';
+import './styles/HeroSection.css';
+
+// Lazy load components
+const ProjectsSection = lazy(() => import('./components/ProjectsSection'));
+const HeroSection = lazy(() => import('./components/HeroSection'));
+const Navbar = lazy(() => import('./components/Navbar'));
+const TimelineSection = lazy(() => import('./components/TimelineSection'));
+const Footer = lazy(() => import('./components/Footer'));
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, useGSAP);
 
 const Portfolio = () => {
   const heroRef = useRef(null);
-  const scrollIndicatorRef = useRef(null);
   const projectsRef = useRef(null);
   const timelineRef = useRef(null);
   const footerRef = useRef(null);
   const navbarRef = useRef(null);
   const containerRef = useRef(null);
-  const [activeSection, setActiveSection] = useState('hero');
 
-  // Configurar typewriter con palabras más impactantes
-  const typewriterWords = [
-    'Full Stack Developer',
-    'Swift Developer',
-    'Creative Problem Solver',
-    'UX Enthusiast',
-    'React Specialist',
-    'Mobile App Creator',
+  // Custom hooks
+  const scrollToSection = useScrollToSection(heroRef, navbarRef);
+  const sections = [
+    { ref: heroRef, name: 'hero' },
+    { ref: projectsRef, name: 'projects' },
+    { ref: timelineRef, name: 'timeline' },
+    { ref: footerRef, name: 'footer' },
   ];
+  const activeSection = useScrollSpy(sections);
 
   // useGSAP hook for modern React GSAP integration
-  const { contextSafe } = useGSAP(() => {
-    // Initialize animations when DOM is ready
-    const timer = setTimeout(() => {
-      initializeAnimations();
-    }, 100);
+  useGSAP(
+    () => {
+      // Initialize animations when DOM is ready
+      const timer = setTimeout(() => {
+        initializeAnimations();
+      }, 500);
 
-    return () => {
-      clearTimeout(timer);
-    };
-  }, { scope: containerRef });
+      return () => {
+        clearTimeout(timer);
+      };
+    },
+    { scope: containerRef }
+  );
 
   useEffect(() => {
     // Prevenir restauración automática del scroll del navegador
@@ -71,7 +74,7 @@ const Portfolio = () => {
     // Inicializar animaciones cuando DOM esté listo
     const timer = setTimeout(() => {
       initializeAnimations();
-    }, 100);
+    }, 500);
 
     // Manejar redimensionamiento de ventana con debounce optimizado para INP
     let resizeTimeout;
@@ -80,9 +83,12 @@ const Portfolio = () => {
       resizeTimeout = setTimeout(() => {
         // Use requestIdleCallback for better INP and Core Web Vitals
         if (window.requestIdleCallback) {
-          window.requestIdleCallback(() => {
-            ScrollTrigger.refresh();
-          }, { timeout: 200 }); // Add timeout fallback
+          window.requestIdleCallback(
+            () => {
+              ScrollTrigger.refresh();
+            },
+            { timeout: 200 }
+          ); // Add timeout fallback
         } else {
           // Fallback for browsers without requestIdleCallback
           setTimeout(() => {
@@ -115,12 +121,20 @@ const Portfolio = () => {
       return;
     }
 
+    // Check if elements exist before animating
+    const heroGreeting = document.querySelector('.hero-greeting');
+    const heroName = document.querySelector('.hero-name');
+    const typewriterText = document.querySelector('.typewriter-text');
+    const heroDescription = document.querySelector('.hero-description');
+    const gradientBg = document.querySelector('.gradient-bg');
+    const footerContent = document.querySelector('.footer-content');
+
     // Hero entrance animation con mejor coordinación
     const heroTl = gsap.timeline();
 
-    heroTl
-      .fromTo(
-        '.hero-greeting',
+    if (heroGreeting) {
+      heroTl.fromTo(
+        heroGreeting,
         {
           y: 50,
           opacity: 0,
@@ -131,9 +145,12 @@ const Portfolio = () => {
           duration: 1,
           ease: 'power3.out',
         }
-      )
-      .fromTo(
-        '.hero-name',
+      );
+    }
+
+    if (heroName) {
+      heroTl.fromTo(
+        heroName,
         {
           y: 50,
           opacity: 0,
@@ -147,9 +164,12 @@ const Portfolio = () => {
           ease: 'back.out(1.7)',
         },
         '-=0.6'
-      )
-      .fromTo(
-        '.typewriter-text',
+      );
+    }
+
+    if (typewriterText) {
+      heroTl.fromTo(
+        typewriterText,
         {
           y: 30,
           opacity: 0,
@@ -162,9 +182,12 @@ const Portfolio = () => {
           delay: 0.5, // Delay para que termine la animación del nombre
         },
         '-=0.5'
-      )
-      .fromTo(
-        '.hero-description',
+      );
+    }
+
+    if (heroDescription) {
+      heroTl.fromTo(
+        heroDescription,
         {
           y: 30,
           opacity: 0,
@@ -177,12 +200,11 @@ const Portfolio = () => {
         },
         '-=0.3'
       );
-
-    // Scroll indicator bounce moved to CSS for better performance
+    }
 
     // Parallax effect mejorado (solo en desktop)
-    if (!isMobile) {
-      gsap.to('.gradient-bg', {
+    if (!isMobile && gradientBg && heroRef.current) {
+      gsap.to(gradientBg, {
         yPercent: -20,
         ease: 'none',
         scrollTrigger: {
@@ -196,316 +218,117 @@ const Portfolio = () => {
       });
     }
 
-    // Project presentation handled by ImmersiveProjectScroll component
-
-    // Timeline line draw animation
-    gsap.fromTo(
-      '.timeline-line',
-      {
-        scaleY: 0,
-        transformOrigin: 'top center',
-      },
-      {
-        scaleY: 1,
-        duration: 2,
-        ease: 'power2.inOut',
-        scrollTrigger: {
-          trigger: timelineRef.current,
-          start: 'top 75%',
-          toggleActions: 'play none none reverse',
-          fastScrollEnd: true, // Better mobile performance
-        },
-      }
-    );
-
-    // Timeline items stagger
-    gsap.fromTo(
-      '.timeline-item',
-      {
-        x: -80,
-        opacity: 0,
-      },
-      {
-        x: 0,
-        opacity: 1,
-        duration: 0.8,
-        stagger: 0.3,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: timelineRef.current,
-          start: 'top 65%',
-          toggleActions: 'play none none reverse',
-          fastScrollEnd: true, // Better mobile performance
-        },
-      }
-    );
-
     // Footer entrance
-    gsap.fromTo(
-      '.footer-content',
-      {
-        y: 60,
-        opacity: 0,
-      },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: footerRef.current,
-          start: 'top 90%',
-          toggleActions: 'play none none reverse',
-          fastScrollEnd: true, // Better mobile performance
+    if (footerContent && footerRef.current) {
+      gsap.fromTo(
+        footerContent,
+        {
+          y: 60,
+          opacity: 0,
         },
-      }
-    );
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: footerRef.current,
+            start: 'top 90%',
+            toggleActions: 'play none none reverse',
+            fastScrollEnd: true, // Better mobile performance
+          },
+        }
+      );
+    }
 
     // Navbar scroll effect
-    gsap.to(navbarRef.current, {
-      backgroundColor: 'rgba(10, 10, 10, 0.7)',
-      backdropFilter: 'blur(20px)',
-      borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-      scrollTrigger: {
-        trigger: 'body',
-        start: 'top -50px',
-        end: 'bottom bottom',
-        toggleActions: 'play none none reverse',
-        scrub: 1,
-      },
-    });
-
-    // Scroll spy para navbar
-    const sections = [
-      { ref: heroRef, name: 'hero' },
-      { ref: projectsRef, name: 'projects' },
-      { ref: timelineRef, name: 'timeline' },
-      { ref: footerRef, name: 'footer' },
-    ];
-
-    sections.forEach((section) => {
-      ScrollTrigger.create({
-        trigger: section.ref.current,
-        start: 'top 20%',
-        end: 'bottom 20%',
-        onEnter: () => setActiveSection(section.name),
-        onEnterBack: () => setActiveSection(section.name),
+    if (navbarRef.current) {
+      gsap.to(navbarRef.current, {
+        backgroundColor: 'rgba(10, 10, 10, 0.7)',
+        backdropFilter: 'blur(20px)',
+        borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+        scrollTrigger: {
+          trigger: 'body',
+          start: 'top -50px',
+          end: 'bottom bottom',
+          toggleActions: 'play none none reverse',
+          scrub: 1,
+        },
       });
-    });
+    }
 
     // ScrollTrigger se actualizará automáticamente con las configuraciones de performance
   };
 
-  // Función para smooth scroll usando contextSafe
-  const scrollToSection = useCallback(contextSafe((sectionRef) => {
-    if (sectionRef.current) {
-      // Usar altura del navbar desde CSS custom property
-      const navbarHeight = navbarRef.current
-        ? navbarRef.current.offsetHeight
-        : parseInt(getComputedStyle(document.documentElement).getPropertyValue('--navbar-height')) || 80;
-
-      // Obtener posición exacta de la sección
-      const sectionRect = sectionRef.current.getBoundingClientRect();
-      const currentScrollY = window.pageYOffset;
-      const targetY = sectionRect.top + currentScrollY;
-
-      if (gsap && gsap.plugins?.ScrollToPlugin) {
-        gsap.to(window, {
-          duration: 1.2, // Slightly faster for better INP
-          scrollTo: {
-            y: targetY - (sectionRef === heroRef ? 0 : navbarHeight),
-            autoKill: false,
-          },
-          ease: 'power2.inOut',
-          onComplete: () => {
-            // Yield to main thread after scroll complete
-            if (window.requestIdleCallback) {
-              window.requestIdleCallback(() => {
-                ScrollTrigger.refresh();
-              });
-            }
-          }
-        });
-      } else {
-        console.warn('GSAP ScrollTo no disponible, usando scroll nativo');
-
-        // Fallback scroll nativo con cálculo preciso
-        const finalTargetY =
-          targetY - (sectionRef === heroRef ? 0 : navbarHeight);
-
-        window.scrollTo({
-          top: finalTargetY,
-          behavior: 'smooth',
-        });
-      }
-    }
-  }), [heroRef, navbarRef, contextSafe]);
-
-  // Función específica para el scroll indicator usando contextSafe
-  const handleScrollIndicatorClick = useCallback(contextSafe(() => {
+  // Función específica para el scroll indicator
+  const handleScrollIndicatorClick = useCallback(() => {
     scrollToSection(projectsRef);
-  }), [scrollToSection, projectsRef, contextSafe]);
+  }, [scrollToSection, projectsRef]);
+
+  // Función para manejar clicks de navegación
+  const handleNavClick = useCallback(
+    (sectionName) => {
+      const sectionMap = {
+        hero: heroRef,
+        projects: projectsRef,
+        timeline: timelineRef,
+        footer: footerRef,
+      };
+      const targetRef = sectionMap[sectionName];
+      if (targetRef) {
+        scrollToSection(targetRef);
+      }
+    },
+    [scrollToSection]
+  );
 
   return (
-    <div ref={containerRef} className="portfolio">
-      {/* Navbar */}
-      <nav ref={navbarRef} className="navbar">
-        <div className="navbar-container">
-          <div className="navbar-logo">
-            <span onClick={() => scrollToSection(heroRef)}>StevenACZ</span>
-          </div>
-          <div className="navbar-links">
-            <button
-              onClick={() => scrollToSection(heroRef)}
-              className={`nav-link ${activeSection === 'hero' ? 'active' : ''}`}
-            >
-              Home
-            </button>
-            <button
-              onClick={() => scrollToSection(projectsRef)}
-              className={`nav-link ${
-                activeSection === 'projects' ? 'active' : ''
-              }`}
-            >
-              Projects
-            </button>
-            <button
-              onClick={() => scrollToSection(timelineRef)}
-              className={`nav-link ${
-                activeSection === 'timeline' ? 'active' : ''
-              }`}
-            >
-              Experience
-            </button>
-            <button
-              onClick={() => scrollToSection(footerRef)}
-              className={`nav-link ${
-                activeSection === 'footer' ? 'active' : ''
-              }`}
-            >
-              Contact
-            </button>
-          </div>
-        </div>
-      </nav>
-      {/* Hero Section */}
-      <section ref={heroRef} className="hero">
-        <div className="hero-bg">
-          <div className="particles">
-            {[...Array(50)].map((_, i) => (
-              <div key={i} className={`particle particle-${i % 3}`}></div>
-            ))}
-          </div>
-          <div className="gradient-bg"></div>
-        </div>
-        <div className="hero-content">
-          <h1 className="hero-title">
-            <span className="hero-greeting">Hello, I&apos;m</span>
-            <span className="hero-name">Steven</span>
-          </h1>
-          <h2 className="hero-subtitle">
-            <span className="typewriter-text">
-              <Typewriter
-                options={{
-                  strings: typewriterWords,
-                  autoStart: true,
-                  loop: true,
-                  delay: 80,
-                  deleteSpeed: 30,
-                  pauseFor: 3000,
-                }}
-              />
-            </span>
-          </h2>
-          <p className="hero-description">
-            Creating innovative digital experiences with cutting-edge technology
-          </p>
-        </div>
-        <div
-          ref={scrollIndicatorRef}
-          className="scroll-indicator"
-          onClick={handleScrollIndicatorClick}
+    <>
+      <SEOHead />
+      <div ref={containerRef} className="portfolio">
+        {/* Navbar */}
+        <Suspense
+          fallback={<div className="loading">Loading navigation...</div>}
         >
-          <ChevronDown size={24} />
-        </div>
-      </section>
+          <Navbar
+            activeSection={activeSection}
+            onNavClick={handleNavClick}
+            navbarRef={navbarRef}
+          />
+        </Suspense>
 
-      {/* Projects Section */}
-      <section ref={projectsRef} className="projects">
-        <ProjectsSection projects={projects} />
-      </section>
-
-      {/* Timeline Section */}
-      <section ref={timelineRef} className="timeline">
-        <div className="container">
-          <h2 className="section-title">Experience</h2>
-          <div className="timeline-container">
-            <div className="timeline-line"></div>
-            {experiences.map((exp, index) => (
-              <div
-                key={exp.id}
-                className={`timeline-item ${
-                  index % 2 === 0 ? 'left' : 'right'
-                }`}
-              >
-                <div className="timeline-dot"></div>
-                <div className="timeline-card">
-                  <div className="timeline-date">{exp.period}</div>
-                  <h3 className="timeline-title">{exp.title}</h3>
-                  <h4 className="timeline-company">{exp.company}</h4>
-                  <div className="timeline-location">
-                    <MapPin size={14} />
-                    <span>{exp.location}</span>
-                  </div>
-                  <p className="timeline-description">{exp.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+        {/* Hero Section */}
+        <div ref={heroRef}>
+          <Suspense fallback={<div className="loading">Loading...</div>}>
+            <HeroSection onScrollIndicatorClick={handleScrollIndicatorClick} />
+          </Suspense>
         </div>
-      </section>
 
-      {/* Footer */}
-      <footer ref={footerRef} className="footer">
-        <div className="container">
-          <div className="footer-content">
-            <div className="footer-info">
-              <h3>Let&apos;s work together!</h3>
-              <p>
-                I&apos;m always open to new projects and interesting opportunities.
-              </p>
-            </div>
-            <div className="footer-links">
-              <a href="mailto:scoaila@proton.me" className="footer-link">
-                <Mail size={20} />
-                <span>scoaila@proton.me</span>
-              </a>
-              <a
-                href="https://www.linkedin.com/in/stevenacz/"
-                className="footer-link"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <Linkedin size={20} />
-                <span>LinkedIn</span>
-              </a>
-              <a
-                href="https://github.com/StevenACZ"
-                className="footer-link"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <Github size={20} />
-                <span>GitHub</span>
-              </a>
-            </div>
-          </div>
-          <div className="footer-bottom">
-            <p>&copy; 2025 Steven Coaila Zaa. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
-    </div>
+        {/* Projects Section */}
+        <section ref={projectsRef} className="projects">
+          <Suspense
+            fallback={<div className="loading">Loading projects...</div>}
+          >
+            <ProjectsSection projects={projects} />
+          </Suspense>
+        </section>
+
+        {/* Timeline Section */}
+        <Suspense
+          fallback={<div className="loading">Loading experience...</div>}
+        >
+          <TimelineSection
+            experiences={experiences}
+            timelineRef={timelineRef}
+          />
+        </Suspense>
+
+        {/* Footer */}
+        <Suspense fallback={<div className="loading">Loading contact...</div>}>
+          <Footer footerRef={footerRef} />
+        </Suspense>
+      </div>
+    </>
   );
 };
 
