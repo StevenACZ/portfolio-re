@@ -14,17 +14,23 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
 
   // Device detection
   const isMobile = useMemo(() => {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-           window.innerWidth < 768;
+    return (
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      ) || window.innerWidth < 768
+    );
   }, []);
 
   // Particle configuration based on device
-  const particleConfig = useMemo(() => ({
-    count: isMobile ? 75 : 150, // Reduced particle count
-    size: isMobile ? 0.3 : 0.5,  // Smaller particles
-    speed: isMobile ? 0.3 : 0.5,
-    mouseInfluence: isMobile ? 50 : 100,
-  }), [isMobile]);
+  const particleConfig = useMemo(
+    () => ({
+      count: isMobile ? 75 : 400, // Reduced particle count
+      size: isMobile ? 0.3 : 0.5, // Smaller particles
+      speed: isMobile ? 0.3 : 0.5,
+      mouseInfluence: isMobile ? 50 : 100,
+    }),
+    [isMobile]
+  );
 
   // Typewriter words
   const typewriterWords = [
@@ -61,7 +67,9 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
       antialias: !isMobile, // Disable antialiasing on mobile for performance
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+    renderer.setPixelRatio(
+      Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2)
+    );
     rendererRef.current = renderer;
 
     // 3D Sphere Particle System Setup
@@ -71,7 +79,7 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
 
     // Exact app colors: 50% purple, 50% blue
     const appPurple = new THREE.Color(0x8b5cf6); // Your app's purple
-    const appBlue = new THREE.Color(0x3b82f6);   // Your app's blue
+    const appBlue = new THREE.Color(0x3b82f6); // Your app's blue
 
     // Create subtle lighting that preserves particle colors
     const ambientLight = new THREE.AmbientLight(0x2a1f3d, 0.3); // Darker purple ambient
@@ -87,15 +95,15 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
 
     // Create individual 3D sphere particles
     for (let i = 0; i < particleConfig.count; i++) {
-      // Create sphere geometry with optimized segments - much smaller
+      // Create sphere geometry with optimized segments - larger spheres
       const sphereGeometry = new THREE.SphereGeometry(
-        Math.random() * 0.3 + 0.1, // Random radius between 0.1 and 0.4 (much smaller)
+        Math.random() * 2 + 0.2, // Random radius between 0.2 and 0.7 (larger)
         isMobile ? 6 : 8, // Lower segments on mobile
         isMobile ? 4 : 6
       );
 
       // Assign color: exactly 50% purple, 50% blue
-      const color = (i % 2 === 0) ? appPurple : appBlue;
+      const color = i % 2 === 0 ? appPurple : appBlue;
 
       // Create material with stable properties (no dynamic changes)
       const sphereMaterial = new THREE.MeshPhongMaterial({
@@ -110,7 +118,7 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
       sphereMaterial.userData = {
         baseColor: color.clone(),
         baseOpacity: 0.7,
-        baseEmissive: color.clone().multiplyScalar(0.05)
+        baseEmissive: color.clone().multiplyScalar(0.05),
       };
 
       const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
@@ -121,7 +129,7 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
       const orbitAngle = Math.random() * Math.PI * 2; // Random starting angle
       const baseZ = (Math.random() - 0.5) * 8; // Random Z depth between -4 and 4
       const floatSpeed = Math.random() * 0.005 + 0.002; // Slower floating
-      
+
       // Initial position based on orbit - HORIZONTAL plane (XY) facing user
       const x = Math.cos(orbitAngle) * orbitRadius;
       const y = Math.sin(orbitAngle) * orbitRadius; // Orbit in XY plane (horizontal)
@@ -136,11 +144,19 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
         orbitAngle,
         baseZ, // Changed from baseY to baseZ
         floatSpeed,
-        currentAngle: orbitAngle
+        currentAngle: orbitAngle,
       };
 
       // Store original orbital position
-      originalPositions[i] = { x, y, z, orbitRadius, orbitSpeed, orbitAngle, baseZ };
+      originalPositions[i] = {
+        x,
+        y,
+        z,
+        orbitRadius,
+        orbitSpeed,
+        orbitAngle,
+        baseZ,
+      };
 
       // Orient spheres to face the camera (user)
       sphere.rotation.x = 0; // No X rotation (prevents looking up/down)
@@ -152,7 +168,11 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
     }
 
     scene.add(particleGroup);
-    particlesRef.current = { group: particleGroup, particles: particlesArray, originalPositions };
+    particlesRef.current = {
+      group: particleGroup,
+      particles: particlesArray,
+      originalPositions,
+    };
 
     setIsLoaded(true);
 
@@ -172,7 +192,13 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
 
   // Animation loop
   useEffect(() => {
-    if (!isLoaded || !rendererRef.current || !sceneRef.current || !cameraRef.current) return;
+    if (
+      !isLoaded ||
+      !rendererRef.current ||
+      !sceneRef.current ||
+      !cameraRef.current
+    )
+      return;
 
     let startTime = Date.now();
 
@@ -180,7 +206,7 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
       frameIdRef.current = requestAnimationFrame(animate);
 
       const elapsedTime = (Date.now() - startTime) * 0.001;
-      
+
       if (particlesRef.current && particlesRef.current.particles) {
         const { particles, originalPositions } = particlesRef.current;
 
@@ -189,66 +215,74 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
           const sphere = particles[i];
           const position = sphere.position;
           const userData = sphere.userData;
-          
+
           // Update orbital angle
           userData.currentAngle += userData.orbitSpeed;
-          
+
           // Calculate base orbital position - HORIZONTAL orbit (XY plane) facing user
           const baseX = Math.cos(userData.currentAngle) * userData.orbitRadius;
           const baseY = Math.sin(userData.currentAngle) * userData.orbitRadius; // Y orbit instead of Z
-          const baseZ = userData.baseZ + Math.sin(elapsedTime * userData.floatSpeed + i) * 1; // Gentle Z float
-          
+          const baseZ =
+            userData.baseZ +
+            Math.sin(elapsedTime * userData.floatSpeed + i) * 1; // Gentle Z float
+
           // Mouse interaction - CORRECTED orientation and dispersion only
-          const mouseX = -mouseRef.current.x * 15; // INVERTED X
-          const mouseY = mouseRef.current.y * 15;   // INVERTED Y (removed negative)
+          const mouseX = mouseRef.current.x * 15; // Fixed X direction
+          const mouseY = mouseRef.current.y * 15; // Y direction
           const mouseZ = 0;
-          
+
           // Calculate distance from mouse
           const dx = position.x - mouseX;
           const dy = position.y - mouseY;
           const dz = position.z - mouseZ;
           const distance3D = Math.sqrt(dx * dx + dy * dy + dz * dz);
-          
+
           let finalX = baseX;
           let finalY = baseY;
           let finalZ = baseZ;
-          
+
           // Mouse dispersion effect - only push away, no attraction
           if (distance3D < particleConfig.mouseInfluence) {
-            const disperseForce = (particleConfig.mouseInfluence - distance3D) / particleConfig.mouseInfluence;
-            
+            const disperseForce =
+              (particleConfig.mouseInfluence - distance3D) /
+              particleConfig.mouseInfluence;
+
             // Push particles away from mouse
             finalX += (dx / distance3D) * disperseForce * 8;
             finalY += (dy / distance3D) * disperseForce * 8;
             finalZ += (dz / distance3D) * disperseForce * 4;
           }
-          
+
           // Smooth transition to final position
           position.x += (finalX - position.x) * 0.05;
           position.y += (finalY - position.y) * 0.05;
           position.z += (finalZ - position.z) * 0.05;
-          
+
           // Boundary limits - keep particles in screen area (XY plane)
           const maxRadius = 25;
-          const currentRadius = Math.sqrt(position.x * position.x + position.y * position.y);
+          const currentRadius = Math.sqrt(
+            position.x * position.x + position.y * position.y
+          );
           if (currentRadius > maxRadius) {
             const scale = maxRadius / currentRadius;
             position.x *= scale;
             position.y *= scale;
           }
-          
+
           // Z limits (depth)
           if (Math.abs(position.z) > 10) {
             position.z = Math.sign(position.z) * 10;
           }
-          
+
           // Very subtle rotation animation - only Y axis, much slower
           sphere.rotation.y += 0.0003;
         }
 
         // Gentle camera movement
-        cameraRef.current.position.x += (mouseRef.current.x * 2 - cameraRef.current.position.x) * 0.02;
-        cameraRef.current.position.y += (-mouseRef.current.y * 2 - cameraRef.current.position.y) * 0.02;
+        cameraRef.current.position.x +=
+          (mouseRef.current.x * 2 - cameraRef.current.position.x) * 0.02;
+        cameraRef.current.position.y +=
+          (-mouseRef.current.y * 2 - cameraRef.current.position.y) * 0.02;
         cameraRef.current.lookAt(sceneRef.current.position);
       }
 
@@ -305,8 +339,8 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
   return (
     <section id="hero" className="hero-section">
       {/* Three.js Canvas */}
-      <canvas 
-        ref={canvasRef} 
+      <canvas
+        ref={canvasRef}
         className="hero-canvas"
         style={{
           position: 'absolute',
@@ -317,7 +351,7 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
           zIndex: 1,
         }}
       />
-      
+
       {/* Hero Content */}
       <div className="hero-content">
         <div className="hero-text">
@@ -339,17 +373,16 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
           </div>
           <p className="hero-description">
             Creating innovative digital experiences with modern technologies.
-            Passionate about building scalable applications and beautiful user interfaces.
+            Passionate about building scalable applications and beautiful user
+            interfaces.
           </p>
         </div>
-        
+
         {/* Scroll Indicator */}
         <div className="scroll-indicator" onClick={onScrollIndicatorClick}>
           <div className="scroll-arrow">
             <span>Scroll to explore</span>
-            <div className="chevron-down">
-              ↓
-            </div>
+            <div className="chevron-down">↓</div>
           </div>
         </div>
       </div>
