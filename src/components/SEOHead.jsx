@@ -55,6 +55,12 @@ const SEOHead = ({
       <meta name="referrer" content="strict-origin-when-cross-origin" />
       <meta name="color-scheme" content="dark light" />
       <meta name="supported-color-schemes" content="dark light" />
+      
+      {/* Lazy Loading & Performance Meta Tags */}
+      <meta name="image-loading" content="lazy" />
+      <meta name="loading" content="lazy" />
+      <meta name="fetchpriority" content="high" />
+      <meta name="preload" content="metadata" />
 
       {/* Web App Manifest */}
       <link rel="manifest" href="/manifest.json" />
@@ -71,14 +77,41 @@ const SEOHead = ({
       />
       <link rel="preconnect" href="https://www.google-analytics.com" />
 
-      {/* Resource Hints */}
-      <link
-        rel="preload"
-        href="/peso-tracker.webp"
-        as="image"
-        fetchPriority="high"
-      />
-      <link rel="preload" href="/buen-mouse.webp" as="image" />
+      {/* Resource Hints - Images removed as they are now lazy-loaded */}
+      
+      {/* Structured Data for Portfolio Images */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ImageGallery",
+          "name": "Steven Coaila Zaa Portfolio Projects",
+          "description": "Portfolio showcasing full-stack development projects including React, Swift, and web applications",
+          "author": {
+            "@type": "Person",
+            "name": "Steven Coaila Zaa",
+            "jobTitle": "Full Stack Developer",
+            "url": "https://stevenacz.com"
+          },
+          "image": [
+            {
+              "@type": "ImageObject",
+              "url": "https://stevenacz.com/peso-tracker.webp",
+              "name": "PesoTracker - Swift macOS Application",
+              "description": "macOS weight tracking application built with Swift, SwiftUI, and JWT authentication",
+              "encodingFormat": "image/webp",
+              "representativeOfPage": true
+            },
+            {
+              "@type": "ImageObject", 
+              "url": "https://stevenacz.com/buen-mouse.webp",
+              "name": "BuenMouse - Mouse Enhancement Tool",
+              "description": "macOS mouse enhancement utility built with Swift, AppleScript, and Core Graphics",
+              "encodingFormat": "image/webp",
+              "representativeOfPage": true
+            }
+          ]
+        })}
+      </script>
     </Helmet>
   );
 };

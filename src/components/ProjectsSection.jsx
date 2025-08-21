@@ -67,7 +67,7 @@ const ProjectCard = memo(({ project, index }) => {
               {project.image ? (
                 <LazyImage 
                   src={project.image} 
-                  alt={project.title}
+                  alt={project.alt || project.title}
                   className="project-lazy-image"
                   skeletonHeight="300px"
                   threshold={0.2}
