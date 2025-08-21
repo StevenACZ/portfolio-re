@@ -14,6 +14,8 @@ Modern portfolio website for Steven Coaila Zaa, a Full Stack Developer specializ
 
 ### Libraries & Plugins
 - **typewriter-effect 2.22.0**: Typewriter animation for hero section
+- **three 0.171.0**: 3D graphics library for interactive hero particle system
+- **@gsap/react 2.1.2**: Modern GSAP React integration with useGSAP hook
 - **lucide-react 0.263.1**: Modern icon library
 - **GSAP ScrollTrigger**: Scroll-based animations
 - **GSAP ScrollToPlugin**: Smooth scrolling navigation
@@ -40,8 +42,10 @@ portfolio/
 │   ├── main.jsx                 # React entry point
 │   ├── styles.css               # Global styles and animations
 │   ├── components/
+│   │   ├── HeroSection.jsx      # 3D interactive hero with Three.js particles (360 lines)
 │   │   └── ProjectsSection.jsx  # Magic scroll system (284 lines)
 │   ├── styles/
+│   │   ├── HeroSection.css      # Hero section styling with 3D canvas integration
 │   │   └── ProjectsSection.css  # Project section styling (602 lines)
 │   └── data/
 │       ├── projects.js          # Project data (2 projects)
@@ -64,7 +68,7 @@ portfolio/
 
 **Sections**: Home, Projects, Experience, Contact
 
-### 2. Hero Section
+### 2. Hero Section - 3D Interactive Experience
 - **Typewriter Effect**: Rotates through developer titles:
   - "Full Stack Developer"
   - "Swift Developer"  
@@ -72,8 +76,14 @@ portfolio/
   - "UX Enthusiast"
   - "React Specialist"
   - "Mobile App Creator"
-- **Animations**: Staggered entrance for greeting, name, subtitle, description
-- **Background**: Animated particles (50 elements) with gradient overlay
+- **3D Particle System**: Advanced Three.js implementation with 150+ interactive spheres
+  - **Orbital Mechanics**: Horizontal orbital motion in XY plane facing user
+  - **Individual Properties**: Each particle has unique orbit radius, speed, and angle
+  - **Mouse Interaction**: Dispersion-only effect pushes particles away from cursor
+  - **Color System**: Exact 50/50 split between app purple (#8b5cf6) and blue (#3b82f6)
+  - **Performance Optimized**: Mobile-specific optimizations and boundary management
+- **Lighting System**: Sophisticated Three.js lighting with ambient, directional, and point lights
+- **Responsive Design**: Adaptive particle count and geometry complexity for mobile devices
 - **Scroll Indicator**: Bouncing chevron that scrolls to projects
 
 ### 3. Projects Section
@@ -238,7 +248,88 @@ heroTl
 - Footer: "¡Trabajemos juntos!" → "Let's work together!"
 - Data files: All project descriptions and experience details translated
 
-### 8. Magic Scroll System - ProjectsSection (CRITICAL COMPONENT)
+### 8. GSAP Modernization & Performance Optimizations (Session 8)
+**Modern GSAP Integration**: Upgraded entire animation system to use modern patterns
+- **@gsap/react Package**: Replaced manual GSAP imports with official React integration
+- **useGSAP Hook**: Implemented throughout Portfolio.jsx for automatic cleanup
+- **contextSafe Pattern**: Upgraded event handlers to prevent memory leaks
+- **ScrollTrigger Optimizations**: Added requestIdleCallback for refresh operations
+- **CSS will-change Properties**: Strategic GPU acceleration for animating elements
+- **Mobile Performance**: Enhanced scroll handling with fastScrollEnd option
+
+**Key Performance Improvements**:
+- Eliminated manual cleanup code with automatic useGSAP management
+- Reduced memory usage with proper GSAP context handling
+- Improved scroll performance on mobile devices
+- Added accessibility support with motion preference detection
+
+### 9. 3D Hero Section Implementation (Session 9) - CRITICAL COMPONENT
+**⚠️ WARNING: CORE PORTFOLIO FEATURE - Handle with extreme care**
+
+Complete redesign of hero section with sophisticated 3D particle system using Three.js. This represents the most complex and visually impressive component in the portfolio.
+
+#### Core Architecture:
+```javascript
+// 3D Sphere Particle System with Orbital Mechanics
+const particleGroup = new THREE.Group();
+const particlesArray = [];
+const originalPositions = [];
+
+// Individual sphere creation with orbital properties
+for (let i = 0; i < particleConfig.count; i++) {
+  const sphereGeometry = new THREE.SphereGeometry(
+    Math.random() * 0.3 + 0.1, // Random radius 0.1-0.4
+    isMobile ? 6 : 8, // Optimized segments
+    isMobile ? 4 : 6
+  );
+  
+  // Orbital properties for each particle
+  const orbitRadius = Math.random() * 15 + 8;
+  const orbitSpeed = Math.random() * 0.003 + 0.001; // Slow speeds
+  const orbitAngle = Math.random() * Math.PI * 2;
+}
+```
+
+#### Technical Implementation:
+1. **3D Sphere Geometry**: Individual THREE.SphereGeometry instances for realistic depth
+2. **Orbital System**: Horizontal circular motion in XY plane facing user
+3. **Mouse Interaction**: Dispersion-only effect with corrected orientation
+4. **Color Management**: Stable 50/50 purple/blue distribution
+5. **Performance Optimization**: Mobile-adaptive geometry and particle count
+6. **Lighting System**: Three-point lighting setup preserving particle colors
+
+#### Animation System:
+```javascript
+// Orbital animation with mouse dispersion
+userData.currentAngle += userData.orbitSpeed;
+const baseX = Math.cos(userData.currentAngle) * userData.orbitRadius;
+const baseY = Math.sin(userData.currentAngle) * userData.orbitRadius;
+
+// Mouse dispersion effect
+if (distance3D < particleConfig.mouseInfluence) {
+  const disperseForce = (particleConfig.mouseInfluence - distance3D) / particleConfig.mouseInfluence;
+  finalX += (dx / distance3D) * disperseForce * 8;
+  finalY += (dy / distance3D) * disperseForce * 8;
+}
+```
+
+#### Evolution Process:
+1. **Initial 2D Points**: Started with basic THREE.Points particle system
+2. **3D Sphere Conversion**: Replaced with individual sphere geometries
+3. **Particle Recycling**: Implemented boundary management to prevent disappearing
+4. **Color Stabilization**: Fixed flickering with stable material properties
+5. **Orbital Mechanics**: Created circular motion system in horizontal plane
+6. **Mouse Orientation**: Corrected inverted X/Y axes for natural interaction
+7. **Speed Optimization**: Reduced orbital speeds for smooth viewing experience
+
+#### Critical Files:
+- `src/components/HeroSection.jsx` (360 lines) - Complete 3D particle system
+- `src/styles/HeroSection.css` - Styling with canvas integration
+- Integrated into Portfolio.jsx with onScrollIndicatorClick prop
+
+This system creates a mesmerizing 3D environment that responds to user interaction while maintaining excellent performance across all devices. Any modifications require thorough testing of orbital mechanics, mouse interaction, and mobile performance.
+
+### 10. Magic Scroll System - ProjectsSection (CRITICAL COMPONENT)
 **⚠️ WARNING: NEVER REMOVE OR SIMPLIFY - Core portfolio functionality**
 
 The ProjectsSection component implements a sophisticated pinned scroll system with Apple-style magnetic zones that is the centerpiece of the portfolio experience. This system creates a cinematic presentation where projects appear, stick for extended viewing, then disappear in phases as the user scrolls.
@@ -289,27 +380,34 @@ ScrollTrigger.create({
 - `src/styles/ProjectsSection.css` (380 lines) - Specialized styling
 - Integrated into Portfolio.jsx at line 407
 
-This system took multiple sessions to perfect and represents the most complex animation system in the portfolio. Any modifications should be done with extreme caution and thorough testing.
+This system took multiple sessions to perfect and represents one of the most complex animation systems in the portfolio. Any modifications should be done with extreme caution and thorough testing.
 
 ## Technical Considerations
 
 ### Performance
-- GSAP npm package (no CDN dependencies for better bundling)
-- Lazy loading for scroll-triggered animations
-- Mobile-optimized animation settings
-- Accessibility support with `prefers-reduced-motion`
+- **GSAP npm package** (no CDN dependencies for better bundling)
+- **@gsap/react integration** with automatic cleanup and useGSAP hook
+- **Three.js WebGL rendering** with optimized geometry for mobile devices
+- **Lazy loading** for scroll-triggered animations
+- **Mobile-optimized settings**: Reduced particle count, lower geometry segments
+- **Accessibility support** with `prefers-reduced-motion`
+- **GPU acceleration** via strategic CSS will-change properties
+- **Memory management** with proper Three.js scene cleanup
 
 ### Code Quality
-- ESLint configuration for React best practices
-- Functional components with hooks pattern
-- Proper cleanup of animation timers and ScrollTriggers
-- Modular data structure for easy content updates
+- **ESLint configuration** for React best practices
+- **Functional components** with modern hooks pattern
+- **Automatic cleanup** of animation timers and ScrollTriggers via useGSAP
+- **Three.js best practices** with proper geometry disposal and scene management
+- **Modular data structure** for easy content updates
+- **Component separation** for maintainability (HeroSection, ProjectsSection)
 
 ### Browser Compatibility
-- Modern browser support (ES6+)
-- Fallback scroll behavior for browsers without GSAP
-- CSS Grid with flexbox fallbacks
-- Progressive enhancement approach
+- **Modern browser support** (ES6+) with WebGL capability for Three.js
+- **Fallback scroll behavior** for browsers without GSAP
+- **WebGL detection** and graceful degradation for 3D features
+- **CSS Grid** with flexbox fallbacks
+- **Progressive enhancement** approach with feature detection
 
 ## Future Enhancement Opportunities
 
@@ -349,9 +447,13 @@ npm run lint         # Run ESLint on codebase
 
 1. **Custom vs Library**: The typewriter effect experience showed that sometimes using a well-tested library is better than custom implementation
 2. **Animation Performance**: GSAP provides excellent performance but requires careful mobile optimization
-3. **Modular Data**: Separating data from components makes content updates much easier
-4. **Accessibility**: Always consider `prefers-reduced-motion` and provide fallbacks
-5. **Responsive Design**: Mobile-first approach with progressive enhancement works best
-6. **Code Organization**: Clear separation of concerns improves maintainability
+3. **3D Graphics Integration**: Three.js can create stunning visual effects but requires performance consideration and progressive enhancement
+4. **Modular Data**: Separating data from components makes content updates much easier
+5. **Accessibility**: Always consider `prefers-reduced-motion` and provide fallbacks
+6. **Responsive Design**: Mobile-first approach with progressive enhancement works best
+7. **Code Organization**: Clear separation of concerns improves maintainability
+8. **Modern React Patterns**: useGSAP and contextSafe patterns prevent memory leaks and improve performance
+9. **Interactive Design**: Mouse interactions should feel natural and enhance rather than complicate the user experience
+10. **Iterative Development**: Complex features like 3D particle systems benefit from incremental improvements based on user feedback
 
-This portfolio demonstrates modern web development practices with smooth animations, responsive design, and clean architecture suitable for showcasing professional development work.
+This portfolio demonstrates cutting-edge web development practices combining 2D and 3D graphics, smooth animations, responsive design, and clean architecture suitable for showcasing professional development work in 2025.
