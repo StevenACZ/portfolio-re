@@ -38,11 +38,8 @@ const TimelineSection = ({ experiences, timelineRef }) => {
             scrollTrigger: {
               trigger: containerRef.current,
               start: 'top 80%',
-              end: 'bottom 20%',
+              end: 'bottom 100%', // Complete the animation when timeline section fully exits viewport
               scrub: 1.5,
-              onUpdate: (self) => {
-                console.log('Timeline progress:', self.progress);
-              },
               markers: false, // Set to true for debugging
             },
           });

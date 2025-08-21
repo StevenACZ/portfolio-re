@@ -783,7 +783,7 @@ body {
 
 /* ===== Timeline Section ===== */
 .timeline {
-  padding: 8rem 0;
+  padding: 8rem 0 12rem 0; /* Increased bottom padding to ensure animation completion */
   background: var(--primary-bg);
   position: relative;
   z-index: 20;
@@ -1106,7 +1106,7 @@ body {
   }
 
   .timeline {
-    padding: 4rem 0;
+    padding: 4rem 0 8rem 0; /* Maintain extra bottom padding on mobile for animation completion */
   }
 
   /* Reducir partículas en mobile pero mantener distribución */
