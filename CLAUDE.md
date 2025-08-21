@@ -31,12 +31,12 @@ Modern portfolio website for Steven Coaila Zaa, a Full Stack Developer specializ
 portfolio/
 ├── public/
 │   ├── favicon.ico              # Site icon
-│   ├── og-image.jpg             # Social media preview image (1920x1080)
+│   ├── og-image.webp            # Social media preview image (1920x1080, WebP optimized)
 │   ├── robots.txt               # Search engine instructions
 │   ├── sitemap.xml              # Site structure for SEO
 │   ├── .htaccess                # Apache server configuration
-│   ├── buen-mouse.jpg           # Project image
-│   └── peso-tracker.webp        # Project image
+│   ├── buen-mouse.webp          # Project image (WebP optimized)
+│   └── peso-tracker.webp        # Project image (WebP optimized)
 ├── src/
 │   ├── Portfolio.jsx            # Main component with navigation and sections
 │   ├── main.jsx                 # React entry point
@@ -134,7 +134,7 @@ portfolio/
 - **Open Graph Protocol**: Facebook, LinkedIn preview optimization
 - **Twitter Cards**: Summary with large image for Twitter shares
 - **Structured Data**: JSON-LD schema for rich snippets and search results
-- **Social Media Image**: og-image.jpg (1920x1080) with hero section screenshot
+- **Social Media Image**: og-image.webp (1920x1080, WebP optimized) with hero section screenshot
 
 ### Search Engine Optimization
 - **Robots.txt**: Search engine crawling instructions with social media permissions

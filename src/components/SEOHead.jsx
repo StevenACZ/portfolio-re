@@ -79,7 +79,7 @@ const SEOHead = ({
         as="image"
         fetchPriority="high"
       />
-      <link rel="preload" href="/buen-mouse.jpg" as="image" />
+      <link rel="preload" href="/buen-mouse.webp" as="image" />
     </Helmet>
   );
 };
