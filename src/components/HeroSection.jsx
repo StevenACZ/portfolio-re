@@ -24,10 +24,10 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
   // Particle configuration based on device
   const particleConfig = useMemo(
     () => ({
-      count: isMobile ? 75 : 400, // Reduced particle count
-      size: isMobile ? 0.3 : 0.5, // Smaller particles
-      speed: isMobile ? 0.3 : 0.5,
-      mouseInfluence: isMobile ? 50 : 100,
+      count: isMobile ? 50 : 300, // Further reduced for better performance
+      size: isMobile ? 0.2 : 0.4, // Smaller particles
+      speed: isMobile ? 0.2 : 0.4, // Slower for better performance
+      mouseInfluence: isMobile ? 40 : 80, // Reduced influence
     }),
     [isMobile]
   );
@@ -75,7 +75,7 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
     // 3D Sphere Particle System Setup
     const particleGroup = new THREE.Group();
     const particlesArray = [];
-    const originalPositions = [];
+    // const originalPositions = [];
 
     // Exact app colors: 50% purple, 50% blue
     const appPurple = new THREE.Color(0x8b5cf6); // Your app's purple
@@ -95,11 +95,11 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
 
     // Create individual 3D sphere particles
     for (let i = 0; i < particleConfig.count; i++) {
-      // Create sphere geometry with optimized segments - larger spheres
+      // Create sphere geometry with optimized segments - smaller spheres
       const sphereGeometry = new THREE.SphereGeometry(
-        Math.random() * 2 + 0.2, // Random radius between 0.2 and 0.7 (larger)
-        isMobile ? 6 : 8, // Lower segments on mobile
-        isMobile ? 4 : 6
+        Math.random() * 1.5 + 0.1, // Random radius between 0.1 and 1.6 (smaller)
+        isMobile ? 4 : 6, // Even lower segments on mobile
+        isMobile ? 3 : 4
       );
 
       // Assign color: exactly 50% purple, 50% blue
@@ -147,16 +147,16 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
         currentAngle: orbitAngle,
       };
 
-      // Store original orbital position
-      originalPositions[i] = {
-        x,
-        y,
-        z,
-        orbitRadius,
-        orbitSpeed,
-        orbitAngle,
-        baseZ,
-      };
+      // Store original orbital position for future reference
+      // originalPositions[i] = {
+      //   x,
+      //   y,
+      //   z,
+      //   orbitRadius,
+      //   orbitSpeed,
+      //   orbitAngle,
+      //   baseZ,
+      // };
 
       // Orient spheres to face the camera (user)
       sphere.rotation.x = 0; // No X rotation (prevents looking up/down)
@@ -171,7 +171,7 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
     particlesRef.current = {
       group: particleGroup,
       particles: particlesArray,
-      originalPositions,
+      // originalPositions,
     };
 
     setIsLoaded(true);
@@ -208,7 +208,7 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
       const elapsedTime = (Date.now() - startTime) * 0.001;
 
       if (particlesRef.current && particlesRef.current.particles) {
-        const { particles, originalPositions } = particlesRef.current;
+        const { particles } = particlesRef.current;
 
         // Orbital 3D Sphere animation system
         for (let i = 0; i < particles.length; i++) {
@@ -355,7 +355,7 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
       {/* Hero Content */}
       <div className="hero-content">
         <div className="hero-text">
-          <h1 className="hero-greeting">Hi, I'm</h1>
+          <h1 className="hero-greeting">Hi, I&apos;m</h1>
           <h2 className="hero-name">Steven Coaila Zaa</h2>
           <div className="hero-subtitle">
             <span className="typewriter-text">

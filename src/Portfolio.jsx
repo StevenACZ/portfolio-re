@@ -1,28 +1,29 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import Typewriter from 'typewriter-effect';
-import {
-  Github,
-  Linkedin,
-  Mail,
-  ChevronDown,
-  MapPin,
-} from 'lucide-react';
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  lazy,
+  Suspense,
+} from 'react';
+import { Github, Linkedin, Mail, MapPin } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { useGSAP } from '@gsap/react';
 import { projects } from './data/projects';
 import { experiences } from './data/experiences';
-import ProjectsSection from './components/ProjectsSection';
-import HeroSection from './components/HeroSection';
 import './styles/HeroSection.css';
+
+// Lazy load heavy components
+const ProjectsSection = lazy(() => import('./components/ProjectsSection'));
+const HeroSection = lazy(() => import('./components/HeroSection'));
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, useGSAP);
 
 const Portfolio = () => {
   const heroRef = useRef(null);
-  const scrollIndicatorRef = useRef(null);
   const projectsRef = useRef(null);
   const timelineRef = useRef(null);
   const footerRef = useRef(null);
@@ -30,27 +31,20 @@ const Portfolio = () => {
   const containerRef = useRef(null);
   const [activeSection, setActiveSection] = useState('hero');
 
-  // Configurar typewriter con palabras más impactantes
-  const typewriterWords = [
-    'Full Stack Developer',
-    'Swift Developer',
-    'Creative Problem Solver',
-    'UX Enthusiast',
-    'React Specialist',
-    'Mobile App Creator',
-  ];
-
   // useGSAP hook for modern React GSAP integration
-  const { contextSafe } = useGSAP(() => {
-    // Initialize animations when DOM is ready
-    const timer = setTimeout(() => {
-      initializeAnimations();
-    }, 100);
+  useGSAP(
+    () => {
+      // Initialize animations when DOM is ready
+      const timer = setTimeout(() => {
+        initializeAnimations();
+      }, 100);
 
-    return () => {
-      clearTimeout(timer);
-    };
-  }, { scope: containerRef });
+      return () => {
+        clearTimeout(timer);
+      };
+    },
+    { scope: containerRef }
+  );
 
   useEffect(() => {
     // Prevenir restauración automática del scroll del navegador
@@ -82,9 +76,12 @@ const Portfolio = () => {
       resizeTimeout = setTimeout(() => {
         // Use requestIdleCallback for better INP and Core Web Vitals
         if (window.requestIdleCallback) {
-          window.requestIdleCallback(() => {
-            ScrollTrigger.refresh();
-          }, { timeout: 200 }); // Add timeout fallback
+          window.requestIdleCallback(
+            () => {
+              ScrollTrigger.refresh();
+            },
+            { timeout: 200 }
+          ); // Add timeout fallback
         } else {
           // Fallback for browsers without requestIdleCallback
           setTimeout(() => {
@@ -299,54 +296,61 @@ const Portfolio = () => {
   };
 
   // Función para smooth scroll usando contextSafe
-  const scrollToSection = useCallback(contextSafe((sectionRef) => {
-    if (sectionRef.current) {
-      // Usar altura del navbar desde CSS custom property
-      const navbarHeight = navbarRef.current
-        ? navbarRef.current.offsetHeight
-        : parseInt(getComputedStyle(document.documentElement).getPropertyValue('--navbar-height')) || 80;
+  const scrollToSection = useCallback(
+    (sectionRef) => {
+      if (sectionRef.current) {
+        // Usar altura del navbar desde CSS custom property
+        const navbarHeight = navbarRef.current
+          ? navbarRef.current.offsetHeight
+          : parseInt(
+              getComputedStyle(document.documentElement).getPropertyValue(
+                '--navbar-height'
+              )
+            ) || 80;
 
-      // Obtener posición exacta de la sección
-      const sectionRect = sectionRef.current.getBoundingClientRect();
-      const currentScrollY = window.pageYOffset;
-      const targetY = sectionRect.top + currentScrollY;
+        // Obtener posición exacta de la sección
+        const sectionRect = sectionRef.current.getBoundingClientRect();
+        const currentScrollY = window.pageYOffset;
+        const targetY = sectionRect.top + currentScrollY;
 
-      if (gsap && gsap.plugins?.ScrollToPlugin) {
-        gsap.to(window, {
-          duration: 1.2, // Slightly faster for better INP
-          scrollTo: {
-            y: targetY - (sectionRef === heroRef ? 0 : navbarHeight),
-            autoKill: false,
-          },
-          ease: 'power2.inOut',
-          onComplete: () => {
-            // Yield to main thread after scroll complete
-            if (window.requestIdleCallback) {
-              window.requestIdleCallback(() => {
-                ScrollTrigger.refresh();
-              });
-            }
-          }
-        });
-      } else {
-        console.warn('GSAP ScrollTo no disponible, usando scroll nativo');
+        if (gsap && gsap.plugins?.ScrollToPlugin) {
+          gsap.to(window, {
+            duration: 1.2, // Slightly faster for better INP
+            scrollTo: {
+              y: targetY - (sectionRef === heroRef ? 0 : navbarHeight),
+              autoKill: false,
+            },
+            ease: 'power2.inOut',
+            onComplete: () => {
+              // Yield to main thread after scroll complete
+              if (window.requestIdleCallback) {
+                window.requestIdleCallback(() => {
+                  ScrollTrigger.refresh();
+                });
+              }
+            },
+          });
+        } else {
+          console.warn('GSAP ScrollTo no disponible, usando scroll nativo');
 
-        // Fallback scroll nativo con cálculo preciso
-        const finalTargetY =
-          targetY - (sectionRef === heroRef ? 0 : navbarHeight);
+          // Fallback scroll nativo con cálculo preciso
+          const finalTargetY =
+            targetY - (sectionRef === heroRef ? 0 : navbarHeight);
 
-        window.scrollTo({
-          top: finalTargetY,
-          behavior: 'smooth',
-        });
+          window.scrollTo({
+            top: finalTargetY,
+            behavior: 'smooth',
+          });
+        }
       }
-    }
-  }), [heroRef, navbarRef, contextSafe]);
+    },
+    [heroRef, navbarRef]
+  );
 
-  // Función específica para el scroll indicator usando contextSafe
-  const handleScrollIndicatorClick = useCallback(contextSafe(() => {
+  // Función específica para el scroll indicator
+  const handleScrollIndicatorClick = useCallback(() => {
     scrollToSection(projectsRef);
-  }), [scrollToSection, projectsRef, contextSafe]);
+  }, [scrollToSection, projectsRef]);
 
   return (
     <div ref={containerRef} className="portfolio">
@@ -392,12 +396,16 @@ const Portfolio = () => {
       </nav>
       {/* Hero Section - New 3D Interactive Version */}
       <div ref={heroRef}>
-        <HeroSection onScrollIndicatorClick={handleScrollIndicatorClick} />
+        <Suspense fallback={<div className="loading">Loading...</div>}>
+          <HeroSection onScrollIndicatorClick={handleScrollIndicatorClick} />
+        </Suspense>
       </div>
 
       {/* Projects Section */}
       <section ref={projectsRef} className="projects">
-        <ProjectsSection projects={projects} />
+        <Suspense fallback={<div className="loading">Loading projects...</div>}>
+          <ProjectsSection projects={projects} />
+        </Suspense>
       </section>
 
       {/* Timeline Section */}
@@ -437,7 +445,8 @@ const Portfolio = () => {
             <div className="footer-info">
               <h3>Let&apos;s work together!</h3>
               <p>
-                I&apos;m always open to new projects and interesting opportunities.
+                I&apos;m always open to new projects and interesting
+                opportunities.
               </p>
             </div>
             <div className="footer-links">
