@@ -1,6 +1,6 @@
-# Steven Portfolio
+# Modern Portfolio Website
 
-Modern portfolio website for Steven Coaila Zaa, showcasing full-stack development skills with React, GSAP animations, and Apple-inspired design.
+Interactive portfolio showcasing full-stack development expertise with cutting-edge web technologies.
 
 ## 🚀 Quick Start
 
@@ -21,29 +21,28 @@ npm run preview
 ## 🛠️ Technologies
 
 - **React 18+** - Modern UI library with hooks
-- **GSAP 3.x** - Smooth animations and ScrollTrigger
+- **Three.js** - 3D graphics and interactive particles
+- **GSAP 3.x** - Advanced animations and ScrollTrigger
 - **Vite** - Fast build tool and dev server
-- **CSS3** - Modern styling with variables
-- **Typewriter Effect** - Dynamic text animations
+- **Modern CSS** - Custom properties and advanced layouts
 
-## ✨ Features
+## ✨ Key Features
 
-- Responsive design (mobile-first)
-- Smooth scroll navigation
-- Animated project showcase
-- Interactive timeline
-- Dark theme with modern aesthetics
+- **3D Interactive Hero** - WebGL particle system with orbital mechanics
+- **Apple-Style Scroll** - Magnetic project presentation system
+- **Modern Lazy Loading** - Skeleton placeholders with intersection observer
+- **SEO Optimized** - Structured data and performance optimization
+- **Mobile First** - Responsive design with touch interactions
 
 ## 📁 Project Structure
 
 ```
 src/
-├── Portfolio.jsx       # Main component
-├── styles.css         # Global styles
-├── data/
-│   ├── projects.js    # Project information
-│   └── experiences.js # Work experience
-└── main.jsx          # App entry point
+├── components/         # Modular React components
+├── hooks/             # Custom React hooks
+├── styles/            # CSS modules for complex animations
+├── data/              # Content management
+└── main.jsx           # App entry point
 ```
 
 ## 🌐 Deployment
