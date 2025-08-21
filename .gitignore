@@ -98,3 +98,7 @@ jspm_packages/
 
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
+
+# Test results and Playwright
+test-results/
+.playwright-mcp/
