@@ -20,8 +20,8 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
 
   // Particle configuration based on device
   const particleConfig = useMemo(() => ({
-    count: isMobile ? 800 : 1500,
-    size: isMobile ? 2 : 3,
+    count: isMobile ? 75 : 150, // Reduced particle count
+    size: isMobile ? 0.3 : 0.5,  // Smaller particles
     speed: isMobile ? 0.3 : 0.5,
     mouseInfluence: isMobile ? 50 : 100,
   }), [isMobile]);
@@ -64,104 +64,95 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
     rendererRef.current = renderer;
 
-    // Particle system setup
-    const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(particleConfig.count * 3);
-    const colors = new Float32Array(particleConfig.count * 3);
-    const sizes = new Float32Array(particleConfig.count);
-    const originalPositions = new Float32Array(particleConfig.count * 3);
+    // 3D Sphere Particle System Setup
+    const particleGroup = new THREE.Group();
+    const particlesArray = [];
+    const originalPositions = [];
 
-    // Purple/Blue color palette
-    const colorPalette = [
-      new THREE.Color(0x3b82f6), // Blue
-      new THREE.Color(0x8b5cf6), // Purple
-      new THREE.Color(0x6366f1), // Indigo
-      new THREE.Color(0xa855f7), // Light purple
-    ];
+    // Exact app colors: 50% purple, 50% blue
+    const appPurple = new THREE.Color(0x8b5cf6); // Your app's purple
+    const appBlue = new THREE.Color(0x3b82f6);   // Your app's blue
 
-    // Generate particles
+    // Create subtle lighting that preserves particle colors
+    const ambientLight = new THREE.AmbientLight(0x2a1f3d, 0.3); // Darker purple ambient
+    scene.add(ambientLight);
+
+    const directionalLight = new THREE.DirectionalLight(0x4338ca, 0.4); // Purple directional light
+    directionalLight.position.set(10, 10, 5);
+    scene.add(directionalLight);
+
+    const pointLight = new THREE.PointLight(0x7c3aed, 0.3, 50); // Purple point light
+    pointLight.position.set(-10, -10, 10);
+    scene.add(pointLight);
+
+    // Create individual 3D sphere particles
     for (let i = 0; i < particleConfig.count; i++) {
-      const i3 = i * 3;
+      // Create sphere geometry with optimized segments - much smaller
+      const sphereGeometry = new THREE.SphereGeometry(
+        Math.random() * 0.3 + 0.1, // Random radius between 0.1 and 0.4 (much smaller)
+        isMobile ? 6 : 8, // Lower segments on mobile
+        isMobile ? 4 : 6
+      );
+
+      // Assign color: exactly 50% purple, 50% blue
+      const color = (i % 2 === 0) ? appPurple : appBlue;
+
+      // Create material with stable properties (no dynamic changes)
+      const sphereMaterial = new THREE.MeshPhongMaterial({
+        color: color,
+        shininess: 15,
+        transparent: true,
+        opacity: 0.7,
+        emissive: color.clone().multiplyScalar(0.05), // Very subtle stable glow
+      });
+
+      // Store the base material properties to prevent flickering
+      sphereMaterial.userData = {
+        baseColor: color.clone(),
+        baseOpacity: 0.7,
+        baseEmissive: color.clone().multiplyScalar(0.05)
+      };
+
+      const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+
+      // Create orbital properties for circular movement - SLOWER speeds
+      const orbitRadius = Math.random() * 15 + 8; // Orbit radius between 8-23
+      const orbitSpeed = Math.random() * 0.003 + 0.001; // Much slower: 0.001-0.004
+      const orbitAngle = Math.random() * Math.PI * 2; // Random starting angle
+      const baseZ = (Math.random() - 0.5) * 8; // Random Z depth between -4 and 4
+      const floatSpeed = Math.random() * 0.005 + 0.002; // Slower floating
       
-      // Position particles in a sphere-like distribution
-      const radius = Math.random() * 25 + 5;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.random() * Math.PI;
-      
-      positions[i3] = radius * Math.sin(phi) * Math.cos(theta);
-      positions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      positions[i3 + 2] = radius * Math.cos(phi);
+      // Initial position based on orbit - HORIZONTAL plane (XY) facing user
+      const x = Math.cos(orbitAngle) * orbitRadius;
+      const y = Math.sin(orbitAngle) * orbitRadius; // Orbit in XY plane (horizontal)
+      const z = baseZ; // Z is depth, not part of orbit
 
-      // Store original positions for reset
-      originalPositions[i3] = positions[i3];
-      originalPositions[i3 + 1] = positions[i3 + 1];
-      originalPositions[i3 + 2] = positions[i3 + 2];
+      sphere.position.set(x, y, z);
 
-      // Random color from palette
-      const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
-      colors[i3] = color.r;
-      colors[i3 + 1] = color.g;
-      colors[i3 + 2] = color.b;
+      // Store orbital properties in userData
+      sphere.userData = {
+        orbitRadius,
+        orbitSpeed,
+        orbitAngle,
+        baseZ, // Changed from baseY to baseZ
+        floatSpeed,
+        currentAngle: orbitAngle
+      };
 
-      // Random size
-      sizes[i] = Math.random() * particleConfig.size + 1;
+      // Store original orbital position
+      originalPositions[i] = { x, y, z, orbitRadius, orbitSpeed, orbitAngle, baseZ };
+
+      // Orient spheres to face the camera (user)
+      sphere.rotation.x = 0; // No X rotation (prevents looking up/down)
+      sphere.rotation.y = Math.random() * Math.PI * 0.5; // Slight Y variation
+      sphere.rotation.z = 0; // No Z rotation
+
+      particlesArray.push(sphere);
+      particleGroup.add(sphere);
     }
 
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-    geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-
-    // Particle material with custom shader
-    const material = new THREE.ShaderMaterial({
-      uniforms: {
-        time: { value: 1.0 },
-        mouse: { value: new THREE.Vector2() },
-        resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-      },
-      vertexShader: `
-        attribute float size;
-        varying vec3 vColor;
-        uniform float time;
-        uniform vec2 mouse;
-        
-        void main() {
-          vColor = color;
-          
-          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-          
-          // Mouse interaction effect
-          vec2 mouseInfluence = mouse * 0.1;
-          mvPosition.xy += mouseInfluence * sin(time + position.x * 0.1) * 0.5;
-          
-          gl_PointSize = size * (300.0 / -mvPosition.z);
-          gl_Position = projectionMatrix * mvPosition;
-        }
-      `,
-      fragmentShader: `
-        uniform float time;
-        varying vec3 vColor;
-        
-        void main() {
-          vec2 center = gl_PointCoord - vec2(0.5);
-          float distance = length(center);
-          
-          // Create circular particles with glow
-          float alpha = 1.0 - smoothstep(0.3, 0.5, distance);
-          
-          // Add subtle pulsing effect
-          alpha *= 0.8 + 0.2 * sin(time * 2.0);
-          
-          gl_FragColor = vec4(vColor, alpha);
-        }
-      `,
-      transparent: true,
-      vertexColors: true,
-      blending: THREE.AdditiveBlending,
-    });
-
-    const particles = new THREE.Points(geometry, material);
-    scene.add(particles);
-    particlesRef.current = particles;
+    scene.add(particleGroup);
+    particlesRef.current = { group: particleGroup, particles: particlesArray, originalPositions };
 
     setIsLoaded(true);
 
@@ -190,38 +181,70 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
 
       const elapsedTime = (Date.now() - startTime) * 0.001;
       
-      if (particlesRef.current) {
-        const material = particlesRef.current.material;
-        const geometry = particlesRef.current.geometry;
-        const positions = geometry.attributes.position.array;
+      if (particlesRef.current && particlesRef.current.particles) {
+        const { particles, originalPositions } = particlesRef.current;
 
-        // Update shader uniforms
-        material.uniforms.time.value = elapsedTime;
-        material.uniforms.mouse.value.set(mouseRef.current.x, mouseRef.current.y);
-
-        // Particle animation and mouse interaction
-        for (let i = 0; i < particleConfig.count; i++) {
-          const i3 = i * 3;
+        // Orbital 3D Sphere animation system
+        for (let i = 0; i < particles.length; i++) {
+          const sphere = particles[i];
+          const position = sphere.position;
+          const userData = sphere.userData;
           
-          // Gentle floating animation
-          positions[i3 + 1] += Math.sin(elapsedTime + i * 0.1) * 0.01;
+          // Update orbital angle
+          userData.currentAngle += userData.orbitSpeed;
           
-          // Mouse attraction/repulsion effect
-          const mouseX = mouseRef.current.x * window.innerWidth * 0.5;
-          const mouseY = -mouseRef.current.y * window.innerHeight * 0.5;
+          // Calculate base orbital position - HORIZONTAL orbit (XY plane) facing user
+          const baseX = Math.cos(userData.currentAngle) * userData.orbitRadius;
+          const baseY = Math.sin(userData.currentAngle) * userData.orbitRadius; // Y orbit instead of Z
+          const baseZ = userData.baseZ + Math.sin(elapsedTime * userData.floatSpeed + i) * 1; // Gentle Z float
           
-          const dx = positions[i3] - mouseX * 0.05;
-          const dy = positions[i3 + 1] - mouseY * 0.05;
-          const distance = Math.sqrt(dx * dx + dy * dy);
+          // Mouse interaction - CORRECTED orientation and dispersion only
+          const mouseX = -mouseRef.current.x * 15; // INVERTED X
+          const mouseY = mouseRef.current.y * 15;   // INVERTED Y (removed negative)
+          const mouseZ = 0;
           
-          if (distance < particleConfig.mouseInfluence) {
-            const force = (particleConfig.mouseInfluence - distance) / particleConfig.mouseInfluence;
-            positions[i3] += dx * force * 0.01;
-            positions[i3 + 1] += dy * force * 0.01;
+          // Calculate distance from mouse
+          const dx = position.x - mouseX;
+          const dy = position.y - mouseY;
+          const dz = position.z - mouseZ;
+          const distance3D = Math.sqrt(dx * dx + dy * dy + dz * dz);
+          
+          let finalX = baseX;
+          let finalY = baseY;
+          let finalZ = baseZ;
+          
+          // Mouse dispersion effect - only push away, no attraction
+          if (distance3D < particleConfig.mouseInfluence) {
+            const disperseForce = (particleConfig.mouseInfluence - distance3D) / particleConfig.mouseInfluence;
+            
+            // Push particles away from mouse
+            finalX += (dx / distance3D) * disperseForce * 8;
+            finalY += (dy / distance3D) * disperseForce * 8;
+            finalZ += (dz / distance3D) * disperseForce * 4;
           }
+          
+          // Smooth transition to final position
+          position.x += (finalX - position.x) * 0.05;
+          position.y += (finalY - position.y) * 0.05;
+          position.z += (finalZ - position.z) * 0.05;
+          
+          // Boundary limits - keep particles in screen area (XY plane)
+          const maxRadius = 25;
+          const currentRadius = Math.sqrt(position.x * position.x + position.y * position.y);
+          if (currentRadius > maxRadius) {
+            const scale = maxRadius / currentRadius;
+            position.x *= scale;
+            position.y *= scale;
+          }
+          
+          // Z limits (depth)
+          if (Math.abs(position.z) > 10) {
+            position.z = Math.sign(position.z) * 10;
+          }
+          
+          // Very subtle rotation animation - only Y axis, much slower
+          sphere.rotation.y += 0.0003;
         }
-
-        geometry.attributes.position.needsUpdate = true;
 
         // Gentle camera movement
         cameraRef.current.position.x += (mouseRef.current.x * 2 - cameraRef.current.position.x) * 0.02;
