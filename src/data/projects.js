@@ -30,7 +30,7 @@ export const projects = [
       'Accessibility APIs',
       'UserDefaults',
     ],
-    image: '/buen-mouse.jpg',
+    image: '/buen-mouse.webp',
     github: 'https://github.com/StevenACZ/BuenMouse',
     features: [
       'System-level event interception with CGEventTap',

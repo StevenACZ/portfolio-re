@@ -6,15 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Steven Coaila Zaa - Full Stack Developer</title>
 
-    <!-- Google Fonts - Optimized Preload -->
+    <!-- Google Fonts - Critical Performance Optimization -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <!-- Critical font weights with display swap for better Core Web Vitals -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <!-- Full font loading with swap for better UX -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"></noscript>
 
-    <!-- Resource Hints for Performance -->
-    <link rel="preload" href="/peso-tracker.webp" as="image" fetchpriority="high">
-    <link rel="preload" href="/buen-mouse.jpg" as="image">
+    <!-- Critical Resource Preloading for Core Web Vitals -->
+    <!-- Preload hero images for LCP optimization -->
+    <link rel="preload" href="/peso-tracker.webp" as="image" fetchpriority="high" type="image/webp">
+    <link rel="preload" href="/buen-mouse.webp" as="image" fetchpriority="low" type="image/webp">
+    <!-- Preload favicon for better perceived performance -->
+    <link rel="preload" href="/favicon.ico" as="image" type="image/x-icon">
+    <!-- DNS prefetch for external domains -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
 
     <!-- SEO Meta Tags -->
     <meta
@@ -23,8 +32,16 @@
     />
     <meta
       name="keywords"
-      content="Steven Coaila Zaa, Full Stack Developer, React Developer, Swift Developer, JavaScript, TypeScript, Node.js, iOS Development, Web Development, Portfolio, Software Engineer"
+      content="Steven Coaila Zaa, Full Stack Developer, React Developer, Swift Developer, JavaScript, TypeScript, Node.js, iOS Development, Web Development, Portfolio, Software Engineer, GSAP, Three.js, Vite, SwiftUI, Core Graphics, JWT Authentication, macOS Development, Frontend Engineer, Backend Developer"
     />
+    <!-- Enhanced SEO Meta Tags -->
+    <meta name="application-name" content="Steven ACZ Portfolio" />
+    <meta name="generator" content="Vite + React" />
+    <meta name="subject" content="Full Stack Developer Portfolio" />
+    <meta name="rating" content="General" />
+    <meta name="language" content="English" />
+    <meta name="revisit-after" content="30 days" />
+    <meta name="distribution" content="global" />
     <meta name="author" content="Steven Coaila Zaa" />
     <meta name="robots" content="index, follow" />
     <link rel="canonical" href="https://stevenacz.com" />
@@ -40,7 +57,8 @@
       property="og:description"
       content="Full Stack Developer specializing in React, Swift, and modern web/mobile development. Explore my portfolio of innovative projects."
     />
-    <meta property="og:image" content="https://stevenacz.com/og-image.jpg" />
+    <meta property="og:image" content="https://stevenacz.com/og-image.webp" />
+    <meta property="og:image:alt" content="Steven Coaila Zaa Portfolio - Full Stack Developer" />
     <meta property="og:image:width" content="1920" />
     <meta property="og:image:height" content="1080" />
     <meta property="og:locale" content="en_US" />
@@ -51,7 +69,7 @@
     <meta name="twitter:url" content="https://stevenacz.com" />
     <meta name="twitter:title" content="Steven Coaila Zaa - Full Stack Developer" />
     <meta name="twitter:description" content="Full Stack Developer specializing in React, Swift, and modern web/mobile development. Explore my portfolio of innovative projects." />
-    <meta name="twitter:image" content="https://stevenacz.com/og-image.jpg" />
+    <meta name="twitter:image" content="https://stevenacz.com/og-image.webp" />
 
     <!-- Additional Meta Tags -->
     <meta name="theme-color" content="#3b82f6" />

@@ -11,6 +11,7 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
   const mouseRef = useRef({ x: 0, y: 0 });
   const frameIdRef = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const performanceRef = useRef({ frameCount: 0, lastTime: Date.now(), avgFPS: 60 });
 
   // Device detection
   const isMobile = useMemo(() => {
@@ -21,16 +22,25 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
     );
   }, []);
 
-  // Particle configuration based on device
-  const particleConfig = useMemo(
-    () => ({
-      count: isMobile ? 50 : 300, // Further reduced for better performance
-      size: isMobile ? 0.2 : 0.4, // Smaller particles
-      speed: isMobile ? 0.2 : 0.4, // Slower for better performance
-      mouseInfluence: isMobile ? 40 : 80, // Reduced influence
-    }),
-    [isMobile]
-  );
+  // Particle configuration based on device and performance
+  const particleConfig = useMemo(() => {
+    const isLowEnd = navigator.hardwareConcurrency < 4 || window.innerWidth < 768;
+    const hasLowMemory = navigator.deviceMemory && navigator.deviceMemory < 4;
+    const isSlowConnection = navigator.connection && 
+      (navigator.connection.effectiveType === 'slow-2g' || navigator.connection.effectiveType === '2g');
+    
+    const performanceLevel = (hasLowMemory || isSlowConnection) ? 'ultra-low' : 
+      isLowEnd ? 'low' : isMobile ? 'medium' : 'high';
+    
+    const configs = {
+      'ultra-low': { count: 15, size: 0.1, speed: 0.1, mouseInfluence: 20, segments: 3, rings: 2, updateRate: 3 },
+      low: { count: 30, size: 0.15, speed: 0.15, mouseInfluence: 30, segments: 4, rings: 3, updateRate: 2 },
+      medium: { count: 80, size: 0.25, speed: 0.25, mouseInfluence: 50, segments: 6, rings: 4, updateRate: 1 },
+      high: { count: 200, size: 0.4, speed: 0.4, mouseInfluence: 80, segments: 8, rings: 6, updateRate: 1 }
+    };
+    
+    return configs[performanceLevel];
+  }, [isMobile]);
 
   // Typewriter words
   const typewriterWords = [
@@ -93,33 +103,49 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
     pointLight.position.set(-10, -10, 10);
     scene.add(pointLight);
 
-    // Create individual 3D sphere particles
-    for (let i = 0; i < particleConfig.count; i++) {
-      // Create sphere geometry with optimized segments - smaller spheres
-      const sphereGeometry = new THREE.SphereGeometry(
-        Math.random() * 1.5 + 0.1, // Random radius between 0.1 and 1.6 (smaller)
-        isMobile ? 4 : 6, // Even lower segments on mobile
-        isMobile ? 3 : 4
-      );
-
-      // Assign color: exactly 50% purple, 50% blue
-      const color = i % 2 === 0 ? appPurple : appBlue;
-
-      // Create material with stable properties (no dynamic changes)
-      const sphereMaterial = new THREE.MeshPhongMaterial({
-        color: color,
+    // Object pooling for geometries and materials
+    const geometryPool = [];
+    const materialPool = { purple: [], blue: [] };
+    
+    // Pre-create optimized geometries and materials
+    const baseGeometry = new THREE.SphereGeometry(1, particleConfig.segments, particleConfig.rings);
+    for (let j = 0; j < 3; j++) { // 3 size variants
+      const size = 0.1 + (j * particleConfig.size / 3);
+      const geometry = baseGeometry.clone();
+      geometry.scale(size, size, size);
+      geometryPool.push(geometry);
+    }
+    
+    // Pre-create materials with color variants
+    for (let j = 0; j < 2; j++) {
+      const purpleMaterial = new THREE.MeshPhongMaterial({
+        color: appPurple,
         shininess: 15,
         transparent: true,
         opacity: 0.7,
-        emissive: color.clone().multiplyScalar(0.05), // Very subtle stable glow
+        emissive: appPurple.clone().multiplyScalar(0.05),
       });
+      const blueMaterial = purpleMaterial.clone();
+      blueMaterial.color = appBlue;
+      blueMaterial.emissive = appBlue.clone().multiplyScalar(0.05);
+      
+      materialPool.purple.push(purpleMaterial);
+      materialPool.blue.push(blueMaterial);
+    }
 
-      // Store the base material properties to prevent flickering
-      sphereMaterial.userData = {
-        baseColor: color.clone(),
-        baseOpacity: 0.7,
-        baseEmissive: color.clone().multiplyScalar(0.05),
-      };
+    // Create individual 3D sphere particles using pooled resources
+    for (let i = 0; i < particleConfig.count; i++) {
+      // Use pooled geometry and material
+      const geometryIndex = Math.floor(Math.random() * geometryPool.length);
+      const sphereGeometry = geometryPool[geometryIndex];
+      
+      const isBlue = i % 2 === 0;
+      const materialIndex = Math.floor(Math.random() * 2);
+      const sphereMaterial = isBlue ? 
+        materialPool.blue[materialIndex] : 
+        materialPool.purple[materialIndex];
+
+      // Material already assigned from pool above
 
       const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
 
@@ -205,13 +231,40 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
     const animate = () => {
       frameIdRef.current = requestAnimationFrame(animate);
 
-      const elapsedTime = (Date.now() - startTime) * 0.001;
+      // Performance monitoring and adaptive quality
+      const now = Date.now();
+      const deltaTime = now - performanceRef.current.lastTime;
+      performanceRef.current.frameCount++;
+      
+      if (deltaTime >= 1000) { // Update FPS every second
+        performanceRef.current.avgFPS = (performanceRef.current.frameCount * 1000) / deltaTime;
+        performanceRef.current.frameCount = 0;
+        performanceRef.current.lastTime = now;
+        
+        // Reduce quality if FPS drops below 30
+        if (performanceRef.current.avgFPS < 30) {
+          console.warn('Performance degradation detected, consider reducing particle count');
+        }
+      }
+
+      const elapsedTime = (now - startTime) * 0.001;
+
+      // Frame skipping for performance optimization
+      const frameSkip = particleConfig.updateRate || 1;
+      if (performanceRef.current.frameCount % frameSkip !== 0) {
+        rendererRef.current.render(sceneRef.current, cameraRef.current);
+        return;
+      }
 
       if (particlesRef.current && particlesRef.current.particles) {
         const { particles } = particlesRef.current;
 
+        // LOD: Update fewer particles when performance is low
+        const updateCount = performanceRef.current.avgFPS < 30 ? 
+          Math.floor(particles.length * 0.7) : particles.length;
+
         // Orbital 3D Sphere animation system
-        for (let i = 0; i < particles.length; i++) {
+        for (let i = 0; i < updateCount; i++) {
           const sphere = particles[i];
           const position = sphere.position;
           const userData = sphere.userData;

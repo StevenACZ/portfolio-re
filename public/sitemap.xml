@@ -6,7 +6,7 @@
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <image:image>
-      <image:loc>https://stevenacz.com/og-image.jpg</image:loc>
+      <image:loc>https://stevenacz.com/og-image.webp</image:loc>
       <image:title>Steven Coaila Zaa - Full Stack Developer Portfolio</image:title>
       <image:caption>Portfolio homepage showcasing Steven Coaila Zaa's work as a Full Stack Developer</image:caption>
     </image:image>
@@ -16,7 +16,7 @@
       <image:caption>macOS application for weight tracking with JWT authentication and Cloudflare API</image:caption>
     </image:image>
     <image:image>
-      <image:loc>https://stevenacz.com/buen-mouse.jpg</image:loc>
+      <image:loc>https://stevenacz.com/buen-mouse.webp</image:loc>
       <image:title>BuenMouse - macOS Productivity App</image:title>
       <image:caption>Productivity application for macOS enhancing mouse/trackpad functionality</image:caption>
     </image:image>
