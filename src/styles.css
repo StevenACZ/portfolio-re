@@ -802,14 +802,18 @@ body {
   bottom: 0;
   width: 2px;
   background: var(--gradient-primary);
-  transform: translateX(-50%);
-  transform-origin: top;
+  transform: translateX(-50%) scaleY(0);
+  transform-origin: top center;
+  will-change: transform;
 }
 
 .timeline-item {
   position: relative;
   margin-bottom: 4rem;
   width: 50%;
+  opacity: 0;
+  transform: translateY(50px);
+  will-change: transform, opacity;
 }
 
 .timeline-item.left {

@@ -20,47 +20,64 @@ const TimelineSection = ({ experiences, timelineRef }) => {
         return;
       }
 
-      // Timeline line draw animation
-      gsap.fromTo(
-        '.timeline-line',
-        {
-          scaleY: 0,
-          transformOrigin: 'top center',
-        },
-        {
-          scaleY: 1,
-          duration: 2,
-          ease: 'power2.inOut',
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: 'top 75%',
-            toggleActions: 'play none none reverse',
-            fastScrollEnd: true,
-          },
-        }
-      );
+      // Wait for elements to be rendered
+      const timer = setTimeout(() => {
+        // Force initial state for timeline line
+        const timelineLine = containerRef.current?.querySelector('.timeline-line');
+        if (timelineLine) {
+          gsap.set(timelineLine, {
+            scaleY: 0,
+            transformOrigin: 'top center',
+            visibility: 'visible',
+          });
 
-      // Timeline items stagger animation
-      gsap.fromTo(
-        '.timeline-item',
-        {
-          x: -80,
-          opacity: 0,
-        },
-        {
-          x: 0,
-          opacity: 1,
-          duration: 0.8,
-          stagger: 0.3,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: 'top 65%',
-            toggleActions: 'play none none reverse',
-            fastScrollEnd: true,
-          },
+          // Timeline line draw animation - scroll-linked
+          gsap.to(timelineLine, {
+            scaleY: 1,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: containerRef.current,
+              start: 'top 80%',
+              end: 'bottom 20%',
+              scrub: 1.5,
+              onUpdate: (self) => {
+                console.log('Timeline progress:', self.progress);
+              },
+              markers: false, // Set to true for debugging
+            },
+          });
         }
-      );
+
+        // Force initial state for timeline items
+        const timelineItems = containerRef.current?.querySelectorAll('.timeline-item');
+        if (timelineItems && timelineItems.length > 0) {
+          timelineItems.forEach((item, index) => {
+            gsap.set(item, {
+              y: 50,
+              opacity: 0,
+              visibility: 'visible',
+            });
+
+            // Individual animation for each timeline item
+            gsap.to(item, {
+              y: 0,
+              opacity: 1,
+              duration: 0.8,
+              ease: 'power2.out',
+              scrollTrigger: {
+                trigger: item,
+                start: 'top 85%',
+                toggleActions: 'play none none reverse',
+                fastScrollEnd: true,
+              },
+            });
+          });
+        }
+      }, 100);
+
+      return () => {
+        clearTimeout(timer);
+      };
     },
     { scope: containerRef }
   );

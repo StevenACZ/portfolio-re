@@ -51,7 +51,6 @@ const SEOHead = ({
 
       {/* Security & Performance Meta Tags */}
       <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
-      <meta httpEquiv="X-Frame-Options" content="DENY" />
       <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
       <meta name="referrer" content="strict-origin-when-cross-origin" />
       <meta name="color-scheme" content="dark light" />

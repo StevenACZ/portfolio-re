@@ -44,7 +44,7 @@ const Portfolio = () => {
       // Initialize animations when DOM is ready
       const timer = setTimeout(() => {
         initializeAnimations();
-      }, 100);
+      }, 500);
 
       return () => {
         clearTimeout(timer);
@@ -74,7 +74,7 @@ const Portfolio = () => {
     // Inicializar animaciones cuando DOM esté listo
     const timer = setTimeout(() => {
       initializeAnimations();
-    }, 100);
+    }, 500);
 
     // Manejar redimensionamiento de ventana con debounce optimizado para INP
     let resizeTimeout;
@@ -121,12 +121,20 @@ const Portfolio = () => {
       return;
     }
 
+    // Check if elements exist before animating
+    const heroGreeting = document.querySelector('.hero-greeting');
+    const heroName = document.querySelector('.hero-name');
+    const typewriterText = document.querySelector('.typewriter-text');
+    const heroDescription = document.querySelector('.hero-description');
+    const gradientBg = document.querySelector('.gradient-bg');
+    const footerContent = document.querySelector('.footer-content');
+
     // Hero entrance animation con mejor coordinación
     const heroTl = gsap.timeline();
 
-    heroTl
-      .fromTo(
-        '.hero-greeting',
+    if (heroGreeting) {
+      heroTl.fromTo(
+        heroGreeting,
         {
           y: 50,
           opacity: 0,
@@ -137,9 +145,12 @@ const Portfolio = () => {
           duration: 1,
           ease: 'power3.out',
         }
-      )
-      .fromTo(
-        '.hero-name',
+      );
+    }
+
+    if (heroName) {
+      heroTl.fromTo(
+        heroName,
         {
           y: 50,
           opacity: 0,
@@ -153,9 +164,12 @@ const Portfolio = () => {
           ease: 'back.out(1.7)',
         },
         '-=0.6'
-      )
-      .fromTo(
-        '.typewriter-text',
+      );
+    }
+
+    if (typewriterText) {
+      heroTl.fromTo(
+        typewriterText,
         {
           y: 30,
           opacity: 0,
@@ -168,9 +182,12 @@ const Portfolio = () => {
           delay: 0.5, // Delay para que termine la animación del nombre
         },
         '-=0.5'
-      )
-      .fromTo(
-        '.hero-description',
+      );
+    }
+
+    if (heroDescription) {
+      heroTl.fromTo(
+        heroDescription,
         {
           y: 30,
           opacity: 0,
@@ -183,12 +200,11 @@ const Portfolio = () => {
         },
         '-=0.3'
       );
-
-    // Scroll indicator bounce moved to CSS for better performance
+    }
 
     // Parallax effect mejorado (solo en desktop)
-    if (!isMobile) {
-      gsap.to('.gradient-bg', {
+    if (!isMobile && gradientBg && heroRef.current) {
+      gsap.to(gradientBg, {
         yPercent: -20,
         ease: 'none',
         scrollTrigger: {
@@ -202,44 +218,44 @@ const Portfolio = () => {
       });
     }
 
-    // Project presentation handled by ImmersiveProjectScroll component
-
-    // Timeline animations handled by TimelineSection component
-
     // Footer entrance
-    gsap.fromTo(
-      '.footer-content',
-      {
-        y: 60,
-        opacity: 0,
-      },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        ease: 'power3.out',
-        scrollTrigger: {
-          trigger: footerRef.current,
-          start: 'top 90%',
-          toggleActions: 'play none none reverse',
-          fastScrollEnd: true, // Better mobile performance
+    if (footerContent && footerRef.current) {
+      gsap.fromTo(
+        footerContent,
+        {
+          y: 60,
+          opacity: 0,
         },
-      }
-    );
+        {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: footerRef.current,
+            start: 'top 90%',
+            toggleActions: 'play none none reverse',
+            fastScrollEnd: true, // Better mobile performance
+          },
+        }
+      );
+    }
 
     // Navbar scroll effect
-    gsap.to(navbarRef.current, {
-      backgroundColor: 'rgba(10, 10, 10, 0.7)',
-      backdropFilter: 'blur(20px)',
-      borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-      scrollTrigger: {
-        trigger: 'body',
-        start: 'top -50px',
-        end: 'bottom bottom',
-        toggleActions: 'play none none reverse',
-        scrub: 1,
-      },
-    });
+    if (navbarRef.current) {
+      gsap.to(navbarRef.current, {
+        backgroundColor: 'rgba(10, 10, 10, 0.7)',
+        backdropFilter: 'blur(20px)',
+        borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+        scrollTrigger: {
+          trigger: 'body',
+          start: 'top -50px',
+          end: 'bottom bottom',
+          toggleActions: 'play none none reverse',
+          scrub: 1,
+        },
+      });
+    }
 
     // ScrollTrigger se actualizará automáticamente con las configuraciones de performance
   };
