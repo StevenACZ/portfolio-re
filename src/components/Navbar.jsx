@@ -15,8 +15,6 @@ const Navbar = ({ activeSection, onNavClick, navbarRef }) => {
       role="navigation" 
       aria-label="Main navigation"
     >
-      {/* Skip link for accessibility */}
-      <a href="#hero" className="skip-link">Skip to main content</a>
       
       <div className="navbar-container">
         <div className="navbar-logo">

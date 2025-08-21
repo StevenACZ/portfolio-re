@@ -3,6 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
 import { Github, ExternalLink } from 'lucide-react';
+import LazyImage from './LazyImage';
 import '../styles/ProjectsSection.css';
 
 // Register GSAP plugins
@@ -64,11 +65,13 @@ const ProjectCard = memo(({ project, index }) => {
               onClick={hasValidLinks ? handleImageClick : undefined}
             >
               {project.image ? (
-                <img 
+                <LazyImage 
                   src={project.image} 
                   alt={project.title}
-                  loading="lazy"
-                  decoding="async"
+                  className="project-lazy-image"
+                  skeletonHeight="300px"
+                  threshold={0.2}
+                  fadeInDuration={400}
                 />
               ) : (
                 <div className="project-placeholder">
