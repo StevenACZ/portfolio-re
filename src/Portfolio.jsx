@@ -1,23 +1,21 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-  lazy,
-  Suspense,
-} from 'react';
-import { Github, Linkedin, Mail, MapPin } from 'lucide-react';
+import React, { useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { useGSAP } from '@gsap/react';
 import { projects } from './data/projects';
 import { experiences } from './data/experiences';
+import { useScrollToSection } from './hooks/useScrollToSection';
+import { useScrollSpy } from './hooks/useScrollSpy';
+import SEOHead from './components/SEOHead';
 import './styles/HeroSection.css';
 
-// Lazy load heavy components
+// Lazy load components
 const ProjectsSection = lazy(() => import('./components/ProjectsSection'));
 const HeroSection = lazy(() => import('./components/HeroSection'));
+const Navbar = lazy(() => import('./components/Navbar'));
+const TimelineSection = lazy(() => import('./components/TimelineSection'));
+const Footer = lazy(() => import('./components/Footer'));
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, useGSAP);
@@ -29,7 +27,16 @@ const Portfolio = () => {
   const footerRef = useRef(null);
   const navbarRef = useRef(null);
   const containerRef = useRef(null);
-  const [activeSection, setActiveSection] = useState('hero');
+
+  // Custom hooks
+  const scrollToSection = useScrollToSection(heroRef, navbarRef);
+  const sections = [
+    { ref: heroRef, name: 'hero' },
+    { ref: projectsRef, name: 'projects' },
+    { ref: timelineRef, name: 'timeline' },
+    { ref: footerRef, name: 'footer' },
+  ];
+  const activeSection = useScrollSpy(sections);
 
   // useGSAP hook for modern React GSAP integration
   useGSAP(
@@ -274,212 +281,78 @@ const Portfolio = () => {
       },
     });
 
-    // Scroll spy para navbar
-    const sections = [
-      { ref: heroRef, name: 'hero' },
-      { ref: projectsRef, name: 'projects' },
-      { ref: timelineRef, name: 'timeline' },
-      { ref: footerRef, name: 'footer' },
-    ];
-
-    sections.forEach((section) => {
-      ScrollTrigger.create({
-        trigger: section.ref.current,
-        start: 'top 20%',
-        end: 'bottom 20%',
-        onEnter: () => setActiveSection(section.name),
-        onEnterBack: () => setActiveSection(section.name),
-      });
-    });
-
     // ScrollTrigger se actualizará automáticamente con las configuraciones de performance
   };
-
-  // Función para smooth scroll usando contextSafe
-  const scrollToSection = useCallback(
-    (sectionRef) => {
-      if (sectionRef.current) {
-        // Usar altura del navbar desde CSS custom property
-        const navbarHeight = navbarRef.current
-          ? navbarRef.current.offsetHeight
-          : parseInt(
-              getComputedStyle(document.documentElement).getPropertyValue(
-                '--navbar-height'
-              )
-            ) || 80;
-
-        // Obtener posición exacta de la sección
-        const sectionRect = sectionRef.current.getBoundingClientRect();
-        const currentScrollY = window.pageYOffset;
-        const targetY = sectionRect.top + currentScrollY;
-
-        if (gsap && gsap.plugins?.ScrollToPlugin) {
-          gsap.to(window, {
-            duration: 1.2, // Slightly faster for better INP
-            scrollTo: {
-              y: targetY - (sectionRef === heroRef ? 0 : navbarHeight),
-              autoKill: false,
-            },
-            ease: 'power2.inOut',
-            onComplete: () => {
-              // Yield to main thread after scroll complete
-              if (window.requestIdleCallback) {
-                window.requestIdleCallback(() => {
-                  ScrollTrigger.refresh();
-                });
-              }
-            },
-          });
-        } else {
-          console.warn('GSAP ScrollTo no disponible, usando scroll nativo');
-
-          // Fallback scroll nativo con cálculo preciso
-          const finalTargetY =
-            targetY - (sectionRef === heroRef ? 0 : navbarHeight);
-
-          window.scrollTo({
-            top: finalTargetY,
-            behavior: 'smooth',
-          });
-        }
-      }
-    },
-    [heroRef, navbarRef]
-  );
 
   // Función específica para el scroll indicator
   const handleScrollIndicatorClick = useCallback(() => {
     scrollToSection(projectsRef);
   }, [scrollToSection, projectsRef]);
 
+  // Función para manejar clicks de navegación
+  const handleNavClick = useCallback(
+    (sectionName) => {
+      const sectionMap = {
+        hero: heroRef,
+        projects: projectsRef,
+        timeline: timelineRef,
+        footer: footerRef,
+      };
+      const targetRef = sectionMap[sectionName];
+      if (targetRef) {
+        scrollToSection(targetRef);
+      }
+    },
+    [scrollToSection]
+  );
+
   return (
-    <div ref={containerRef} className="portfolio">
-      {/* Navbar */}
-      <nav ref={navbarRef} className="navbar">
-        <div className="navbar-container">
-          <div className="navbar-logo">
-            <span onClick={() => scrollToSection(heroRef)}>StevenACZ</span>
-          </div>
-          <div className="navbar-links">
-            <button
-              onClick={() => scrollToSection(heroRef)}
-              className={`nav-link ${activeSection === 'hero' ? 'active' : ''}`}
-            >
-              Home
-            </button>
-            <button
-              onClick={() => scrollToSection(projectsRef)}
-              className={`nav-link ${
-                activeSection === 'projects' ? 'active' : ''
-              }`}
-            >
-              Projects
-            </button>
-            <button
-              onClick={() => scrollToSection(timelineRef)}
-              className={`nav-link ${
-                activeSection === 'timeline' ? 'active' : ''
-              }`}
-            >
-              Experience
-            </button>
-            <button
-              onClick={() => scrollToSection(footerRef)}
-              className={`nav-link ${
-                activeSection === 'footer' ? 'active' : ''
-              }`}
-            >
-              Contact
-            </button>
-          </div>
+    <>
+      <SEOHead />
+      <div ref={containerRef} className="portfolio">
+        {/* Navbar */}
+        <Suspense
+          fallback={<div className="loading">Loading navigation...</div>}
+        >
+          <Navbar
+            activeSection={activeSection}
+            onNavClick={handleNavClick}
+            navbarRef={navbarRef}
+          />
+        </Suspense>
+
+        {/* Hero Section */}
+        <div ref={heroRef}>
+          <Suspense fallback={<div className="loading">Loading...</div>}>
+            <HeroSection onScrollIndicatorClick={handleScrollIndicatorClick} />
+          </Suspense>
         </div>
-      </nav>
-      {/* Hero Section - New 3D Interactive Version */}
-      <div ref={heroRef}>
-        <Suspense fallback={<div className="loading">Loading...</div>}>
-          <HeroSection onScrollIndicatorClick={handleScrollIndicatorClick} />
+
+        {/* Projects Section */}
+        <section ref={projectsRef} className="projects">
+          <Suspense
+            fallback={<div className="loading">Loading projects...</div>}
+          >
+            <ProjectsSection projects={projects} />
+          </Suspense>
+        </section>
+
+        {/* Timeline Section */}
+        <Suspense
+          fallback={<div className="loading">Loading experience...</div>}
+        >
+          <TimelineSection
+            experiences={experiences}
+            timelineRef={timelineRef}
+          />
+        </Suspense>
+
+        {/* Footer */}
+        <Suspense fallback={<div className="loading">Loading contact...</div>}>
+          <Footer footerRef={footerRef} />
         </Suspense>
       </div>
-
-      {/* Projects Section */}
-      <section ref={projectsRef} className="projects">
-        <Suspense fallback={<div className="loading">Loading projects...</div>}>
-          <ProjectsSection projects={projects} />
-        </Suspense>
-      </section>
-
-      {/* Timeline Section */}
-      <section ref={timelineRef} className="timeline">
-        <div className="container">
-          <h2 className="section-title">Experience</h2>
-          <div className="timeline-container">
-            <div className="timeline-line"></div>
-            {experiences.map((exp, index) => (
-              <div
-                key={exp.id}
-                className={`timeline-item ${
-                  index % 2 === 0 ? 'left' : 'right'
-                }`}
-              >
-                <div className="timeline-dot"></div>
-                <div className="timeline-card">
-                  <div className="timeline-date">{exp.period}</div>
-                  <h3 className="timeline-title">{exp.title}</h3>
-                  <h4 className="timeline-company">{exp.company}</h4>
-                  <div className="timeline-location">
-                    <MapPin size={14} />
-                    <span>{exp.location}</span>
-                  </div>
-                  <p className="timeline-description">{exp.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer ref={footerRef} className="footer">
-        <div className="container">
-          <div className="footer-content">
-            <div className="footer-info">
-              <h3>Let&apos;s work together!</h3>
-              <p>
-                I&apos;m always open to new projects and interesting
-                opportunities.
-              </p>
-            </div>
-            <div className="footer-links">
-              <a href="mailto:scoaila@proton.me" className="footer-link">
-                <Mail size={20} />
-                <span>scoaila@proton.me</span>
-              </a>
-              <a
-                href="https://www.linkedin.com/in/stevenacz/"
-                className="footer-link"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <Linkedin size={20} />
-                <span>LinkedIn</span>
-              </a>
-              <a
-                href="https://github.com/StevenACZ"
-                className="footer-link"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <Github size={20} />
-                <span>GitHub</span>
-              </a>
-            </div>
-          </div>
-          <div className="footer-bottom">
-            <p>&copy; 2025 Steven Coaila Zaa. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
-    </div>
+    </>
   );
 };
 
