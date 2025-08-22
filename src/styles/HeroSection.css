@@ -1,12 +1,15 @@
-/* Hero Section 3D Styles */
+/* Hero Section 3D Styles - Optimized for CLS Prevention */
 .hero-section {
   position: relative;
   height: 100vh;
+  width: 100%;
   overflow: hidden;
   background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #16213e 100%);
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Prevent layout shift by reserving space */
+  contain: layout style paint;
 }
 
 .hero-canvas {
@@ -17,6 +20,20 @@
   height: 100% !important;
   z-index: 1 !important;
   pointer-events: none;
+  /* Performance optimizations */
+  will-change: auto;
+  contain: strict;
+}
+
+.hero-fallback-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  /* Fallback gradient for when 3D is disabled/loading */
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #16213e 100%);
 }
 
 .hero-content {
