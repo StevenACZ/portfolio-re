@@ -1,10 +1,14 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import react from '@vitejs/plugin-react-swc';
 import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
   plugins: [
-    react(),
+    react({
+      // SWC configuration for optimal performance
+      jsxImportSource: undefined, // Use default React import
+      plugins: [], // No additional SWC plugins for maximum speed
+    }),
     visualizer({
       filename: 'dist/stats.html',
       open: false,
@@ -15,6 +19,20 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true,
+    // Warmup frequently used files for faster dev server
+    warmup: {
+      clientFiles: [
+        './src/Portfolio.jsx',          // Main component
+        './src/components/HeroSection.jsx',     // Critical first paint
+        './src/components/ThreeScene.jsx',      // Complex 3D component
+        './src/components/Navbar.jsx',          // Always visible
+        './src/components/SEOHead.jsx',         // Meta tags needed early
+        './src/hooks/useScrollSpy.js',          // Navigation logic
+        './src/hooks/useScrollToSection.js',    // Scroll behavior
+        './src/styles/globals.css',             // Global styles
+        './src/styles/HeroSection.css',         // Critical CSS
+      ],
+    },
   },
   build: {
     outDir: 'dist',
@@ -22,6 +40,22 @@ export default defineConfig({
     sourcemap: false,
     chunkSizeWarningLimit: 500, // Reduced for better chunking
     minify: 'terser',
+    target: 'es2020', // Modern target for better optimization
+    cssTarget: 'es2020',
+    // Enhanced module preloading for better performance
+    modulePreload: {
+      polyfill: true,
+      resolveDependencies: (filename, deps, { hostType }) => {
+        // Prioritize critical chunks for preloading
+        return deps.filter(dep => {
+          // Always preload vendor chunks and critical components
+          return dep.includes('vendor') || 
+                 dep.includes('Portfolio') || 
+                 dep.includes('HeroSection') ||
+                 dep.includes('three');
+        });
+      },
+    },
     terserOptions: {
       compress: {
         drop_console: true,
@@ -29,9 +63,18 @@ export default defineConfig({
         pure_funcs: ['console.log', 'console.info'],
         dead_code: true,
         unused: true,
+        // Additional optimizations
+        passes: 2, // Run compression twice for better results
+        ecma: 2020, // Target modern JS for better compression
       },
       mangle: {
         safari10: true,
+        properties: {
+          regex: /^_/, // Mangle private properties
+        },
+      },
+      format: {
+        comments: false, // Remove all comments
       },
     },
     rollupOptions: {
@@ -40,29 +83,38 @@ export default defineConfig({
         propertyReadSideEffects: false,
         unknownGlobalSideEffects: false,
       },
+      // Optimized input configuration for better chunking
+      input: {
+        main: './index.html',
+      },
       output: {
         manualChunks: (id) => {
-          // React and React-DOM
+          // Critical vendor - React (high priority for preloading)
           if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
             return 'react-vendor';
           }
-          // Three.js - separate chunk for tree-shaking
+          // Three.js - separate chunk for tree-shaking and conditional loading
           if (id.includes('node_modules/three/')) {
             return 'three-vendor';
           }
-          // GSAP - separate chunk
+          // GSAP - animation library chunk
           if (id.includes('node_modules/gsap/') || id.includes('node_modules/@gsap/')) {
             return 'gsap-vendor';
           }
-          // UI libraries
-          if (id.includes('node_modules/lucide-react/') || id.includes('node_modules/typewriter-effect/')) {
+          // Performance utilities - small but frequently used
+          if (id.includes('node_modules/typed.js/') || 
+              id.includes('node_modules/react-intersection-observer/')) {
+            return 'perf-vendor';
+          }
+          // UI libraries - icons and small utilities
+          if (id.includes('node_modules/lucide-react/')) {
             return 'ui-vendor';
           }
-          // Helmet
+          // SEO and meta - separate for critical path optimization
           if (id.includes('node_modules/@dr.pogodin/react-helmet/')) {
-            return 'helmet-vendor';
+            return 'seo-vendor';
           }
-          // Large vendor libraries
+          // Remaining vendor libraries
           if (id.includes('node_modules/')) {
             return 'vendor';
           }
