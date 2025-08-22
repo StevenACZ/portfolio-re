@@ -16,14 +16,24 @@
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"></noscript>
 
     <!-- Critical Resource Preloading for Core Web Vitals -->
-    <!-- Preload hero images for LCP optimization -->
-    <link rel="preload" href="/peso-tracker.webp" as="image" fetchpriority="high" type="image/webp">
-    <link rel="preload" href="/buen-mouse.webp" as="image" fetchpriority="low" type="image/webp">
+    <!-- Preload critical chunks for faster initial load -->
+    <link rel="modulepreload" href="/src/main.jsx" fetchpriority="high">
+    <link rel="modulepreload" href="/src/Portfolio.jsx" fetchpriority="high">
+    <link rel="modulepreload" href="/src/components/HeroSection.jsx" fetchpriority="high">
+    <link rel="modulepreload" href="/src/components/Navbar.jsx" fetchpriority="high">
+    
+    <!-- Preload hero images for LCP optimization - Remove since they're not in critical path -->
+    <!-- Images will be lazy loaded when projects section is visible -->
     <!-- Preload favicon for better perceived performance -->
     <link rel="preload" href="/favicon.ico" as="image" type="image/x-icon">
+    
     <!-- DNS prefetch for external domains -->
     <link rel="dns-prefetch" href="//fonts.googleapis.com">
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    
+    <!-- Preconnect to critical third-party domains -->
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 
     <!-- SEO Meta Tags -->
     <meta

@@ -46,13 +46,22 @@ export default defineConfig({
     modulePreload: {
       polyfill: true,
       resolveDependencies: (filename, deps, { hostType }) => {
-        // Prioritize critical chunks for preloading
+        // Smart preloading - prioritize critical path only
         return deps.filter(dep => {
-          // Always preload vendor chunks and critical components
-          return dep.includes('vendor') || 
-                 dep.includes('Portfolio') || 
-                 dep.includes('HeroSection') ||
-                 dep.includes('three');
+          // Critical chunks for initial render
+          const isCritical = dep.includes('react-vendor') || 
+                           dep.includes('gsap-core') ||
+                           dep.includes('gsap-react') ||
+                           dep.includes('perf-vendor') ||
+                           dep.includes('seo-vendor') ||
+                           dep.includes('Portfolio') || 
+                           dep.includes('HeroSection') ||
+                           dep.includes('Navbar');
+          
+          // Don't preload Three.js - it's now lazy loaded
+          const isThreeJS = dep.includes('three');
+          
+          return isCritical && !isThreeJS;
         });
       },
     },
@@ -89,31 +98,58 @@ export default defineConfig({
       },
       output: {
         manualChunks: (id) => {
-          // Critical vendor - React (high priority for preloading)
+          // Critical vendor - React (highest priority for preloading)
           if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
             return 'react-vendor';
           }
-          // Three.js - separate chunk for tree-shaking and conditional loading
+          
+          // Three.js sub-chunking for better optimization
           if (id.includes('node_modules/three/')) {
+            // Core Three.js - most frequently used
+            if (id.includes('WebGLRenderer') || id.includes('Scene') || id.includes('PerspectiveCamera')) {
+              return 'three-core';
+            }
+            // Geometry and materials - can be lazy loaded
+            if (id.includes('Geometry') || id.includes('Material') || id.includes('Mesh')) {
+              return 'three-objects';
+            }
+            // Lights - smallest chunk
+            if (id.includes('Light')) {
+              return 'three-lights';
+            }
+            // Remaining Three.js modules
             return 'three-vendor';
           }
-          // GSAP - animation library chunk
-          if (id.includes('node_modules/gsap/') || id.includes('node_modules/@gsap/')) {
-            return 'gsap-vendor';
+          
+          // GSAP - split by usage frequency
+          if (id.includes('node_modules/gsap/')) {
+            // Core GSAP
+            if (id.includes('gsap.js') || id.includes('Timeline')) {
+              return 'gsap-core';
+            }
+            // Plugins - can be loaded on demand
+            return 'gsap-plugins';
           }
+          if (id.includes('node_modules/@gsap/')) {
+            return 'gsap-react';
+          }
+          
           // Performance utilities - small but frequently used
           if (id.includes('node_modules/typed.js/') || 
               id.includes('node_modules/react-intersection-observer/')) {
             return 'perf-vendor';
           }
+          
           // UI libraries - icons and small utilities
           if (id.includes('node_modules/lucide-react/')) {
             return 'ui-vendor';
           }
+          
           // SEO and meta - separate for critical path optimization
           if (id.includes('node_modules/@dr.pogodin/react-helmet/')) {
             return 'seo-vendor';
           }
+          
           // Remaining vendor libraries
           if (id.includes('node_modules/')) {
             return 'vendor';

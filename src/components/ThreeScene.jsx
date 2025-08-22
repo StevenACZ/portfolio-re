@@ -1,17 +1,4 @@
 import React, { useRef, useEffect, useMemo, startTransition } from 'react';
-import {
-  Scene,
-  PerspectiveCamera,
-  WebGLRenderer,
-  Group,
-  Color,
-  AmbientLight,
-  DirectionalLight,
-  PointLight,
-  SphereGeometry,
-  MeshPhongMaterial,
-  Mesh
-} from 'three';
 
 export const ThreeScene = ({ canvasRef, onLoaded }) => {
   const sceneRef = useRef(null);
@@ -50,9 +37,54 @@ export const ThreeScene = ({ canvasRef, onLoaded }) => {
     return configs[performanceLevel];
   }, [isMobile]);
 
-  // Initialize Three.js scene
+  // Initialize Three.js scene with dynamic import
   useEffect(() => {
     if (!canvasRef.current) return;
+
+    let handleMouseMove, handleResize;
+
+    // Dynamic import of Three.js for better code splitting
+    const initializeThreeJS = async () => {
+      try {
+        const {
+          Scene,
+          PerspectiveCamera,
+          WebGLRenderer,
+          Group,
+          Color,
+          AmbientLight,
+          DirectionalLight,
+          PointLight,
+          SphereGeometry,
+          MeshPhongMaterial,
+          Mesh
+        } = await import('three');
+
+        // Initialize after dynamic import
+        initScene({
+          Scene,
+          PerspectiveCamera,
+          WebGLRenderer,
+          Group,
+          Color,
+          AmbientLight,
+          DirectionalLight,
+          PointLight,
+          SphereGeometry,
+          MeshPhongMaterial,
+          Mesh
+        });
+      } catch (error) {
+        console.error('Failed to load Three.js:', error);
+        // Graceful fallback - hide canvas or show static content
+        if (canvasRef.current) {
+          canvasRef.current.style.display = 'none';
+        }
+      }
+    };
+
+    const initScene = (THREE) => {
+    const { Scene, PerspectiveCamera, WebGLRenderer, Group, Color, AmbientLight, DirectionalLight, PointLight, SphereGeometry, MeshPhongMaterial, Mesh } = THREE;
 
     // Scene setup
     const scene = new Scene();
@@ -185,7 +217,7 @@ export const ThreeScene = ({ canvasRef, onLoaded }) => {
     particlesRef.current = particlesArray;
 
     // Mouse tracking - direct update for immediate response
-    const handleMouseMove = (event) => {
+    handleMouseMove = (event) => {
       // Convert to Three.js coordinate system and update immediately
       mouseRef.current.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouseRef.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -247,7 +279,7 @@ export const ThreeScene = ({ canvasRef, onLoaded }) => {
     animate();
 
     // Handle resize
-    const handleResize = () => {
+    handleResize = () => {
       if (cameraRef.current && rendererRef.current) {
         cameraRef.current.aspect = window.innerWidth / window.innerHeight;
         cameraRef.current.updateProjectionMatrix();
@@ -262,9 +294,16 @@ export const ThreeScene = ({ canvasRef, onLoaded }) => {
     setTimeout(() => {
       onLoaded && onLoaded();
     }, 100);
+    };
+
+    // Start dynamic loading with delay for better perceived performance
+    const loadTimer = setTimeout(() => {
+      initializeThreeJS();
+    }, 100);
 
     // Cleanup
     return () => {
+      clearTimeout(loadTimer);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
       
