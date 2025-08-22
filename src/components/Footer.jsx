@@ -27,17 +27,21 @@ const Footer = ({ footerRef }) => {
   ];
 
   return (
-    <footer ref={footerRef} className="footer">
+    <div ref={footerRef} className="footer">
       <div className="container">
         <div className="footer-content">
           <div className="footer-info">
-            <h3>Let&apos;s work together!</h3>
-            <p>
+            <h3 id="contact-heading">Let&apos;s work together!</h3>
+            <p aria-describedby="contact-heading">
               I&apos;m always open to new projects and interesting
               opportunities.
             </p>
           </div>
-          <div className="footer-links">
+          <nav 
+            className="footer-links"
+            role="navigation"
+            aria-label="Social media and contact links"
+          >
             {socialLinks.map((link, index) => {
               const IconComponent = link.icon;
               return (
@@ -46,20 +50,30 @@ const Footer = ({ footerRef }) => {
                   href={link.href}
                   className="footer-link"
                   target={link.isExternal ? '_blank' : undefined}
-                  rel={link.isExternal ? 'noreferrer' : undefined}
+                  rel={link.isExternal ? 'noopener noreferrer' : undefined}
+                  aria-label={`Contact via ${link.label}${link.isExternal ? ' (opens in new tab)' : ''}`}
                 >
-                  <IconComponent size={20} />
+                  <IconComponent 
+                    size={20} 
+                    aria-hidden="true"
+                    focusable="false"
+                  />
                   <span>{link.label}</span>
                 </a>
               );
             })}
-          </div>
+          </nav>
         </div>
         <div className="footer-bottom">
-          <p>&copy; {currentYear} Steven Coaila Zaa. All rights reserved.</p>
+          <p 
+            role="contentinfo"
+            aria-label={`Copyright ${currentYear} Steven Coaila Zaa`}
+          >
+            &copy; {currentYear} Steven Coaila Zaa. All rights reserved.
+          </p>
         </div>
       </div>
-    </footer>
+    </div>
   );
 };
 

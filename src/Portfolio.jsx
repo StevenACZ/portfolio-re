@@ -296,29 +296,39 @@ const Portfolio = () => {
         />
 
         {/* Hero Section - Critical component, load immediately */}
-        <div ref={heroRef}>
-          <HeroSection />
-        </div>
+        <main id="main-content" role="main">
+          <section ref={heroRef} aria-label="Introduction and hero section">
+            <HeroSection />
+          </section>
 
-        {/* Projects Section */}
-        <section ref={projectsRef} className="projects">
-          <Suspense fallback={<ProjectsSkeleton />}>
-            <ProjectsSection projects={projects} />
-          </Suspense>
-        </section>
+          {/* Projects Section */}
+          <section 
+            ref={projectsRef} 
+            className="projects"
+            aria-label="Featured projects and portfolio"
+          >
+            <Suspense fallback={<ProjectsSkeleton />}>
+              <ProjectsSection projects={projects} />
+            </Suspense>
+          </section>
 
-        {/* Timeline Section */}
-        <Suspense fallback={<TimelineSkeleton />}>
-          <TimelineSection
-            experiences={experiences}
-            timelineRef={timelineRef}
-          />
-        </Suspense>
+          {/* Timeline Section */}
+          <section aria-label="Professional experience and timeline">
+            <Suspense fallback={<TimelineSkeleton />}>
+              <TimelineSection
+                experiences={experiences}
+                timelineRef={timelineRef}
+              />
+            </Suspense>
+          </section>
+        </main>
 
         {/* Footer */}
-        <Suspense fallback={<FooterSkeleton />}>
-          <Footer footerRef={footerRef} />
-        </Suspense>
+        <footer role="contentinfo" aria-label="Contact information and site footer">
+          <Suspense fallback={<FooterSkeleton />}>
+            <Footer footerRef={footerRef} />
+          </Suspense>
+        </footer>
       </div>
     </>
   );

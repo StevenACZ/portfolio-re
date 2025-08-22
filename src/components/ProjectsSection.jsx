@@ -23,21 +23,46 @@ const ProjectCard = memo(({ project, index, contextSafe }) => {
   );
 
   return (
-    <div
+    <article
       className={`project-card ${isEven ? 'image-right' : 'image-left'}`}
       data-project={index}
+      role="article"
+      aria-labelledby={`project-title-${project.id}`}
+      aria-describedby={`project-description-${project.id}`}
     >
       <div className="project-content">
         <div className="project-info">
-          <div className="project-number">
+          <div 
+            className="project-number"
+            aria-label={`Project ${index + 1} of ${index + 1}`}
+          >
             {String(index + 1).padStart(2, '0')}
           </div>
-          <h3 className="project-title">{project.title}</h3>
-          <p className="project-description">{project.description}</p>
+          <h3 
+            id={`project-title-${project.id}`}
+            className="project-title"
+          >
+            {project.title}
+          </h3>
+          <p 
+            id={`project-description-${project.id}`}
+            className="project-description"
+          >
+            {project.description}
+          </p>
 
-          <div className="project-tech">
+          <div 
+            className="project-tech"
+            role="list"
+            aria-label={`Technologies used in ${project.title}`}
+          >
             {project.tech.map((tech, techIndex) => (
-              <span key={techIndex} className="tech-tag">
+              <span 
+                key={techIndex} 
+                className="tech-tag"
+                role="listitem"
+                aria-label={`Technology: ${tech}`}
+              >
                 {tech}
               </span>
             ))}
@@ -63,6 +88,19 @@ const ProjectCard = memo(({ project, index, contextSafe }) => {
             <div 
               className={`project-image ${hasValidLinks ? 'interactive' : ''} ${overlayActive ? 'overlay-active' : ''}`}
               onClick={hasValidLinks ? handleImageClick : undefined}
+              onKeyDown={hasValidLinks ? contextSafe((e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  setOverlayActive(!overlayActive);
+                }
+              }) : undefined}
+              tabIndex={hasValidLinks ? 0 : -1}
+              role={hasValidLinks ? 'button' : 'img'}
+              aria-label={hasValidLinks ? 
+                `${overlayActive ? 'Hide' : 'Show'} project links for ${project.title}` : 
+                `Screenshot of ${project.title} project`
+              }
+              aria-expanded={hasValidLinks ? overlayActive : undefined}
             >
               {project.image ? (
                 <LazyImage 
@@ -127,7 +165,7 @@ const ProjectCard = memo(({ project, index, contextSafe }) => {
           </div>
         </div>
       </div>
-    </div>
+    </article>
   );
 });
 

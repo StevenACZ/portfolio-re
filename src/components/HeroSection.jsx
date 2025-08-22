@@ -74,11 +74,24 @@ const HeroSection = () => {
       <div className="hero-content" style={{ zIndex: 2 }}>
         <div className="hero-text">
           <h1 className="hero-greeting">Hi, I&apos;m</h1>
-          <h2 className="hero-name">Steven Coaila Zaa</h2>
-          <div className="hero-subtitle">
+          <h2 
+            className="hero-name"
+            aria-label="Steven Coaila Zaa, Full Stack Developer"
+          >
+            Steven Coaila Zaa
+          </h2>
+          <div 
+            className="hero-subtitle"
+            role="text"
+            aria-live="polite"
+            aria-label="Dynamic title showing different specializations"
+          >
             <Typewriter className="hero-title" />
           </div>
-          <p className="hero-description">
+          <p 
+            className="hero-description"
+            aria-label="Professional summary and approach"
+          >
             Creating innovative digital experiences with modern web technologies.
             Passionate about clean code, beautiful design, and exceptional user experiences.
           </p>
