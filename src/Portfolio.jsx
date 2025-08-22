@@ -8,12 +8,15 @@ import { experiences } from './data/experiences';
 import { useScrollToSection } from './hooks/useScrollToSection';
 import { useScrollSpy } from './hooks/useScrollSpy';
 import SEOHead from './components/SEOHead';
+import { ProjectsSkeleton, TimelineSkeleton, FooterSkeleton } from './components/SkeletonLoader';
 import './styles/HeroSection.css';
 
-// Lazy load components
+// Critical components - load immediately for better FCP
+import HeroSection from './components/HeroSection';
+import Navbar from './components/Navbar';
+
+// Lazy load non-critical components
 const ProjectsSection = lazy(() => import('./components/ProjectsSection'));
-const HeroSection = lazy(() => import('./components/HeroSection'));
-const Navbar = lazy(() => import('./components/Navbar'));
 const TimelineSection = lazy(() => import('./components/TimelineSection'));
 const Footer = lazy(() => import('./components/Footer'));
 
@@ -124,7 +127,7 @@ const Portfolio = () => {
     // Check if elements exist before animating
     const heroGreeting = document.querySelector('.hero-greeting');
     const heroName = document.querySelector('.hero-name');
-    const typewriterText = document.querySelector('.typewriter-text');
+    const typewriterText = document.querySelector('.hero-title');
     const heroDescription = document.querySelector('.hero-description');
     const gradientBg = document.querySelector('.gradient-bg');
     const footerContent = document.querySelector('.footer-content');
@@ -282,37 +285,27 @@ const Portfolio = () => {
     <>
       <SEOHead />
       <div ref={containerRef} className="portfolio">
-        {/* Navbar */}
-        <Suspense
-          fallback={<div className="loading">Loading navigation...</div>}
-        >
-          <Navbar
-            activeSection={activeSection}
-            onNavClick={handleNavClick}
-            navbarRef={navbarRef}
-          />
-        </Suspense>
+        {/* Navbar - Critical component, load immediately */}
+        <Navbar
+          activeSection={activeSection}
+          onNavClick={handleNavClick}
+          navbarRef={navbarRef}
+        />
 
-        {/* Hero Section */}
+        {/* Hero Section - Critical component, load immediately */}
         <div ref={heroRef}>
-          <Suspense fallback={<div className="loading">Loading...</div>}>
-            <HeroSection />
-          </Suspense>
+          <HeroSection />
         </div>
 
         {/* Projects Section */}
         <section ref={projectsRef} className="projects">
-          <Suspense
-            fallback={<div className="loading">Loading projects...</div>}
-          >
+          <Suspense fallback={<ProjectsSkeleton />}>
             <ProjectsSection projects={projects} />
           </Suspense>
         </section>
 
         {/* Timeline Section */}
-        <Suspense
-          fallback={<div className="loading">Loading experience...</div>}
-        >
+        <Suspense fallback={<TimelineSkeleton />}>
           <TimelineSection
             experiences={experiences}
             timelineRef={timelineRef}
@@ -320,7 +313,7 @@ const Portfolio = () => {
         </Suspense>
 
         {/* Footer */}
-        <Suspense fallback={<div className="loading">Loading contact...</div>}>
+        <Suspense fallback={<FooterSkeleton />}>
           <Footer footerRef={footerRef} />
         </Suspense>
       </div>

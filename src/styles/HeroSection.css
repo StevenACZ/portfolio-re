@@ -1,12 +1,15 @@
-/* Hero Section 3D Styles */
+/* Hero Section 3D Styles - Optimized for CLS Prevention */
 .hero-section {
   position: relative;
   height: 100vh;
+  width: 100%;
   overflow: hidden;
   background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #16213e 100%);
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Prevent layout shift by reserving space */
+  contain: layout style paint;
 }
 
 .hero-canvas {
@@ -17,6 +20,20 @@
   height: 100% !important;
   z-index: 1 !important;
   pointer-events: none;
+  /* Performance optimizations */
+  will-change: auto;
+  contain: strict;
+}
+
+.hero-fallback-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  /* Fallback gradient for when 3D is disabled/loading */
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #16213e 100%);
 }
 
 .hero-content {
@@ -43,7 +60,7 @@
   margin-bottom: 0.5rem;
   opacity: 0;
   transform: translateY(30px);
-  animation: heroFadeInUp 1s ease-out 0.2s forwards;
+  animation: heroFadeInUp 0.8s ease-out 0.1s forwards;
 }
 
 .hero-name {
@@ -56,7 +73,7 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: heroFadeInUp 1s ease-out 0.4s forwards, gradientShift 4s ease-in-out infinite;
+  animation: heroFadeInUp 0.8s ease-out 0.2s forwards, gradientShift 4s ease-in-out infinite;
   opacity: 0;
   transform: translateY(30px);
 }
@@ -66,17 +83,35 @@
   font-weight: 500;
   color: var(--accent-color);
   margin-bottom: 1.5rem;
+  height: 2.5rem;
   min-height: 2.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
   transform: translateY(30px);
-  animation: heroFadeInUp 1s ease-out 0.6s forwards;
+  animation: heroFadeInUp 1s ease-out 0.3s forwards;
 }
 
-.typewriter-text {
+.hero-title {
   position: relative;
+  color: var(--accent-color);
+}
+
+/* Typed.js cursor styling */
+.hero-title .typed-cursor {
+  color: var(--accent-color);
+  font-weight: 300;
+  animation: blink 1s infinite;
+}
+
+.hero-title .typed-cursor--blink {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
 }
 
 .hero-description {
@@ -87,7 +122,7 @@
   margin: 0 auto;
   opacity: 0;
   transform: translateY(30px);
-  animation: heroFadeInUp 1s ease-out 0.8s forwards;
+  animation: heroFadeInUp 0.8s ease-out 0.4s forwards;
 }
 
 
@@ -144,6 +179,7 @@
   .hero-subtitle {
     font-size: clamp(1rem, 6vw, 1.4rem);
     margin-bottom: 1rem;
+    height: 2rem;
     min-height: 2rem;
   }
   

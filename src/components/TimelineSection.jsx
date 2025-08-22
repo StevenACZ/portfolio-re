@@ -3,6 +3,7 @@ import { MapPin } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
+import '../styles/Timeline.css';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger, useGSAP);

@@ -88,6 +88,7 @@ const ProjectCard = memo(({ project, index }) => {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="overlay-link"
+                        aria-label={`View ${project.title} source code on GitHub`}
                         onClick={(e) => {
                           e.stopPropagation();
                           // On mobile, prevent navigation if overlay is not active
@@ -96,7 +97,8 @@ const ProjectCard = memo(({ project, index }) => {
                           }
                         }}
                       >
-                        <Github size={24} />
+                        <Github size={24} aria-hidden="true" />
+                        <span className="sr-only">View {project.title} source code on GitHub</span>
                       </a>
                     )}
                     {project.demo && project.demo !== '#' && (
@@ -105,6 +107,7 @@ const ProjectCard = memo(({ project, index }) => {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="overlay-link"
+                        aria-label={`View ${project.title} live demo`}
                         onClick={(e) => {
                           e.stopPropagation();
                           // On mobile, prevent navigation if overlay is not active
@@ -113,7 +116,8 @@ const ProjectCard = memo(({ project, index }) => {
                           }
                         }}
                       >
-                        <ExternalLink size={24} />
+                        <ExternalLink size={24} aria-hidden="true" />
+                        <span className="sr-only">View {project.title} live demo</span>
                       </a>
                     )}
                   </div>

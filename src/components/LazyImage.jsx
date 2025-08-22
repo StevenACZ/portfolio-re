@@ -46,8 +46,11 @@ const LazyImage = ({
         <div 
           className="image-skeleton"
           style={{ height: skeletonHeight }}
-          aria-label="Loading image..."
+          role="img"
+          aria-live="polite"
+          aria-busy="true"
         >
+          <span className="sr-only">Loading image...</span>
           {placeholder || (
             <div className="skeleton-shimmer">
               <div className="skeleton-content">
@@ -64,11 +67,12 @@ const LazyImage = ({
         <div 
           className="image-error"
           style={{ height: skeletonHeight }}
-          aria-label="Failed to load image"
+          role="img"
+          aria-describedby="image-error-text"
         >
           <div className="error-content">
-            <span className="error-icon">📷</span>
-            <p>Image not available</p>
+            <span className="error-icon" aria-hidden="true">📷</span>
+            <p id="image-error-text">Image not available</p>
           </div>
         </div>
       )}
