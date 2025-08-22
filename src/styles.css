@@ -699,7 +699,7 @@ body {
   transform: translateX(-50%);
   color: var(--accent-color);
   cursor: pointer;
-  z-index: 2;
+  z-index: 9999;
 }
 
 /* ===== Project Presentation Section ===== */
@@ -1115,10 +1115,6 @@ body {
 
   .timeline-card {
     padding: 1.5rem;
-  }
-
-  .projects {
-    padding: 4rem 0;
   }
 
   .timeline {

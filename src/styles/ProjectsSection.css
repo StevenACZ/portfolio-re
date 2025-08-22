@@ -41,12 +41,7 @@
 .skeleton-shimmer {
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    #1a1a1a 0%,
-    #2a2a2a 50%,
-    #1a1a1a 100%
-  );
+  background: linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
   background-size: 200% 100%;
   animation: shimmer 2s infinite ease-in-out;
   display: flex;
@@ -139,19 +134,19 @@
   .skeleton-content {
     padding: 1rem;
   }
-  
+
   .skeleton-title {
     height: 1.2rem;
   }
-  
+
   .skeleton-subtitle {
     height: 0.8rem;
   }
-  
+
   .error-icon {
     font-size: 2rem;
   }
-  
+
   .error-content p {
     font-size: 0.9rem;
   }
@@ -623,10 +618,11 @@
   .project-content {
     grid-template-columns: 1fr !important;
     grid-template-areas: 'info' 'visual' !important;
-    gap: 1.5rem;
+    gap: 0.5rem;
     text-align: center;
     height: 100%;
     align-items: center;
+    justify-content: center;
     grid-template-rows: 1fr 40%;
   }
 
@@ -724,10 +720,12 @@
   }
 
   .project-content {
-    gap: 1rem;
+    padding-top: 3rem;
     height: 100%;
     align-items: center;
-    grid-template-rows: 1fr 35%;
+    justify-content: center;
+    grid-template-rows: auto auto;
+    row-gap: 2rem;
   }
 
   .project-showcase {
@@ -738,8 +736,9 @@
 
   .project-visual {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     width: 100%;
     height: 100%;
   }
@@ -751,7 +750,7 @@
     height: 100%;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
   }
 
   .project-number {
