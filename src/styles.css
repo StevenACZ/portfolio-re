@@ -694,12 +694,17 @@ body {
 
 .scroll-indicator {
   position: absolute;
-  bottom: 2rem;
+  bottom: 3rem;
   left: 50%;
   transform: translateX(-50%);
   color: var(--accent-color);
   cursor: pointer;
   z-index: 9999;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
 }
 
 /* ===== Project Presentation Section ===== */
@@ -1300,10 +1305,28 @@ body {
 }
 
 .scroll-indicator:hover {
-  transform: scale(1.15) translateY(-3px);
+  transform: scale(1.15) translateX(-50%) translateY(-3px);
   color: var(--accent-hover);
   animation-play-state: paused;
   filter: drop-shadow(0 4px 8px rgba(59, 130, 246, 0.3));
+}
+
+.scroll-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.scroll-arrow span {
+  font-size: 0.9rem;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.chevron-down {
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 
 /* ===== Responsive Hero Animations ===== */
