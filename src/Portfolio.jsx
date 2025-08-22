@@ -71,14 +71,6 @@ const Portfolio = () => {
 
     scrollToTop();
 
-    // Registrar plugins GSAP
-    gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
-
-    // Inicializar animaciones cuando DOM esté listo
-    const timer = setTimeout(() => {
-      initializeAnimations();
-    }, 500);
-
     // Manejar redimensionamiento de ventana con debounce optimizado para INP
     let resizeTimeout;
     const handleResize = () => {
@@ -105,10 +97,8 @@ const Portfolio = () => {
 
     // Cleanup al desmontar
     return () => {
-      clearTimeout(timer);
       clearTimeout(resizeTimeout);
       window.removeEventListener('resize', handleResize);
-      ScrollTrigger.getAll().forEach((st) => st.kill());
     };
   }, []);
 
@@ -123,6 +113,19 @@ const Portfolio = () => {
       // Desactivar animaciones si el usuario prefiere movimiento reducido
       return;
     }
+
+    // Get CSS custom properties for animation values
+    const rootStyles = getComputedStyle(document.documentElement);
+    const animationDuration = {
+      hero: parseFloat(rootStyles.getPropertyValue('--animation-duration-hero')) || 1,
+      heroLong: parseFloat(rootStyles.getPropertyValue('--animation-duration-hero-long')) || 1.2,
+      heroText: parseFloat(rootStyles.getPropertyValue('--animation-duration-hero-text')) || 0.8,
+    };
+    const animationDistance = {
+      medium: parseInt(rootStyles.getPropertyValue('--animation-distance-medium')) || 50,
+      small: parseInt(rootStyles.getPropertyValue('--animation-distance-small')) || 30,
+      large: parseInt(rootStyles.getPropertyValue('--animation-distance-large')) || 60,
+    };
 
     // Check if elements exist before animating
     const heroGreeting = document.querySelector('.hero-greeting');
@@ -139,13 +142,13 @@ const Portfolio = () => {
       heroTl.fromTo(
         heroGreeting,
         {
-          y: 50,
+          y: animationDistance.medium,
           opacity: 0,
         },
         {
           y: 0,
           opacity: 1,
-          duration: 1,
+          duration: animationDuration.hero,
           ease: 'power3.out',
         }
       );
@@ -155,7 +158,7 @@ const Portfolio = () => {
       heroTl.fromTo(
         heroName,
         {
-          y: 50,
+          y: animationDistance.medium,
           opacity: 0,
           scale: 0.9,
         },
@@ -163,7 +166,7 @@ const Portfolio = () => {
           y: 0,
           opacity: 1,
           scale: 1,
-          duration: 1.2,
+          duration: animationDuration.heroLong,
           ease: 'back.out(1.7)',
         },
         '-=0.6'
@@ -174,13 +177,13 @@ const Portfolio = () => {
       heroTl.fromTo(
         typewriterText,
         {
-          y: 30,
+          y: animationDistance.small,
           opacity: 0,
         },
         {
           y: 0,
           opacity: 1,
-          duration: 0.8,
+          duration: animationDuration.heroText,
           ease: 'power3.out',
           delay: 0.5, // Delay para que termine la animación del nombre
         },
@@ -192,13 +195,13 @@ const Portfolio = () => {
       heroTl.fromTo(
         heroDescription,
         {
-          y: 30,
+          y: animationDistance.small,
           opacity: 0,
         },
         {
           y: 0,
           opacity: 1,
-          duration: 1,
+          duration: animationDuration.hero,
           ease: 'power3.out',
         },
         '-=0.3'
@@ -226,13 +229,13 @@ const Portfolio = () => {
       gsap.fromTo(
         footerContent,
         {
-          y: 60,
+          y: animationDistance.large,
           opacity: 0,
         },
         {
           y: 0,
           opacity: 1,
-          duration: 1,
+          duration: animationDuration.hero,
           ease: 'power3.out',
           scrollTrigger: {
             trigger: footerRef.current,

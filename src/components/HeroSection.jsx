@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState, lazy, Suspense } from 'react';
 import Typewriter from './Typewriter';
+import ErrorBoundary from './ErrorBoundary';
+import '../styles/ErrorBoundary.css';
 
 // Lazy load Three.js components only when needed
 const ThreeScene = lazy(() => 
@@ -85,12 +87,14 @@ const HeroSection = () => {
 
       {/* Lazy load Three.js scene only when needed */}
       {show3D && (
-        <Suspense fallback={null}>
-          <ThreeScene 
-            canvasRef={canvasRef}
-            onLoaded={handleThreeLoaded}
-          />
-        </Suspense>
+        <ErrorBoundary>
+          <Suspense fallback={null}>
+            <ThreeScene 
+              canvasRef={canvasRef}
+              onLoaded={handleThreeLoaded}
+            />
+          </Suspense>
+        </ErrorBoundary>
       )}
     </section>
   );

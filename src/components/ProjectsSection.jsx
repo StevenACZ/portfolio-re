@@ -9,13 +9,13 @@ import '../styles/ProjectsSection.css';
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const ProjectCard = memo(({ project, index }) => {
+const ProjectCard = memo(({ project, index, contextSafe }) => {
   const isEven = useMemo(() => index % 2 === 0, [index]);
   const [overlayActive, setOverlayActive] = useState(false);
 
-  const handleImageClick = () => {
+  const handleImageClick = contextSafe(() => {
     setOverlayActive(!overlayActive);
-  };
+  });
 
   const hasValidLinks = useMemo(() => 
     (project.github && project.github !== '#') || (project.demo && project.demo !== '#'),
@@ -89,13 +89,13 @@ const ProjectCard = memo(({ project, index }) => {
                         rel="noopener noreferrer"
                         className="overlay-link"
                         aria-label={`View ${project.title} source code on GitHub`}
-                        onClick={(e) => {
+                        onClick={contextSafe((e) => {
                           e.stopPropagation();
                           // On mobile, prevent navigation if overlay is not active
                           if (window.innerWidth <= 768 && !overlayActive) {
                             e.preventDefault();
                           }
-                        }}
+                        })}
                       >
                         <Github size={24} aria-hidden="true" />
                         <span className="sr-only">View {project.title} source code on GitHub</span>
@@ -108,13 +108,13 @@ const ProjectCard = memo(({ project, index }) => {
                         rel="noopener noreferrer"
                         className="overlay-link"
                         aria-label={`View ${project.title} live demo`}
-                        onClick={(e) => {
+                        onClick={contextSafe((e) => {
                           e.stopPropagation();
                           // On mobile, prevent navigation if overlay is not active
                           if (window.innerWidth <= 768 && !overlayActive) {
                             e.preventDefault();
                           }
-                        }}
+                        })}
                       >
                         <ExternalLink size={24} aria-hidden="true" />
                         <span className="sr-only">View {project.title} live demo</span>
@@ -140,7 +140,7 @@ const ProjectsSection = ({ projects = [] }) => {
   const totalPhases = useMemo(() => 1 + projects.length, [projects.length]);
   const totalHeight = useMemo(() => totalPhases * 1.8 * window.innerHeight, [totalPhases]);
 
-  useGSAP(() => {
+  const { contextSafe } = useGSAP(() => {
     if (!projects.length) return;
 
     const section = sectionRef.current;
@@ -357,7 +357,12 @@ const ProjectsSection = ({ projects = [] }) => {
 
       <div className="projects-grid">
         {projects.map((project, index) => (
-          <ProjectCard key={project.id} project={project} index={index} />
+          <ProjectCard 
+            key={project.id} 
+            project={project} 
+            index={index} 
+            contextSafe={contextSafe}
+          />
         ))}
       </div>
     </div>

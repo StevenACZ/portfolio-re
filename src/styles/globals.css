@@ -21,6 +21,26 @@
   --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
     0 10px 10px -5px rgba(0, 0, 0, 0.04);
   --navbar-height: 80px;
+
+  /* ===== Animation Variables ===== */
+  --animation-duration-fast: 0.2s;
+  --animation-duration-normal: 0.3s;
+  --animation-duration-slow: 0.5s;
+  --animation-duration-hero: 1s;
+  --animation-duration-hero-long: 1.2s;
+  --animation-duration-hero-text: 0.8s;
+  
+  --animation-easing-power2: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --animation-easing-power3: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --animation-easing-back: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  --animation-delay-stagger: 0.1s;
+  --animation-delay-hero: 0.5s;
+  
+  --animation-distance-small: 30px;
+  --animation-distance-medium: 50px;
+  --animation-distance-large: 60px;
+  --animation-distance-dynamic: calc(50vh + var(--navbar-height) + 20px);
 }
 
 /* ===== CSS Reset ===== */

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo, startTransition } from 'react';
 import {
   Scene,
   PerspectiveCamera,
@@ -118,46 +118,69 @@ export const ThreeScene = ({ canvasRef, onLoaded }) => {
       shininess: 100,
     });
 
-    // Create particles
-    for (let i = 0; i < particleConfig.count; i++) {
-      // Create variety of sizes: planets (large) and moons (small)
-      const isPlanet = Math.random() < 0.3; // 30% chance of being a "planet"
-      const scale = isPlanet 
-        ? Math.random() * particleConfig.size + 0.4 // Large planets (0.4 to size+0.4)
-        : Math.random() * (particleConfig.size * 0.5) + 0.1; // Small moons (0.1 to size*0.5+0.1)
-      
-      const sphereGeometry = baseGeometry.clone();
-      sphereGeometry.scale(scale, scale, scale);
-      
-      // Alternate between purple and blue for exact 50/50 split
-      const sphereMaterial = i % 2 === 0 ? purpleMaterial.clone() : blueMaterial.clone();
-      const sphere = new Mesh(sphereGeometry, sphereMaterial);
+    // Create particles using React 18 concurrency for better performance
+    const createParticlesBatch = () => {
+      const batchSize = Math.min(20, particleConfig.count); // Process in smaller batches
+      let currentIndex = 0;
 
-      // Position particles in a 3D space (facing user in XY plane)
-      // Mobile: closer orbit around invisible planet, Desktop: more spread out
-      const maxRadius = isMobile ? 12 : 35; // Mobile: 4-16, Desktop: 10-45
-      const minRadius = isMobile ? 4 : 10;
-      const radius = Math.random() * maxRadius + minRadius; // Distance from center
-      const angle = (i / particleConfig.count) * Math.PI * 2; // Even distribution
-      const offsetAngle = (Math.random() - 0.5) * Math.PI * 0.3; // Add some randomness
-      const finalAngle = angle + offsetAngle;
-      
-      sphere.position.x = Math.cos(finalAngle) * radius;
-      sphere.position.y = Math.sin(finalAngle) * radius * 0.6; // Flatten Y a bit
-      sphere.position.z = (Math.random() - 0.5) * 10; // Random depth
+      const processBatch = () => {
+        const endIndex = Math.min(currentIndex + batchSize, particleConfig.count);
+        
+        for (let i = currentIndex; i < endIndex; i++) {
+          // Create variety of sizes: planets (large) and moons (small)
+          const isPlanet = Math.random() < 0.3; // 30% chance of being a "planet"
+          const scale = isPlanet 
+            ? Math.random() * particleConfig.size + 0.4 // Large planets (0.4 to size+0.4)
+            : Math.random() * (particleConfig.size * 0.5) + 0.1; // Small moons (0.1 to size*0.5+0.1)
+          
+          const sphereGeometry = baseGeometry.clone();
+          sphereGeometry.scale(scale, scale, scale);
+          
+          // Alternate between purple and blue for exact 50/50 split
+          const sphereMaterial = i % 2 === 0 ? purpleMaterial.clone() : blueMaterial.clone();
+          const sphere = new Mesh(sphereGeometry, sphereMaterial);
 
-      // Store orbital properties
-      sphere.userData = {
-        orbitRadius: radius,
-        orbitSpeed: (Math.random() * 0.002 + 0.0005) * particleConfig.speed, // Even slower orbital speeds
-        orbitAngle: finalAngle,
-        originalPosition: sphere.position.clone(),
-        baseScale: scale,
+          // Position particles in a 3D space (facing user in XY plane)
+          // Mobile: closer orbit around invisible planet, Desktop: more spread out
+          const maxRadius = isMobile ? 12 : 35; // Mobile: 4-16, Desktop: 10-45
+          const minRadius = isMobile ? 4 : 10;
+          const radius = Math.random() * maxRadius + minRadius; // Distance from center
+          const angle = (i / particleConfig.count) * Math.PI * 2; // Even distribution
+          const offsetAngle = (Math.random() - 0.5) * Math.PI * 0.3; // Add some randomness
+          const finalAngle = angle + offsetAngle;
+          
+          sphere.position.x = Math.cos(finalAngle) * radius;
+          sphere.position.y = Math.sin(finalAngle) * radius * 0.6; // Flatten Y a bit
+          sphere.position.z = (Math.random() - 0.5) * 10; // Random depth
+
+          // Store orbital properties
+          sphere.userData = {
+            orbitRadius: radius,
+            orbitSpeed: (Math.random() * 0.002 + 0.0005) * particleConfig.speed, // Even slower orbital speeds
+            orbitAngle: finalAngle,
+            originalPosition: sphere.position.clone(),
+            baseScale: scale,
+          };
+
+          particleGroup.add(sphere);
+          particlesArray.push(sphere);
+        }
+
+        currentIndex = endIndex;
+
+        // Continue processing remaining batches
+        if (currentIndex < particleConfig.count) {
+          // Use startTransition for non-urgent batch processing
+          startTransition(() => {
+            setTimeout(processBatch, 0); // Allow other work to happen
+          });
+        }
       };
 
-      particleGroup.add(sphere);
-      particlesArray.push(sphere);
-    }
+      processBatch(); // Start the first batch
+    };
+
+    createParticlesBatch();
 
     scene.add(particleGroup);
     particlesRef.current = particlesArray;
