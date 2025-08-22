@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState, useMemo } from 'react';
 import * as THREE from 'three';
 import Typewriter from 'typewriter-effect';
 
-const HeroSection = ({ onScrollIndicatorClick }) => {
+const HeroSection = () => {
   const canvasRef = useRef(null);
   const sceneRef = useRef(null);
   const rendererRef = useRef(null);
@@ -431,13 +431,6 @@ const HeroSection = ({ onScrollIndicatorClick }) => {
           </p>
         </div>
 
-        {/* Scroll Indicator */}
-        <div className="scroll-indicator" onClick={onScrollIndicatorClick}>
-          <div className="scroll-arrow">
-            <span>Scroll to explore</span>
-            <div className="chevron-down">↓</div>
-          </div>
-        </div>
       </div>
     </section>
   );

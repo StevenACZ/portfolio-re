@@ -260,10 +260,6 @@ const Portfolio = () => {
     // ScrollTrigger se actualizará automáticamente con las configuraciones de performance
   };
 
-  // Función específica para el scroll indicator
-  const handleScrollIndicatorClick = useCallback(() => {
-    scrollToSection(projectsRef);
-  }, [scrollToSection, projectsRef]);
 
   // Función para manejar clicks de navegación
   const handleNavClick = useCallback(
@@ -300,7 +296,7 @@ const Portfolio = () => {
         {/* Hero Section */}
         <div ref={heroRef}>
           <Suspense fallback={<div className="loading">Loading...</div>}>
-            <HeroSection onScrollIndicatorClick={handleScrollIndicatorClick} />
+            <HeroSection />
           </Suspense>
         </div>
 
