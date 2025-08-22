@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState, lazy, Suspense } from 'react';
+import Typewriter from './Typewriter';
 
 // Lazy load Three.js components only when needed
 const ThreeScene = lazy(() => 
@@ -73,7 +74,7 @@ const HeroSection = () => {
           <h1 className="hero-greeting">Hi, I&apos;m</h1>
           <h2 className="hero-name">Steven Coaila Zaa</h2>
           <div className="hero-subtitle">
-            <span className="hero-title">Full Stack Developer</span>
+            <Typewriter className="hero-title" />
           </div>
           <p className="hero-description">
             Creating innovative digital experiences with modern web technologies.

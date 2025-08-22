@@ -98,6 +98,22 @@
   color: var(--accent-color);
 }
 
+/* Typed.js cursor styling */
+.hero-title .typed-cursor {
+  color: var(--accent-color);
+  font-weight: 300;
+  animation: blink 1s infinite;
+}
+
+.hero-title .typed-cursor--blink {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
 .hero-description {
   font-size: 1.1rem;
   line-height: 1.6;

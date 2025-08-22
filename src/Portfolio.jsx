@@ -127,7 +127,7 @@ const Portfolio = () => {
     // Check if elements exist before animating
     const heroGreeting = document.querySelector('.hero-greeting');
     const heroName = document.querySelector('.hero-name');
-    const typewriterText = document.querySelector('.typewriter-text');
+    const typewriterText = document.querySelector('.hero-title');
     const heroDescription = document.querySelector('.hero-description');
     const gradientBg = document.querySelector('.gradient-bg');
     const footerContent = document.querySelector('.footer-content');
