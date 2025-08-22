@@ -42,10 +42,10 @@ export const ThreeScene = ({ canvasRef, onLoaded }) => {
       isLowEnd ? 'low' : isMobile ? 'medium' : 'high';
     
     const configs = {
-      'ultra-low': { count: 15, size: 0.1, speed: 0.1, mouseInfluence: 20, segments: 3, rings: 2, updateRate: 3 },
-      low: { count: 30, size: 0.15, speed: 0.15, mouseInfluence: 30, segments: 4, rings: 3, updateRate: 2 },
-      medium: { count: 80, size: 0.25, speed: 0.25, mouseInfluence: 50, segments: 6, rings: 4, updateRate: 1 },
-      high: { count: 200, size: 0.4, speed: 0.4, mouseInfluence: 80, segments: 8, rings: 6, updateRate: 1 }
+      'ultra-low': { count: 25, size: 0.5, speed: 0.1, mouseInfluence: 15, segments: 8, rings: 6, updateRate: 3 },
+      low: { count: 50, size: 0.7, speed: 0.15, mouseInfluence: 20, segments: 12, rings: 8, updateRate: 2 },
+      medium: { count: 120, size: 0.9, speed: 0.25, mouseInfluence: 25, segments: 16, rings: 12, updateRate: 1 },
+      high: { count: 300, size: 0.8, speed: 0.3, mouseInfluence: 80, segments: 20, rings: 16, updateRate: 1 }
     };
     
     return configs[performanceLevel];
@@ -120,8 +120,12 @@ export const ThreeScene = ({ canvasRef, onLoaded }) => {
 
     // Create particles
     for (let i = 0; i < particleConfig.count; i++) {
-      // Create individual geometry with random scale
-      const scale = Math.random() * particleConfig.size + 0.1;
+      // Create variety of sizes: planets (large) and moons (small)
+      const isPlanet = Math.random() < 0.3; // 30% chance of being a "planet"
+      const scale = isPlanet 
+        ? Math.random() * particleConfig.size + 0.4 // Large planets (0.4 to size+0.4)
+        : Math.random() * (particleConfig.size * 0.5) + 0.1; // Small moons (0.1 to size*0.5+0.1)
+      
       const sphereGeometry = baseGeometry.clone();
       sphereGeometry.scale(scale, scale, scale);
       
@@ -130,7 +134,10 @@ export const ThreeScene = ({ canvasRef, onLoaded }) => {
       const sphere = new Mesh(sphereGeometry, sphereMaterial);
 
       // Position particles in a 3D space (facing user in XY plane)
-      const radius = Math.random() * 25 + 10; // Distance from center
+      // Mobile: closer orbit around invisible planet, Desktop: more spread out
+      const maxRadius = isMobile ? 12 : 35; // Mobile: 4-16, Desktop: 10-45
+      const minRadius = isMobile ? 4 : 10;
+      const radius = Math.random() * maxRadius + minRadius; // Distance from center
       const angle = (i / particleConfig.count) * Math.PI * 2; // Even distribution
       const offsetAngle = (Math.random() - 0.5) * Math.PI * 0.3; // Add some randomness
       const finalAngle = angle + offsetAngle;
@@ -142,7 +149,7 @@ export const ThreeScene = ({ canvasRef, onLoaded }) => {
       // Store orbital properties
       sphere.userData = {
         orbitRadius: radius,
-        orbitSpeed: (Math.random() * 0.003 + 0.001) * particleConfig.speed, // Very slow speeds
+        orbitSpeed: (Math.random() * 0.002 + 0.0005) * particleConfig.speed, // Even slower orbital speeds
         orbitAngle: finalAngle,
         originalPosition: sphere.position.clone(),
         baseScale: scale,
