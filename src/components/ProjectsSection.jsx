@@ -1,4 +1,4 @@
-import React, { useRef, useState, memo, useMemo } from 'react';
+import React, { useRef, useState, memo, useMemo, useOptimistic, startTransition } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useGSAP } from '@gsap/react';
@@ -12,9 +12,23 @@ gsap.registerPlugin(ScrollTrigger, useGSAP);
 const ProjectCard = memo(({ project, index, contextSafe }) => {
   const isEven = useMemo(() => index % 2 === 0, [index]);
   const [overlayActive, setOverlayActive] = useState(false);
+  
+  // React 19 useOptimistic for instant UI feedback
+  const [optimisticOverlayState, setOptimisticOverlay] = useOptimistic(
+    overlayActive,
+    (currentState, newState) => newState
+  );
 
   const handleImageClick = contextSafe(() => {
-    setOverlayActive(!overlayActive);
+    const newState = !overlayActive;
+    
+    // Optimistically update UI immediately
+    setOptimisticOverlay(newState);
+    
+    // Then update actual state with transition
+    startTransition(() => {
+      setOverlayActive(newState);
+    });
   });
 
   const hasValidLinks = useMemo(() => 
@@ -86,21 +100,29 @@ const ProjectCard = memo(({ project, index, contextSafe }) => {
         <div className="project-visual">
           <div className="project-showcase">
             <div 
-              className={`project-image ${hasValidLinks ? 'interactive' : ''} ${overlayActive ? 'overlay-active' : ''}`}
+              className={`project-image ${hasValidLinks ? 'interactive' : ''} ${optimisticOverlayState ? 'overlay-active' : ''}`}
               onClick={hasValidLinks ? handleImageClick : undefined}
               onKeyDown={hasValidLinks ? contextSafe((e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
-                  setOverlayActive(!overlayActive);
+                  const newState = !overlayActive;
+                  
+                  // Optimistically update UI immediately
+                  setOptimisticOverlay(newState);
+                  
+                  // Then update actual state with transition
+                  startTransition(() => {
+                    setOverlayActive(newState);
+                  });
                 }
               }) : undefined}
               tabIndex={hasValidLinks ? 0 : -1}
               role={hasValidLinks ? 'button' : 'img'}
               aria-label={hasValidLinks ? 
-                `${overlayActive ? 'Hide' : 'Show'} project links for ${project.title}` : 
+                `${optimisticOverlayState ? 'Hide' : 'Show'} project links for ${project.title}` : 
                 `Screenshot of ${project.title} project`
               }
-              aria-expanded={hasValidLinks ? overlayActive : undefined}
+              aria-expanded={hasValidLinks ? optimisticOverlayState : undefined}
             >
               {project.image ? (
                 <LazyImage 
@@ -129,8 +151,8 @@ const ProjectCard = memo(({ project, index, contextSafe }) => {
                         aria-label={`View ${project.title} source code on GitHub`}
                         onClick={contextSafe((e) => {
                           e.stopPropagation();
-                          // On mobile, prevent navigation if overlay is not active
-                          if (window.innerWidth <= 768 && !overlayActive) {
+                          // On mobile, prevent navigation if overlay is not optimistically active
+                          if (window.innerWidth <= 768 && !optimisticOverlayState) {
                             e.preventDefault();
                           }
                         })}
@@ -148,8 +170,8 @@ const ProjectCard = memo(({ project, index, contextSafe }) => {
                         aria-label={`View ${project.title} live demo`}
                         onClick={contextSafe((e) => {
                           e.stopPropagation();
-                          // On mobile, prevent navigation if overlay is not active
-                          if (window.innerWidth <= 768 && !overlayActive) {
+                          // On mobile, prevent navigation if overlay is not optimistically active
+                          if (window.innerWidth <= 768 && !optimisticOverlayState) {
                             e.preventDefault();
                           }
                         })}

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback, lazy, Suspense } from 'react';
+import React, { useEffect, useRef, useCallback, lazy, Suspense, useTransition, startTransition } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
@@ -30,6 +30,7 @@ const Portfolio = () => {
   const footerRef = useRef(null);
   const navbarRef = useRef(null);
   const containerRef = useRef(null);
+  const [isPending, startNavigationTransition] = useTransition();
 
   // Custom hooks
   const scrollToSection = useScrollToSection(heroRef, navbarRef);
@@ -267,7 +268,7 @@ const Portfolio = () => {
   };
 
 
-  // Función para manejar clicks de navegación
+  // Función para manejar clicks de navegación con React 19 Transition API
   const handleNavClick = useCallback(
     (sectionName) => {
       const sectionMap = {
@@ -278,10 +279,13 @@ const Portfolio = () => {
       };
       const targetRef = sectionMap[sectionName];
       if (targetRef) {
-        scrollToSection(targetRef);
+        // Use startTransition for smooth navigation transitions
+        startNavigationTransition(() => {
+          scrollToSection(targetRef);
+        });
       }
     },
-    [scrollToSection]
+    [scrollToSection, startNavigationTransition]
   );
 
   return (
@@ -293,6 +297,7 @@ const Portfolio = () => {
           activeSection={activeSection}
           onNavClick={handleNavClick}
           navbarRef={navbarRef}
+          isPending={isPending}
         />
 
         {/* Hero Section - Critical component, load immediately */}

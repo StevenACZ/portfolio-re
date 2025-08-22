@@ -1,7 +1,7 @@
 import React from 'react';
 import '../styles/Navbar.css';
 
-const Navbar = ({ activeSection, onNavClick, navbarRef }) => {
+const Navbar = ({ activeSection, onNavClick, navbarRef, isPending }) => {
   const navItems = [
     { id: 'hero', label: 'Home', ariaLabel: 'Go to homepage' },
     { id: 'projects', label: 'Projects', ariaLabel: 'View my projects' },
@@ -12,7 +12,7 @@ const Navbar = ({ activeSection, onNavClick, navbarRef }) => {
   return (
     <nav 
       ref={navbarRef} 
-      className="navbar" 
+      className={`navbar ${isPending ? 'navbar-pending' : ''}`}
       role="navigation" 
       aria-label="Main navigation"
     >
@@ -34,12 +34,14 @@ const Navbar = ({ activeSection, onNavClick, navbarRef }) => {
                 onClick={() => onNavClick(item.id)}
                 className={`nav-link ${
                   activeSection === item.id ? 'active' : ''
-                }`}
+                } ${isPending ? 'pending' : ''}`}
                 aria-label={item.ariaLabel}
                 aria-current={activeSection === item.id ? 'page' : undefined}
                 type="button"
+                disabled={isPending}
               >
                 {item.label}
+                {isPending && <span className="nav-loading" aria-hidden="true">…</span>}
               </button>
             </li>
           ))}

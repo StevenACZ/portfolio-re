@@ -20,7 +20,6 @@ export const ThreeScene = ({ canvasRef, onLoaded }) => {
   const particlesRef = useRef(null);
   const mouseRef = useRef({ x: 0, y: 0 });
   const frameIdRef = useRef(null);
-  // const performanceRef = useRef({ frameCount: 0, lastTime: Date.now(), avgFPS: 60 });
 
   // Device detection
   const isMobile = useMemo(() => {
@@ -185,9 +184,9 @@ export const ThreeScene = ({ canvasRef, onLoaded }) => {
     scene.add(particleGroup);
     particlesRef.current = particlesArray;
 
-    // Mouse tracking
+    // Mouse tracking - direct update for immediate response
     const handleMouseMove = (event) => {
-      // Convert to Three.js coordinate system
+      // Convert to Three.js coordinate system and update immediately
       mouseRef.current.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouseRef.current.y = -(event.clientY / window.innerHeight) * 2 + 1;
     };
