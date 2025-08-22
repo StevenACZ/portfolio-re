@@ -132,10 +132,19 @@ body {
 }
 
 .logo-button:hover,
-.logo-button:focus {
+.logo-button:focus-visible {
   transform: scale(1.05);
   outline: 2px solid var(--accent-color);
   outline-offset: 2px;
+}
+
+.logo-button:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.logo-button:active {
+  outline: none;
+  transform: scale(1);
 }
 
 .navbar-links {
@@ -162,7 +171,7 @@ body {
 }
 
 .nav-link:hover,
-.nav-link:focus {
+.nav-link:focus-visible {
   color: var(--accent-color);
   background: rgba(59, 130, 246, 0.1);
   transform: translateY(-2px);
@@ -170,10 +179,15 @@ body {
   outline-offset: 2px;
 }
 
-.nav-link.active {
-  color: var(--accent-color);
-  background: rgba(59, 130, 246, 0.15);
+.nav-link:focus:not(:focus-visible) {
+  outline: none;
 }
+
+.nav-link:active {
+  outline: none;
+  transform: translateY(0);
+}
+
 
 /* ===== Utility Classes ===== */
 .container {
