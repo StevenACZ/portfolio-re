@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState, lazy, Suspense } from 'react';
-import Typewriter from 'typewriter-effect';
 
 // Lazy load Three.js components only when needed
 const ThreeScene = lazy(() => 
@@ -10,23 +9,9 @@ const HeroSection = () => {
   const canvasRef = useRef(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [show3D, setShow3D] = useState(false);
-  const [contentLoaded, setContentLoaded] = useState(false);
 
-  // Typewriter words
-  const typewriterWords = [
-    'Full Stack Developer',
-    'Swift Developer',
-    'Creative Problem Solver',
-    'UX Enthusiast',
-    'React Specialist',
-    'Mobile App Creator',
-  ];
-
-  // Progressive enhancement: Load content first, then 3D effects
+  // Progressive enhancement: Load 3D effects after page is interactive
   useEffect(() => {
-    // Mark content as loaded immediately for fast first paint
-    setContentLoaded(true);
-
     // Delay 3D loading until after content is rendered and page is interactive
     const timer = setTimeout(() => {
       // Check if user prefers reduced motion
@@ -36,9 +21,11 @@ const HeroSection = () => {
       if (!prefersReducedMotion) {
         setShow3D(true);
       }
-    }, 1000); // 1 second delay for better First Contentful Paint
+    }, 500); // Reduced delay for faster 3D loading
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
 
   const handleThreeLoaded = () => {
@@ -86,21 +73,7 @@ const HeroSection = () => {
           <h1 className="hero-greeting">Hi, I&apos;m</h1>
           <h2 className="hero-name">Steven Coaila Zaa</h2>
           <div className="hero-subtitle">
-            {contentLoaded && (
-              <Typewriter
-                options={{
-                  strings: typewriterWords,
-                  autoStart: true,
-                  loop: true,
-                  delay: 80,
-                  deleteSpeed: 30,
-                  pauseFor: 3000,
-                  cursor: '|',
-                  wrapperClassName: 'typewriter-text',
-                  cursorClassName: 'typewriter-cursor',
-                }}
-              />
-            )}
+            <span className="hero-title">Full Stack Developer</span>
           </div>
           <p className="hero-description">
             Creating innovative digital experiences with modern web technologies.
