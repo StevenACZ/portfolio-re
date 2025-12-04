@@ -43,4 +43,18 @@ export const projects = [
       'Optimized architecture for performance and low consumption',
     ],
   },
+  {
+    id: 3,
+    title: 'WW2 MAP Films',
+    description:
+      'TODO: Agregar descripción del proyecto - Mapa interactivo de películas de la Segunda Guerra Mundial.',
+    tech: ['TODO: Agregar tecnologías'],
+    image: '/ww2-map-films.webp',
+    alt: 'WW2 MAP Films interactive map application showing World War II movie locations by Steven Coaila Zaa',
+    github: 'https://github.com/StevenACZ/ww2-movie-map',
+    demo: 'https://ww2.stevenacz.com',
+    features: [
+      'TODO: Agregar características del proyecto',
+    ],
+  },
 ];
