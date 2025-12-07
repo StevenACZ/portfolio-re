@@ -34,6 +34,7 @@ export const projects = [
     image: "/buen-mouse.webp",
     alt: "BuenMouse macOS productivity app interface showing mouse enhancement settings and gesture recognition features built with Swift by Steven Coaila Zaa",
     github: "https://github.com/StevenACZ/BuenMouse",
+    demo: "https://mouse.stevenacz.com/en/",
     features: [
       "System-level event interception with CGEventTap",
       "Custom gesture recognition and space navigation",
