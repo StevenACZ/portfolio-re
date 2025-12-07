@@ -5,7 +5,6 @@ import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { useGSAP } from "@gsap/react";
 import { projects } from "./data/projects";
 import { experiences } from "./data/experiences";
-import { skillCategories } from "./data/skills";
 import { useScrollToSection } from "./hooks/useScrollToSection";
 import { useScrollSpy } from "./hooks/useScrollSpy";
 import SEOHead from "./components/SEOHead";
@@ -329,15 +328,13 @@ const Portfolio = () => {
           {/* Skills Section */}
           <section id="skills" aria-label="Technical skills and technologies">
             <Suspense fallback={<div style={{ minHeight: "100vh" }} />}>
-              <SkillsSection
-                skillsRef={skillsRef}
-                skillCategories={skillCategories}
-              />
+              <SkillsSection skillsRef={skillsRef} />
             </Suspense>
           </section>
 
           {/* Projects Section */}
           <section
+            id="projects"
             ref={projectsRef}
             className="projects"
             aria-label="Featured projects and portfolio"

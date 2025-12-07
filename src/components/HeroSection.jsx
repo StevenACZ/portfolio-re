@@ -100,10 +100,16 @@ const HeroSection = () => {
             exceptional user experiences.
           </p>
           <div className="hero-cta-container">
-            <a
-              href="#projects"
+            <button
+              onClick={() => {
+                const projectsSection = document.getElementById("projects");
+                if (projectsSection) {
+                  projectsSection.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
               className="hero-cta hero-cta-primary"
               aria-label="View my projects"
+              type="button"
             >
               <span>View Projects</span>
               <svg
@@ -118,11 +124,11 @@ const HeroSection = () => {
                 <line x1="5" y1="12" x2="19" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
               </svg>
-            </a>
+            </button>
             <a
-              href="#footer"
+              href="mailto:scoaila@proton.me"
               className="hero-cta hero-cta-secondary"
-              aria-label="Contact me"
+              aria-label="Send me an email"
             >
               <span>Contact Me</span>
               <svg
