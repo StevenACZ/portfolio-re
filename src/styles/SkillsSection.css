@@ -7,6 +7,7 @@
   width: 100%;
   min-height: auto;
   padding: 120px 5%;
+  scroll-margin-top: 60px;
   background: linear-gradient(
     180deg,
     rgba(10, 10, 10, 1) 0%,
@@ -20,8 +21,9 @@
 
 .skills-anchor {
   position: absolute;
-  top: -80px;
+  top: 0;
   left: 0;
+  scroll-margin-top: 70px;
 }
 
 /* Header Styles */
@@ -168,6 +170,10 @@
     padding: 80px 5%;
   }
 
+  .skills-anchor {
+    scroll-margin-top: 65px;
+  }
+
   .skills-header {
     margin-bottom: 32px;
   }
@@ -205,6 +211,10 @@
 @media (max-width: 480px) {
   .skills-section {
     padding: 40px 4%;
+  }
+
+  .skills-anchor {
+    top: 0;
   }
 
   .skills-header .section-title {
