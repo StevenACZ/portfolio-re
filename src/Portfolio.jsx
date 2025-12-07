@@ -1,30 +1,39 @@
-import React, { useEffect, useRef, useCallback, lazy, Suspense } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
-import { useGSAP } from '@gsap/react';
-import { projects } from './data/projects';
-import { experiences } from './data/experiences';
-import { useScrollToSection } from './hooks/useScrollToSection';
-import { useScrollSpy } from './hooks/useScrollSpy';
-import SEOHead from './components/SEOHead';
-import { ProjectsSkeleton, TimelineSkeleton, FooterSkeleton } from './components/SkeletonLoader';
-import './styles/HeroSection.css';
+import { useEffect, useRef, useCallback, lazy, Suspense } from "react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+import { useGSAP } from "@gsap/react";
+import { projects } from "./data/projects";
+import { experiences } from "./data/experiences";
+import { skillCategories } from "./data/skills";
+import { useScrollToSection } from "./hooks/useScrollToSection";
+import { useScrollSpy } from "./hooks/useScrollSpy";
+import SEOHead from "./components/SEOHead";
+import {
+  ProjectsSkeleton,
+  TimelineSkeleton,
+  FooterSkeleton,
+} from "./components/SkeletonLoader";
+import BackToTop from "./components/BackToTop";
+import ScrollProgress from "./components/ScrollProgress";
+import "./styles/HeroSection.css";
 
 // Critical components - load immediately for better FCP
-import HeroSection from './components/HeroSection';
-import Navbar from './components/Navbar';
+import HeroSection from "./components/HeroSection";
+import Navbar from "./components/Navbar";
 
 // Lazy load non-critical components
-const ProjectsSection = lazy(() => import('./components/ProjectsSection'));
-const TimelineSection = lazy(() => import('./components/TimelineSection'));
-const Footer = lazy(() => import('./components/Footer'));
+const SkillsSection = lazy(() => import("./components/SkillsSection"));
+const ProjectsSection = lazy(() => import("./components/ProjectsSection"));
+const TimelineSection = lazy(() => import("./components/TimelineSection"));
+const Footer = lazy(() => import("./components/Footer"));
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin, useGSAP);
 
 const Portfolio = () => {
   const heroRef = useRef(null);
+  const skillsRef = useRef(null);
   const projectsRef = useRef(null);
   const timelineRef = useRef(null);
   const footerRef = useRef(null);
@@ -34,10 +43,11 @@ const Portfolio = () => {
   // Custom hooks
   const scrollToSection = useScrollToSection(heroRef, navbarRef);
   const sections = [
-    { ref: heroRef, name: 'hero' },
-    { ref: projectsRef, name: 'projects' },
-    { ref: timelineRef, name: 'timeline' },
-    { ref: footerRef, name: 'footer' },
+    { ref: heroRef, name: "hero" },
+    { ref: skillsRef, name: "skills" },
+    { ref: projectsRef, name: "projects" },
+    { ref: timelineRef, name: "timeline" },
+    { ref: footerRef, name: "footer" },
   ];
   const activeSection = useScrollSpy(sections);
 
@@ -58,8 +68,8 @@ const Portfolio = () => {
 
   useEffect(() => {
     // Prevenir restauración automática del scroll del navegador
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual';
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
     }
 
     // Asegurar scroll al top
@@ -93,12 +103,12 @@ const Portfolio = () => {
       }, 100); // Reduced for better responsiveness
     };
 
-    window.addEventListener('resize', handleResize, { passive: true });
+    window.addEventListener("resize", handleResize, { passive: true });
 
     // Cleanup al desmontar
     return () => {
       clearTimeout(resizeTimeout);
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -106,7 +116,7 @@ const Portfolio = () => {
     // Configurar performance para mobile
     const isMobile = window.innerWidth <= 768;
     const reducedMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)'
+      "(prefers-reduced-motion: reduce)"
     ).matches;
 
     if (reducedMotion) {
@@ -117,23 +127,37 @@ const Portfolio = () => {
     // Get CSS custom properties for animation values
     const rootStyles = getComputedStyle(document.documentElement);
     const animationDuration = {
-      hero: parseFloat(rootStyles.getPropertyValue('--animation-duration-hero')) || 1,
-      heroLong: parseFloat(rootStyles.getPropertyValue('--animation-duration-hero-long')) || 1.2,
-      heroText: parseFloat(rootStyles.getPropertyValue('--animation-duration-hero-text')) || 0.8,
+      hero:
+        parseFloat(rootStyles.getPropertyValue("--animation-duration-hero")) ||
+        1,
+      heroLong:
+        parseFloat(
+          rootStyles.getPropertyValue("--animation-duration-hero-long")
+        ) || 1.2,
+      heroText:
+        parseFloat(
+          rootStyles.getPropertyValue("--animation-duration-hero-text")
+        ) || 0.8,
     };
     const animationDistance = {
-      medium: parseInt(rootStyles.getPropertyValue('--animation-distance-medium')) || 50,
-      small: parseInt(rootStyles.getPropertyValue('--animation-distance-small')) || 30,
-      large: parseInt(rootStyles.getPropertyValue('--animation-distance-large')) || 60,
+      medium:
+        parseInt(rootStyles.getPropertyValue("--animation-distance-medium")) ||
+        50,
+      small:
+        parseInt(rootStyles.getPropertyValue("--animation-distance-small")) ||
+        30,
+      large:
+        parseInt(rootStyles.getPropertyValue("--animation-distance-large")) ||
+        60,
     };
 
     // Check if elements exist before animating
-    const heroGreeting = document.querySelector('.hero-greeting');
-    const heroName = document.querySelector('.hero-name');
-    const typewriterText = document.querySelector('.hero-title');
-    const heroDescription = document.querySelector('.hero-description');
-    const gradientBg = document.querySelector('.gradient-bg');
-    const footerContent = document.querySelector('.footer-content');
+    const heroGreeting = document.querySelector(".hero-greeting");
+    const heroName = document.querySelector(".hero-name");
+    const typewriterText = document.querySelector(".hero-title");
+    const heroDescription = document.querySelector(".hero-description");
+    const gradientBg = document.querySelector(".gradient-bg");
+    const footerContent = document.querySelector(".footer-content");
 
     // Hero entrance animation con mejor coordinación
     const heroTl = gsap.timeline();
@@ -149,7 +173,7 @@ const Portfolio = () => {
           y: 0,
           opacity: 1,
           duration: animationDuration.hero,
-          ease: 'power3.out',
+          ease: "power3.out",
         }
       );
     }
@@ -167,9 +191,9 @@ const Portfolio = () => {
           opacity: 1,
           scale: 1,
           duration: animationDuration.heroLong,
-          ease: 'back.out(1.7)',
+          ease: "back.out(1.7)",
         },
-        '-=0.6'
+        "-=0.6"
       );
     }
 
@@ -184,10 +208,10 @@ const Portfolio = () => {
           y: 0,
           opacity: 1,
           duration: animationDuration.heroText,
-          ease: 'power3.out',
+          ease: "power3.out",
           delay: 0.5, // Delay para que termine la animación del nombre
         },
-        '-=0.5'
+        "-=0.5"
       );
     }
 
@@ -202,9 +226,9 @@ const Portfolio = () => {
           y: 0,
           opacity: 1,
           duration: animationDuration.hero,
-          ease: 'power3.out',
+          ease: "power3.out",
         },
-        '-=0.3'
+        "-=0.3"
       );
     }
 
@@ -212,11 +236,11 @@ const Portfolio = () => {
     if (!isMobile && gradientBg && heroRef.current) {
       gsap.to(gradientBg, {
         yPercent: -20,
-        ease: 'none',
+        ease: "none",
         scrollTrigger: {
           trigger: heroRef.current,
-          start: 'top bottom',
-          end: 'bottom top',
+          start: "top bottom",
+          end: "bottom top",
           scrub: 1,
           refreshPriority: -10,
           fastScrollEnd: true, // Better mobile performance
@@ -236,11 +260,11 @@ const Portfolio = () => {
           y: 0,
           opacity: 1,
           duration: animationDuration.hero,
-          ease: 'power3.out',
+          ease: "power3.out",
           scrollTrigger: {
             trigger: footerRef.current,
-            start: 'top 90%',
-            toggleActions: 'play none none reverse',
+            start: "top 90%",
+            toggleActions: "play none none reverse",
             fastScrollEnd: true, // Better mobile performance
           },
         }
@@ -250,14 +274,14 @@ const Portfolio = () => {
     // Navbar scroll effect
     if (navbarRef.current) {
       gsap.to(navbarRef.current, {
-        backgroundColor: 'rgba(10, 10, 10, 0.7)',
-        backdropFilter: 'blur(20px)',
-        borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+        backgroundColor: "rgba(10, 10, 10, 0.7)",
+        backdropFilter: "blur(20px)",
+        borderBottomColor: "rgba(255, 255, 255, 0.1)",
         scrollTrigger: {
-          trigger: 'body',
-          start: 'top -50px',
-          end: 'bottom bottom',
-          toggleActions: 'play none none reverse',
+          trigger: "body",
+          start: "top -50px",
+          end: "bottom bottom",
+          toggleActions: "play none none reverse",
           scrub: 1,
         },
       });
@@ -266,12 +290,12 @@ const Portfolio = () => {
     // ScrollTrigger se actualizará automáticamente con las configuraciones de performance
   };
 
-
   // Función para manejar clicks de navegación
   const handleNavClick = useCallback(
     (sectionName) => {
       const sectionMap = {
         hero: heroRef,
+        skills: skillsRef,
         projects: projectsRef,
         timeline: timelineRef,
         footer: footerRef,
@@ -287,6 +311,7 @@ const Portfolio = () => {
   return (
     <>
       <SEOHead />
+      <ScrollProgress />
       <div ref={containerRef} className="portfolio">
         {/* Navbar - Critical component, load immediately */}
         <Navbar
@@ -301,9 +326,19 @@ const Portfolio = () => {
             <HeroSection />
           </section>
 
+          {/* Skills Section */}
+          <section id="skills" aria-label="Technical skills and technologies">
+            <Suspense fallback={<div style={{ minHeight: "100vh" }} />}>
+              <SkillsSection
+                skillsRef={skillsRef}
+                skillCategories={skillCategories}
+              />
+            </Suspense>
+          </section>
+
           {/* Projects Section */}
-          <section 
-            ref={projectsRef} 
+          <section
+            ref={projectsRef}
             className="projects"
             aria-label="Featured projects and portfolio"
           >
@@ -324,11 +359,17 @@ const Portfolio = () => {
         </main>
 
         {/* Footer */}
-        <footer role="contentinfo" aria-label="Contact information and site footer">
+        <footer
+          role="contentinfo"
+          aria-label="Contact information and site footer"
+        >
           <Suspense fallback={<FooterSkeleton />}>
             <Footer footerRef={footerRef} />
           </Suspense>
         </footer>
+
+        {/* Back to Top Button */}
+        <BackToTop />
       </div>
     </>
   );
