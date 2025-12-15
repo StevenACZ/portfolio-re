@@ -1,5 +1,3 @@
-import React from 'react';
-
 export const ProjectsSkeleton = () => (
   <div className="projects-skeleton" style={{
     height: '100vh',

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { MapPin } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -14,7 +14,6 @@ const TimelineSection = ({ experiences, timelineRef }) => {
   // useGSAP hook for timeline animations
   useGSAP(
     () => {
-      const isMobile = window.innerWidth <= 768;
       const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       if (reducedMotion) {
@@ -49,7 +48,7 @@ const TimelineSection = ({ experiences, timelineRef }) => {
         // Force initial state for timeline items
         const timelineItems = containerRef.current?.querySelectorAll('.timeline-item');
         if (timelineItems && timelineItems.length > 0) {
-          timelineItems.forEach((item, index) => {
+          timelineItems.forEach((item) => {
             gsap.set(item, {
               y: 50,
               opacity: 0,
