@@ -24,6 +24,7 @@ import Navbar from "./components/Navbar";
 // Lazy load non-critical components
 const SkillsSection = lazy(() => import("./components/SkillsSection"));
 const ProjectsSection = lazy(() => import("./components/ProjectsSection"));
+const MacOSAppsSection = lazy(() => import("./components/MacOSAppsSection"));
 const TimelineSection = lazy(() => import("./components/TimelineSection"));
 const Footer = lazy(() => import("./components/Footer"));
 
@@ -34,6 +35,7 @@ const Portfolio = () => {
   const heroRef = useRef(null);
   const skillsRef = useRef(null);
   const projectsRef = useRef(null);
+  const macosAppsRef = useRef(null);
   const timelineRef = useRef(null);
   const footerRef = useRef(null);
   const navbarRef = useRef(null);
@@ -45,6 +47,7 @@ const Portfolio = () => {
     { ref: heroRef, name: "hero" },
     { ref: skillsRef, name: "skills" },
     { ref: projectsRef, name: "projects" },
+    { ref: macosAppsRef, name: "macos-apps" },
     { ref: timelineRef, name: "timeline" },
     { ref: footerRef, name: "footer" },
   ];
@@ -296,6 +299,7 @@ const Portfolio = () => {
         hero: heroRef,
         skills: skillsRef,
         projects: projectsRef,
+        "macos-apps": macosAppsRef,
         timeline: timelineRef,
         footer: footerRef,
       };
@@ -341,6 +345,17 @@ const Portfolio = () => {
           >
             <Suspense fallback={<ProjectsSkeleton />}>
               <ProjectsSection projects={projects} />
+            </Suspense>
+          </section>
+
+          {/* macOS Apps Section */}
+          <section
+            id="macos-apps"
+            ref={macosAppsRef}
+            aria-label="macOS native applications"
+          >
+            <Suspense fallback={<div style={{ minHeight: "50vh" }} />}>
+              <MacOSAppsSection />
             </Suspense>
           </section>
 
