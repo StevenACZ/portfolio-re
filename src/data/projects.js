@@ -20,32 +20,6 @@ export const projects = [
   },
   {
     id: 2,
-    title: "BuenMouse",
-    description:
-      "Productivity application for macOS that enhances mouse/trackpad functionality through system event interception and custom gesture recognition.",
-    tech: [
-      "Swift",
-      "SwiftUI",
-      "CGEvent",
-      "AppleScript",
-      "Accessibility APIs",
-      "UserDefaults",
-    ],
-    image: "/buen-mouse.webp",
-    alt: "BuenMouse macOS productivity app interface showing mouse enhancement settings and gesture recognition features built with Swift by Steven Coaila Zaa",
-    github: "https://github.com/StevenACZ/BuenMouse",
-    demo: "https://mouse.stevenacz.com/en/",
-    features: [
-      "System-level event interception with CGEventTap",
-      "Custom gesture recognition and space navigation",
-      "Zoom control and inverted scrolling for mouse",
-      "Menu bar application with real-time configuration",
-      "Automatic accessibility permissions management",
-      "Optimized architecture for performance and low consumption",
-    ],
-  },
-  {
-    id: 3,
     title: "WW2 MAP Films",
     description:
       "Interactive web experience that maps iconic WW2 films to their historical locations and timelines. Explore World War II through the lens of cinema with a curated collection of masterpieces.",

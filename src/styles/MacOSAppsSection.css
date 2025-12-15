@@ -1,0 +1,320 @@
+/* ============================================
+   macOS Apps Section - Premium Dark Design
+   ============================================ */
+
+.macos-apps-section {
+  position: relative;
+  padding: 6rem 2rem;
+  min-height: auto;
+  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 10, 10, 1) 0%,
+    rgba(15, 20, 25, 1) 50%,
+    rgba(10, 10, 10, 1) 100%
+  );
+}
+
+.macos-apps-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+/* Header Styles */
+.macos-apps-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.macos-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.04) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 100px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 1rem;
+  backdrop-filter: blur(10px);
+}
+
+.macos-badge svg {
+  color: #a8a8a8;
+}
+
+.macos-apps-title {
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, #ffffff 0%, #a8a8a8 50%, #ffffff 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.02em;
+}
+
+.macos-apps-subtitle {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 400;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* Apps Grid */
+.macos-apps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+/* App Card */
+.macos-app-card {
+  position: relative;
+  padding: 2rem 1.5rem;
+  background: linear-gradient(
+    145deg,
+    rgba(30, 30, 35, 0.8) 0%,
+    rgba(20, 20, 25, 0.9) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(20px);
+  overflow: hidden;
+}
+
+.macos-app-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.15) 50%,
+    transparent 100%
+  );
+}
+
+.macos-app-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5),
+    0 0 60px -20px rgba(100, 100, 100, 0.15);
+}
+
+/* App Icon */
+.app-icon-wrapper {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 1.25rem;
+  border-radius: 16px;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    rgba(60, 60, 70, 0.5) 0%,
+    rgba(40, 40, 50, 0.5) 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+}
+
+.macos-app-card:hover .app-icon-wrapper {
+  transform: scale(1.05);
+}
+
+.app-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+.app-icon-placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* App Info */
+.app-name {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.01em;
+}
+
+.app-description {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.45);
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+/* GitHub Link */
+.app-github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+.app-github-link:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* CTA Section */
+.macos-apps-cta {
+  text-align: center;
+}
+
+.macos-apps-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #000000;
+  background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+  border: none;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.macos-apps-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2), 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.macos-apps-link:active {
+  transform: translateY(0);
+}
+
+/* Background Decorations */
+.macos-apps-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.macos-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+}
+
+.macos-glow-1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(
+    circle,
+    rgba(100, 100, 120, 0.3) 0%,
+    transparent 70%
+  );
+  top: -100px;
+  left: -100px;
+}
+
+.macos-glow-2 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(
+    circle,
+    rgba(80, 80, 100, 0.25) 0%,
+    transparent 70%
+  );
+  bottom: -50px;
+  right: -50px;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (max-width: 768px) {
+  .macos-apps-section {
+    padding: 4rem 1.5rem;
+  }
+
+  .macos-apps-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .macos-app-card {
+    padding: 1.5rem 1.25rem;
+  }
+
+  .app-icon-wrapper {
+    width: 64px;
+    height: 64px;
+  }
+
+  .macos-apps-title {
+    font-size: 2rem;
+  }
+
+  .macos-apps-link {
+    width: 100%;
+    justify-content: center;
+    padding: 1rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .macos-apps-header {
+    margin-bottom: 2rem;
+  }
+
+  .macos-badge {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .macos-apps-subtitle {
+    font-size: 1rem;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .macos-app-card,
+  .macos-apps-link,
+  .app-icon-wrapper {
+    transition: none;
+  }
+
+  .macos-app-card:hover {
+    transform: none;
+  }
+}

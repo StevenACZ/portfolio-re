@@ -1,21 +1,47 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { ChevronDown } from "lucide-react";
 import "../styles/Navbar.css";
 
 const Navbar = ({ activeSection, onNavClick, navbarRef }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
   const navItems = [
     { id: "hero", label: "Home", ariaLabel: "Go to homepage" },
     { id: "skills", label: "Skills", ariaLabel: "View my technical skills" },
-    { id: "projects", label: "Projects", ariaLabel: "View my projects" },
     { id: "timeline", label: "Experience", ariaLabel: "View my experience" },
     { id: "footer", label: "Contact", ariaLabel: "Contact information" },
   ];
 
+  const workItems = [
+    { id: "projects", label: "Projects", ariaLabel: "View my projects" },
+    {
+      id: "macos-apps",
+      label: "macOS Apps",
+      ariaLabel: "View my macOS applications",
+    },
+  ];
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   // Close menu when clicking outside or on escape
   useEffect(() => {
     const handleEscape = (e) => {
-      if (e.key === "Escape") setIsMenuOpen(false);
+      if (e.key === "Escape") {
+        setIsMenuOpen(false);
+        setIsDropdownOpen(false);
+      }
     };
 
     if (isMenuOpen) {
@@ -34,7 +60,11 @@ const Navbar = ({ activeSection, onNavClick, navbarRef }) => {
   const handleNavClick = (id) => {
     onNavClick(id);
     setIsMenuOpen(false);
+    setIsDropdownOpen(false);
   };
+
+  const isWorkActive =
+    activeSection === "projects" || activeSection === "macos-apps";
 
   return (
     <nav
@@ -56,7 +86,77 @@ const Navbar = ({ activeSection, onNavClick, navbarRef }) => {
 
         {/* Desktop Navigation */}
         <ul className="navbar-links desktop-nav" role="list">
-          {navItems.map((item) => (
+          {navItems.slice(0, 2).map((item) => (
+            <li key={item.id} role="listitem">
+              <button
+                onClick={() => handleNavClick(item.id)}
+                className={`nav-link ${
+                  activeSection === item.id ? "active" : ""
+                }`}
+                aria-label={item.ariaLabel}
+                aria-current={activeSection === item.id ? "page" : undefined}
+                type="button"
+              >
+                {item.label}
+              </button>
+            </li>
+          ))}
+
+          {/* Work Dropdown */}
+          <li
+            role="listitem"
+            className="nav-dropdown-wrapper"
+            ref={dropdownRef}
+          >
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className={`nav-link nav-dropdown-trigger ${
+                isWorkActive ? "active" : ""
+              } ${isDropdownOpen ? "open" : ""}`}
+              aria-label="View my work"
+              aria-expanded={isDropdownOpen}
+              aria-haspopup="true"
+              type="button"
+            >
+              <span>Work</span>
+              <ChevronDown
+                size={16}
+                className={`dropdown-chevron ${
+                  isDropdownOpen ? "rotated" : ""
+                }`}
+              />
+            </button>
+
+            <div className={`nav-dropdown ${isDropdownOpen ? "open" : ""}`}>
+              <div className="nav-dropdown-content">
+                {workItems.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => handleNavClick(item.id)}
+                    className={`nav-dropdown-item ${
+                      activeSection === item.id ? "active" : ""
+                    }`}
+                    aria-label={item.ariaLabel}
+                    type="button"
+                  >
+                    <span className="dropdown-item-icon">
+                      {item.id === "projects" ? "🚀" : "🍎"}
+                    </span>
+                    <span className="dropdown-item-text">
+                      <span className="dropdown-item-label">{item.label}</span>
+                      <span className="dropdown-item-desc">
+                        {item.id === "projects"
+                          ? "Featured projects"
+                          : "Native Mac apps"}
+                      </span>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </li>
+
+          {navItems.slice(2).map((item) => (
             <li key={item.id} role="listitem">
               <button
                 onClick={() => handleNavClick(item.id)}
@@ -95,11 +195,58 @@ const Navbar = ({ activeSection, onNavClick, navbarRef }) => {
         {/* Mobile Navigation */}
         <div className={`mobile-nav ${isMenuOpen ? "open" : ""}`}>
           <ul className="mobile-nav-links" role="list">
-            {navItems.map((item, index) => (
+            {navItems.slice(0, 2).map((item, index) => (
               <li
                 key={item.id}
                 role="listitem"
                 style={{ "--delay": `${index * 0.05}s` }}
+              >
+                <button
+                  onClick={() => handleNavClick(item.id)}
+                  className={`mobile-nav-link ${
+                    activeSection === item.id ? "active" : ""
+                  }`}
+                  aria-label={item.ariaLabel}
+                  aria-current={activeSection === item.id ? "page" : undefined}
+                  type="button"
+                >
+                  {item.label}
+                </button>
+              </li>
+            ))}
+
+            {/* Mobile Work Section */}
+            <li
+              role="listitem"
+              className="mobile-work-section"
+              style={{ "--delay": "0.1s" }}
+            >
+              <span className="mobile-section-label">Work</span>
+              <div className="mobile-work-items">
+                {workItems.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => handleNavClick(item.id)}
+                    className={`mobile-nav-link mobile-work-link ${
+                      activeSection === item.id ? "active" : ""
+                    }`}
+                    aria-label={item.ariaLabel}
+                    type="button"
+                  >
+                    <span className="mobile-work-icon">
+                      {item.id === "projects" ? "🚀" : "🍎"}
+                    </span>
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </li>
+
+            {navItems.slice(2).map((item, index) => (
+              <li
+                key={item.id}
+                role="listitem"
+                style={{ "--delay": `${(index + 3) * 0.05}s` }}
               >
                 <button
                   onClick={() => handleNavClick(item.id)}
