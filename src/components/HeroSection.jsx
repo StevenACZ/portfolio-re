@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState, lazy, Suspense } from "react";
+import { ArrowRight, Mail } from "lucide-react";
 import Typewriter from "./Typewriter";
 import ErrorBoundary from "./ErrorBoundary";
 import "../styles/ErrorBoundary.css";
@@ -112,18 +113,7 @@ const HeroSection = () => {
               type="button"
             >
               <span>View Projects</span>
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="cta-icon"
-              >
-                <line x1="5" y1="12" x2="19" y2="12" />
-                <polyline points="12 5 19 12 12 19" />
-              </svg>
+              <ArrowRight className="cta-icon" size={20} strokeWidth={2} />
             </button>
             <a
               href="mailto:scoaila@proton.me"
@@ -131,18 +121,7 @@ const HeroSection = () => {
               aria-label="Send me an email"
             >
               <span>Contact Me</span>
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="cta-icon"
-              >
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-                <polyline points="22,6 12,13 2,6" />
-              </svg>
+              <Mail className="cta-icon" size={20} strokeWidth={2} />
             </a>
           </div>
         </div>
