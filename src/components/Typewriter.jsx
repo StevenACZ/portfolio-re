@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import Typed from 'typed.js';
 
 const Typewriter = ({ className = '', delay = 1500 }) => {

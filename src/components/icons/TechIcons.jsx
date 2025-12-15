@@ -1,5 +1,6 @@
 // Tech stack SVG icons for skills section
 // Each icon is a React element that accepts currentColor for theming
+/* eslint-disable react-refresh/only-export-components */
 
 export const TechIcons = {
   // Frontend

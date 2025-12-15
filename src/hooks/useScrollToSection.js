@@ -40,6 +40,7 @@ export const useScrollToSection = (heroRef, navbarRef) => {
             },
           });
         } else {
+          // eslint-disable-next-line no-console
           console.warn('GSAP ScrollTo no disponible, usando scroll nativo');
 
           // Fallback scroll nativo con cálculo preciso
