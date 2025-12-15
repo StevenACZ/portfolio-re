@@ -1,76 +1,204 @@
-# Modern Portfolio Website
+<div align="center">
 
-Interactive portfolio showcasing full-stack development expertise with cutting-edge web technologies.
+# Steven Coaila Zaa | Portfolio
+
+### Full Stack Developer
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-stevenacz.com-00D4FF?style=for-the-badge&logo=vercel&logoColor=white)](https://stevenacz.com)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+
+A modern, interactive portfolio featuring 3D graphics, smooth animations, and a responsive design built with cutting-edge web technologies.
+
+<br />
+
+[View Demo](https://stevenacz.com) · [Report Bug](https://github.com/StevenACZ/portfolio/issues) · [Request Feature](https://github.com/StevenACZ/portfolio/issues)
+
+</div>
+
+<br />
+
+## ✨ Features
+
+| Feature | Description |
+|---------|-------------|
+| 🎮 **3D Interactive Hero** | WebGL particle system with 150+ animated spheres and mouse interaction |
+| ⚡ **Smooth Animations** | GSAP-powered animations with ScrollTrigger integration |
+| 📱 **Fully Responsive** | Mobile-first design with touch interactions |
+| 🎯 **Apple-Style Scroll** | Magnetic scroll zones for project presentation |
+| ♿ **Accessible** | WCAG 2.1 AA compliant with reduced motion support |
+| 🔍 **SEO Optimized** | JSON-LD structured data, meta tags, and Open Graph |
+| ⚡ **Blazing Fast** | ~115kb gzipped initial load with lazy loading |
+
+<br />
+
+## 🛠️ Tech Stack
+
+<div align="center">
+
+### Core
+
+![React](https://img.shields.io/badge/React-19.2.1-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-7.1.3-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES2024-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![CSS3](https://img.shields.io/badge/CSS3-Modules-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+
+### 3D & Animation
+
+![Three.js](https://img.shields.io/badge/Three.js-0.179-000000?style=for-the-badge&logo=threedotjs&logoColor=white)
+![GSAP](https://img.shields.io/badge/GSAP-3.13-88CE02?style=for-the-badge&logo=greensock&logoColor=black)
+![Typed.js](https://img.shields.io/badge/Typed.js-2.1.0-FF6B6B?style=for-the-badge)
+
+### UI & Performance
+
+![Lucide](https://img.shields.io/badge/Lucide-Icons-F56565?style=for-the-badge)
+![React Helmet](https://img.shields.io/badge/Helmet-SEO-61DAFB?style=for-the-badge)
+![Intersection Observer](https://img.shields.io/badge/Lazy%20Loading-Optimized-4CAF50?style=for-the-badge)
+
+</div>
+
+<br />
 
 ## 🚀 Quick Start
 
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+
+### Installation
+
 ```bash
+# Clone the repository
+git clone https://github.com/StevenACZ/portfolio.git
+
+# Navigate to project directory
+cd portfolio
+
 # Install dependencies
 npm install
 
 # Start development server
 npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
 ```
 
-## 🛠️ Technologies
+The app will be available at `http://localhost:3000`
 
-- **React 19** - Modern UI library with latest hooks and features
-- **Typed.js 2.1.0** - Professional typewriter animations with accessibility support
-- **Three.js 0.179** - 3D graphics and interactive particle system
-- **GSAP 3.x** - Advanced animations with ScrollTrigger integration
-- **Vite 7.x** - Lightning-fast build tool and dev server
-- **Modern CSS** - Custom properties, CSS Grid, and advanced animations
+### Available Scripts
 
-## ✨ Key Features
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Create production build |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint checks |
 
-- **Dynamic Typewriter Effect** - 6 rotating developer titles with smooth animations
-- **3D Interactive Hero** - WebGL particle system with orbital mechanics and mouse interaction
-- **Apple-Style Scroll** - Magnetic project presentation with extended viewing zones
-- **Modern Lazy Loading** - Skeleton placeholders with intersection observer
-- **Accessibility First** - WCAG 2.1 AA compliance with reduced motion support
-- **SEO Optimized** - Structured data, meta tags, and performance optimization
-- **Mobile First** - Responsive design with touch interactions and progressive enhancement
+<br />
 
 ## 📁 Project Structure
 
 ```
 src/
-├── components/         # Modular React components
-│   ├── HeroSection.jsx    # 3D hero with typewriter effect
-│   ├── Typewriter.jsx     # Dynamic typewriter component
-│   ├── ProjectsSection.jsx # Magnetic scroll system
-│   └── LazyImage.jsx      # Optimized lazy loading
-├── hooks/             # Custom React hooks for scroll behavior
-├── styles/            # CSS modules with animations and utilities
-├── data/              # Content management (projects & experiences)
-└── main.jsx           # App entry point
+├── 📂 components/          # React components
+│   ├── 📂 icons/           # SVG tech icons (21 icons)
+│   ├── HeroSection.jsx     # 3D hero with particle system
+│   ├── Navbar.jsx          # Desktop navigation
+│   ├── MobileNav.jsx       # Mobile hamburger menu
+│   ├── SkillsSection.jsx   # Tech stack with filters
+│   ├── ProjectsSection.jsx # Project showcase
+│   └── ...                 # Other UI components
+├── 📂 hooks/               # Custom React hooks
+│   ├── useHeroAnimations   # GSAP hero animations
+│   ├── useProjectsScroll   # Magnetic scroll zones
+│   └── useScrollSpy        # Active section detection
+├── 📂 config/              # Configuration files
+│   └── threeScene.js       # 3D particle system config
+├── 📂 data/                # Content data
+│   ├── projects.js         # Portfolio projects
+│   ├── skills.js           # Tech skills & categories
+│   └── experiences.js      # Work experience
+└── 📂 styles/              # CSS stylesheets
+    ├── globals.css         # CSS variables & base
+    └── animations.css      # Animation classes
 ```
 
-## ⚡ Dynamic Typewriter Features
+<br />
 
-The hero section showcases a professional typewriter effect that cycles through 6 developer specializations:
+## 🎨 Featured Projects
 
-- **Full Stack Developer** → **Swift Developer** → **Creative Problem Solver** 
-- **UX Enthusiast** → **React Specialist** → **Mobile App Creator**
+<table>
+<tr>
+<td width="33%" align="center">
 
-### Technical Implementation
-- **Library**: Typed.js 2.1.0 for maximum reliability (Trust Score 9.7)
-- **Performance**: 80ms typing speed, 2s pause between rotations
-- **Accessibility**: Automatic fallback for users who prefer reduced motion
-- **Integration**: Seamlessly coordinated with GSAP animation timeline
+### PesoTracker
+**macOS Weight Tracking App**
+
+![Swift](https://img.shields.io/badge/Swift-FA7343?style=flat-square&logo=swift&logoColor=white)
+![SwiftUI](https://img.shields.io/badge/SwiftUI-0D96F6?style=flat-square&logo=swift&logoColor=white)
+
+</td>
+<td width="33%" align="center">
+
+### BuenMouse
+**macOS Productivity Tool**
+
+![Swift](https://img.shields.io/badge/Swift-FA7343?style=flat-square&logo=swift&logoColor=white)
+![macOS](https://img.shields.io/badge/macOS-000000?style=flat-square&logo=apple&logoColor=white)
+
+</td>
+<td width="33%" align="center">
+
+### WW2 MAP Films
+**Interactive Historical Map**
+
+![Nuxt](https://img.shields.io/badge/Nuxt-00DC82?style=flat-square&logo=nuxtdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+
+</td>
+</tr>
+</table>
+
+<br />
 
 ## 🌐 Deployment
 
-1. Build the project: `npm run build`
-2. Deploy the `dist/` folder to your hosting service
-3. Ensure your server supports SPA routing
+Build and deploy to any static hosting service:
+
+```bash
+# Create production build
+npm run build
+
+# Preview before deploying
+npm run preview
+```
+
+The `dist/` folder is ready for deployment to:
+
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
+![Netlify](https://img.shields.io/badge/Netlify-00C7B7?style=flat-square&logo=netlify&logoColor=white)
+![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-222222?style=flat-square&logo=github&logoColor=white)
+
+<br />
+
+## 🤝 Connect
+
+<div align="center">
+
+[![Portfolio](https://img.shields.io/badge/Portfolio-stevenacz.com-00D4FF?style=for-the-badge&logo=safari&logoColor=white)](https://stevenacz.com)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Steven%20Coaila-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/stevenacz)
+[![GitHub](https://img.shields.io/badge/GitHub-StevenACZ-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/StevenACZ)
+
+</div>
+
+<br />
 
 ## 📄 License
 
-MIT © Steven Coaila Zaa
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+<div align="center">
+
+Made with ❤️ by **Steven Coaila Zaa**
+
+</div>
