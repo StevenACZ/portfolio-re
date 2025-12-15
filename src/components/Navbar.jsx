@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Rocket, Apple } from "lucide-react";
 import "../styles/Navbar.css";
 
 const Navbar = ({ activeSection, onNavClick, navbarRef }) => {
@@ -140,7 +140,11 @@ const Navbar = ({ activeSection, onNavClick, navbarRef }) => {
                     type="button"
                   >
                     <span className="dropdown-item-icon">
-                      {item.id === "projects" ? "🚀" : "🍎"}
+                      {item.id === "projects" ? (
+                        <Rocket size={18} />
+                      ) : (
+                        <Apple size={18} />
+                      )}
                     </span>
                     <span className="dropdown-item-text">
                       <span className="dropdown-item-label">{item.label}</span>
@@ -234,7 +238,11 @@ const Navbar = ({ activeSection, onNavClick, navbarRef }) => {
                     type="button"
                   >
                     <span className="mobile-work-icon">
-                      {item.id === "projects" ? "🚀" : "🍎"}
+                      {item.id === "projects" ? (
+                        <Rocket size={18} />
+                      ) : (
+                        <Apple size={18} />
+                      )}
                     </span>
                     {item.label}
                   </button>

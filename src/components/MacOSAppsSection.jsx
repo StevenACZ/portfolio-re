@@ -31,18 +31,32 @@ const AppCard = memo(({ app, index }) => {
       </div>
       <h3 className="app-name">{app.name}</h3>
       <p className="app-description">{app.description}</p>
-      {app.github && (
-        <a
-          href={app.github}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="app-github-link"
-          aria-label={`View ${app.name} on GitHub`}
-        >
-          <Github size={16} />
-          <span>Source</span>
-        </a>
-      )}
+      <div className="app-links">
+        {app.github && (
+          <a
+            href={app.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="app-link app-github-link"
+            aria-label={`View ${app.name} on GitHub`}
+          >
+            <Github size={16} />
+            <span>Source</span>
+          </a>
+        )}
+        {app.demo && (
+          <a
+            href={app.demo}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="app-link app-demo-link"
+            aria-label={`View ${app.name} website`}
+          >
+            <ExternalLink size={16} />
+            <span>Website</span>
+          </a>
+        )}
+      </div>
     </div>
   );
 });

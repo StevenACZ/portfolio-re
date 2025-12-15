@@ -5,6 +5,7 @@ export const macosApps = [
     description: "Instant text extraction from any screen area",
     icon: "/macos-apps/peekocr-icon.png",
     github: "https://github.com/StevenACZ/PeekOCR",
+    demo: null,
   },
   {
     id: 2,
@@ -12,6 +13,7 @@ export const macosApps = [
     description: "Voice to text transcription powered by AI",
     icon: "/macos-apps/sapowhisper-icon.png",
     github: "https://github.com/StevenACZ/SapoWhisper",
+    demo: "https://sapo.stevenacz.com/",
   },
   {
     id: 3,
@@ -19,5 +21,6 @@ export const macosApps = [
     description: "Enhanced mouse gestures and productivity",
     icon: "/macos-apps/buenmouse-icon.png",
     github: "https://github.com/StevenACZ/BuenMouse",
+    demo: "https://mouse.stevenacz.com/",
   },
 ];
