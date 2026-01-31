@@ -23,8 +23,10 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref } from "vue";
+import { onUnmounted, ref } from "vue";
 import { gsap, ScrollTrigger } from "../lib/gsap";
+import { useIntersectionOnce } from "../composables/useIntersectionOnce";
+import { runIdle } from "../utils/idle";
 import ProjectCard from "./ProjectCard.vue";
 import "../styles/ProjectsSection.css";
 
@@ -34,6 +36,7 @@ const props = defineProps({
 
 const sectionRef = ref(null);
 let trigger = null;
+let cancelIdle = null;
 
 function animateTitlePhase(header, section, phaseLocalProgress, totalProjects) {
   const navbarHeight =
@@ -168,10 +171,15 @@ function animateProjectPhases(
   }
 }
 
-onMounted(() => {
+function initPinnedScroll() {
   if (!props.projects.length) return;
   const section = sectionRef.value;
   if (!section) return;
+
+  const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+  if (reducedMotion) return;
 
   const header = section.querySelector(".projects-header");
   if (!header) return;
@@ -228,9 +236,18 @@ onMounted(() => {
       }
     },
   });
-});
+}
+
+useIntersectionOnce(
+  sectionRef,
+  () => {
+    cancelIdle = runIdle(() => initPinnedScroll(), { timeout: 500 });
+  },
+  { rootMargin: "800px 0px", threshold: 0.01 }
+);
 
 onUnmounted(() => {
+  cancelIdle?.();
   trigger?.kill();
   trigger = null;
 });

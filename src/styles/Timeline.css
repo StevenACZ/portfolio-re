@@ -154,3 +154,14 @@
     padding: 4rem 0 8rem 0; /* Maintain extra bottom padding on mobile for animation completion */
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .timeline-line {
+    transform: translateX(-50%) scaleY(1);
+  }
+
+  .timeline-item {
+    opacity: 1;
+    transform: none;
+  }
+}

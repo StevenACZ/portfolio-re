@@ -154,6 +154,29 @@
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .projects-section {
+    min-height: auto;
+  }
+
+  .projects-header {
+    position: relative;
+    height: auto;
+    padding: 6rem 2rem 2rem;
+  }
+
+  .projects-grid {
+    height: auto;
+    overflow: visible;
+  }
+
+  .project-card {
+    position: relative;
+    height: auto;
+    padding: 4rem 2rem;
+  }
+}
+
 .projects-section {
   background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
   min-height: 100vh;
