@@ -99,7 +99,7 @@
 <script setup>
 import { defineAsyncComponent, onMounted, onUnmounted, ref } from "vue";
 import { ArrowRight, Mail } from "lucide-vue-next";
-import { gsap } from "../lib/gsap";
+import { runIdle } from "../utils/idle";
 import ErrorBoundary from "./ErrorBoundary.vue";
 import Typewriter from "./Typewriter.vue";
 import "../styles/HeroSection.css";
@@ -110,117 +110,30 @@ const canvasRef = ref(null);
 const isLoaded = ref(false);
 const show3D = ref(false);
 
-let timerId = null;
-let entranceTl = null;
-
-function getAnimationConfig() {
-  const rootStyles = getComputedStyle(document.documentElement);
-
-  return {
-    duration: {
-      hero:
-        parseFloat(rootStyles.getPropertyValue("--animation-duration-hero")) ||
-        1,
-      heroLong:
-        parseFloat(
-          rootStyles.getPropertyValue("--animation-duration-hero-long")
-        ) || 1.2,
-      heroText:
-        parseFloat(
-          rootStyles.getPropertyValue("--animation-duration-hero-text")
-        ) || 0.8,
-    },
-    distance: {
-      medium:
-        parseInt(rootStyles.getPropertyValue("--animation-distance-medium")) ||
-        50,
-      small:
-        parseInt(rootStyles.getPropertyValue("--animation-distance-small")) ||
-        30,
-    },
-  };
-}
-
-function animateHeroEntrance() {
-  const reducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
-  if (reducedMotion) return;
-
-  const config = getAnimationConfig();
-  const heroGreeting = document.querySelector(".hero-greeting");
-  const heroName = document.querySelector(".hero-name");
-  const typewriterText = document.querySelector(".hero-title");
-  const heroDescription = document.querySelector(".hero-description");
-
-  entranceTl = gsap.timeline();
-
-  if (heroGreeting) {
-    entranceTl.fromTo(
-      heroGreeting,
-      { y: config.distance.medium, opacity: 0 },
-      { y: 0, opacity: 1, duration: config.duration.hero, ease: "power3.out" }
-    );
-  }
-
-  if (heroName) {
-    entranceTl.fromTo(
-      heroName,
-      { y: config.distance.medium, opacity: 0, scale: 0.9 },
-      {
-        y: 0,
-        opacity: 1,
-        scale: 1,
-        duration: config.duration.heroLong,
-        ease: "back.out(1.7)",
-      },
-      "-=0.6"
-    );
-  }
-
-  if (typewriterText) {
-    entranceTl.fromTo(
-      typewriterText,
-      { y: config.distance.small, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: config.duration.heroText,
-        ease: "power3.out",
-        delay: 0.5,
-      },
-      "-=0.5"
-    );
-  }
-
-  if (heroDescription) {
-    entranceTl.fromTo(
-      heroDescription,
-      { y: config.distance.small, opacity: 0 },
-      { y: 0, opacity: 1, duration: config.duration.hero, ease: "power3.out" },
-      "-=0.3"
-    );
-  }
-}
+let cancelIdle = null;
 
 function scrollToProjects() {
   const projectsSection = document.getElementById("projects");
-  projectsSection?.scrollIntoView({ behavior: "smooth" });
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+  projectsSection?.scrollIntoView({
+    behavior: prefersReducedMotion ? "auto" : "smooth",
+  });
 }
 
 onMounted(() => {
-  timerId = window.setTimeout(() => {
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+  if (prefersReducedMotion) return;
 
-    if (!prefersReducedMotion) show3D.value = true;
-    animateHeroEntrance();
-  }, 500);
+  cancelIdle = runIdle(() => {
+    show3D.value = true;
+  }, { timeout: 1500 });
 });
 
 onUnmounted(() => {
-  if (timerId) window.clearTimeout(timerId);
-  entranceTl?.kill?.();
+  cancelIdle?.();
 });
 </script>

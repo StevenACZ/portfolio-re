@@ -39,6 +39,7 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from "vue";
 import { gsap, ScrollTrigger } from "./lib/gsap";
+import { runIdle } from "./utils/idle";
 import BackToTop from "./components/BackToTop.vue";
 import Footer from "./components/Footer.vue";
 import HeroSection from "./components/HeroSection.vue";
@@ -54,6 +55,10 @@ import { projects } from "./data/projects";
 const activeSection = ref("hero");
 let sectionTriggers = [];
 let resizeTimeout = null;
+
+function refreshScrollTriggerSoon() {
+  runIdle(() => ScrollTrigger.refresh(), { timeout: 200 });
+}
 
 function getNavbarHeight() {
   const nav = document.querySelector(".navbar");
@@ -81,13 +86,7 @@ function handleNavClick(sectionId) {
     scrollTo: { y, autoKill: false },
     ease: "power2.inOut",
     onComplete: () => {
-      if (window.requestIdleCallback) {
-        window.requestIdleCallback(() => ScrollTrigger.refresh(), {
-          timeout: 200,
-        });
-      } else {
-        window.setTimeout(() => ScrollTrigger.refresh(), 16);
-      }
+      refreshScrollTriggerSoon();
     },
   });
 }
@@ -95,13 +94,7 @@ function handleNavClick(sectionId) {
 function handleResize() {
   if (resizeTimeout) window.clearTimeout(resizeTimeout);
   resizeTimeout = window.setTimeout(() => {
-    if (window.requestIdleCallback) {
-      window.requestIdleCallback(() => ScrollTrigger.refresh(), {
-        timeout: 200,
-      });
-    } else {
-      window.setTimeout(() => ScrollTrigger.refresh(), 16);
-    }
+    refreshScrollTriggerSoon();
   }, 100);
 }
 
