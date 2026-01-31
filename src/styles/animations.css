@@ -68,7 +68,7 @@
   font-weight: 300;
   font-size: 1.1em;
   color: var(--accent-color);
-  animation: blink 1s infinite;
+  animation: typewriterCursorBlink 1s infinite;
   text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
   margin-left: 2px;
 }
@@ -113,7 +113,7 @@
   }
 }
 
-@keyframes blink {
+@keyframes typewriterCursorBlink {
   0%,
   40% {
     opacity: 1;
