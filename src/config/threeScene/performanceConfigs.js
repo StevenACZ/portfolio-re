@@ -1,0 +1,38 @@
+export const PERFORMANCE_CONFIGS = {
+  "ultra-low": {
+    count: 25,
+    size: 0.5,
+    speed: 0.1,
+    mouseInfluence: 15,
+    segments: 8,
+    rings: 6,
+    updateRate: 3,
+  },
+  low: {
+    count: 50,
+    size: 0.7,
+    speed: 0.15,
+    mouseInfluence: 20,
+    segments: 12,
+    rings: 8,
+    updateRate: 2,
+  },
+  medium: {
+    count: 120,
+    size: 0.9,
+    speed: 0.25,
+    mouseInfluence: 25,
+    segments: 16,
+    rings: 12,
+    updateRate: 1,
+  },
+  high: {
+    count: 300,
+    size: 0.8,
+    speed: 0.3,
+    mouseInfluence: 80,
+    segments: 20,
+    rings: 16,
+    updateRate: 1,
+  },
+};
