@@ -2,8 +2,8 @@
   <span class="tech-icon" aria-hidden="true">
     <svg v-bind="icon.svgAttrs" focusable="false">
       <component
-        v-for="(node, index) in icon.nodes"
         :is="node.tag"
+        v-for="(node, index) in icon.nodes"
         :key="index"
         v-bind="node.attrs"
       />
@@ -24,4 +24,3 @@ const icon = computed(() => {
   return TECH_ICON_DEFS[key] ?? DEFAULT_TECH_ICON;
 });
 </script>
-

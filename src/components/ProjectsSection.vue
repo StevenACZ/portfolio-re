@@ -131,10 +131,7 @@ function initPinnedScroll() {
     onUpdate: (self) => {
       const progress = self.progress;
       const phaseProgress = progress * totalPhases;
-      const currentPhase = Math.min(
-        totalPhases - 1,
-        Math.floor(phaseProgress)
-      );
+      const currentPhase = Math.min(totalPhases - 1, Math.floor(phaseProgress));
       let phaseLocalProgress = phaseProgress - currentPhase;
 
       if (phaseLocalProgress > 0.2 && phaseLocalProgress < 0.8) {

@@ -10,4 +10,3 @@ export function runIdle(callback, { timeout = 200 } = {}) {
   const id = window.setTimeout(callback, 0);
   return () => window.clearTimeout(id);
 }
-

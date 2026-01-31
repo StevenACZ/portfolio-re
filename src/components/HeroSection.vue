@@ -128,9 +128,12 @@ onMounted(() => {
   ).matches;
   if (prefersReducedMotion) return;
 
-  cancelIdle = runIdle(() => {
-    show3D.value = true;
-  }, { timeout: 1500 });
+  cancelIdle = runIdle(
+    () => {
+      show3D.value = true;
+    },
+    { timeout: 1500 }
+  );
 });
 
 onUnmounted(() => {
