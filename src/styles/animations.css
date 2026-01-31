@@ -43,44 +43,6 @@
   font-weight: bold;
 }
 
-/* ===== Typewriter Effect ===== */
-.typewriter-text {
-  display: inline-block;
-  color: var(--accent-color);
-  font-weight: 500;
-  position: relative;
-  padding: 0.2rem 0.5rem;
-  border-radius: 8px;
-  background: rgba(59, 130, 246, 0.08);
-  border: 1px solid rgba(59, 130, 246, 0.15);
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-}
-
-.typewriter-text:hover {
-  background: rgba(59, 130, 246, 0.12);
-  border-color: rgba(59, 130, 246, 0.25);
-  transform: translateY(-2px);
-}
-
-.typewriter-cursor {
-  display: inline-block;
-  font-weight: 300;
-  font-size: 1.1em;
-  color: var(--accent-color);
-  animation: typewriterCursorBlink 1s infinite;
-  text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-  margin-left: 2px;
-}
-
-.typewriter-cursor.visible {
-  opacity: 1;
-}
-
-.typewriter-cursor.hidden {
-  opacity: 0;
-}
-
 /* ===== Animation Keyframes ===== */
 @keyframes fadeInUp {
   from {
@@ -110,24 +72,6 @@
   75% {
     transform: translateY(-6px) scale(1.02);
     animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-}
-
-@keyframes typewriterCursorBlink {
-  0%,
-  40% {
-    opacity: 1;
-    transform: scaleY(1);
-  }
-  41%,
-  60% {
-    opacity: 0;
-    transform: scaleY(0.8);
-  }
-  61%,
-  100% {
-    opacity: 1;
-    transform: scaleY(1);
   }
 }
 

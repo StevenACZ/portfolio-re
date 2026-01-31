@@ -33,6 +33,8 @@
 <script setup>
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import { gsap } from "../lib/gsap";
+import { onAppReady } from "../lib/appState";
+import { getMotionTokens, prefersReducedMotion } from "../lib/motion";
 import { skillsData, skillCategories } from "../data/skills";
 import SkillChip from "./SkillChip.vue";
 import "../styles/SkillsSection.css";
@@ -48,12 +50,11 @@ const filteredSkills = computed(() => {
 });
 
 let headerTrigger = null;
+let stopReadyListener = null;
 
 function animateChips() {
-  const reducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
-  if (reducedMotion) return;
+  if (prefersReducedMotion()) return;
+  const { ease } = getMotionTokens();
 
   const container = chipsContainerRef.value;
   if (!container) return;
@@ -67,7 +68,7 @@ function animateChips() {
       scale: 1,
       opacity: 1,
       duration: 0.4,
-      ease: "back.out(1.7)",
+      ease: ease.out,
       stagger: 0.03,
       overwrite: "auto",
     }
@@ -75,34 +76,34 @@ function animateChips() {
 }
 
 onMounted(() => {
-  const reducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
-  if (reducedMotion || !sectionRef.value) return;
+  stopReadyListener = onAppReady(() => {
+    if (prefersReducedMotion() || !sectionRef.value) return;
+    const { ease } = getMotionTokens();
 
-  const header = sectionRef.value.querySelector(".skills-header");
-  const filters = sectionRef.value.querySelector(".skills-filter");
+    const header = sectionRef.value.querySelector(".skills-header");
+    const filters = sectionRef.value.querySelector(".skills-filter");
 
-  headerTrigger = gsap.fromTo(
-    [header, filters],
-    { y: 40, opacity: 0 },
-    {
-      y: 0,
-      opacity: 1,
-      duration: 0.8,
-      ease: "power3.out",
-      stagger: 0.15,
-      scrollTrigger: {
-        trigger: sectionRef.value,
-        start: "top 80%",
-        once: true,
-        onEnter: () => {
-          hasEntered.value = true;
-          animateChips();
+    headerTrigger = gsap.fromTo(
+      [header, filters],
+      { y: 40, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.8,
+        ease: ease.out,
+        stagger: 0.15,
+        scrollTrigger: {
+          trigger: sectionRef.value,
+          start: "top 80%",
+          once: true,
+          onEnter: () => {
+            hasEntered.value = true;
+            animateChips();
+          },
         },
-      },
-    }
-  );
+      }
+    );
+  });
 });
 
 watch(activeCategory, async () => {
@@ -112,6 +113,8 @@ watch(activeCategory, async () => {
 });
 
 onUnmounted(() => {
+  stopReadyListener?.();
+  stopReadyListener = null;
   headerTrigger?.scrollTrigger?.kill();
   headerTrigger?.kill?.();
 });

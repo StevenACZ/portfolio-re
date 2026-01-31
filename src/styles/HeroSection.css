@@ -58,9 +58,8 @@
   font-weight: 400;
   color: var(--text-secondary);
   margin-bottom: 0.5rem;
-  opacity: 0;
-  transform: translateY(30px);
-  animation: heroFadeInUp 0.8s ease-out 0.1s forwards;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .hero-name {
@@ -73,11 +72,8 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation:
-    heroFadeInUp 0.8s ease-out 0.2s forwards,
-    heroGradientShift 4s ease-in-out infinite;
-  opacity: 0;
-  transform: translateY(30px);
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .hero-subtitle {
@@ -90,36 +86,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
-  transform: translateY(30px);
-  animation: heroFadeInUp 1s ease-out 0.3s forwards;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .hero-title {
   position: relative;
   color: var(--accent-color);
-}
-
-/* Typed.js cursor styling */
-.hero-title .typed-cursor {
-  color: var(--accent-color);
-  font-weight: 300;
-  animation: heroCursorBlink 1s infinite;
-}
-
-.hero-title .typed-cursor--blink {
-  animation: heroCursorBlink 1s infinite;
-}
-
-@keyframes heroCursorBlink {
-  0%,
-  50% {
-    opacity: 1;
-  }
-  51%,
-  100% {
-    opacity: 0;
-  }
 }
 
 .hero-description {
@@ -128,9 +101,8 @@
   color: var(--text-secondary);
   max-width: 600px;
   margin: 0 auto;
-  opacity: 0;
-  transform: translateY(30px);
-  animation: heroFadeInUp 0.8s ease-out 0.4s forwards;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* CTA Buttons */
@@ -140,9 +112,8 @@
   gap: 16px;
   justify-content: center;
   margin-top: 2rem;
-  opacity: 0;
-  transform: translateY(30px);
-  animation: heroFadeInUp 0.8s ease-out 0.6s forwards;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .hero-cta {
@@ -213,28 +184,6 @@
 
 .hero-cta:hover .cta-icon {
   transform: translateX(4px);
-}
-
-/* Animations */
-@keyframes heroFadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes heroGradientShift {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
 }
 
 /* Particle glow effects */
@@ -332,6 +281,6 @@
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: heroFadeInUp 1s ease-out 0.4s forwards;
+    animation: none;
   }
 }

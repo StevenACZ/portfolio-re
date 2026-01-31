@@ -50,6 +50,8 @@
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { Github, Linkedin, Mail } from "lucide-vue-next";
 import { gsap } from "../lib/gsap";
+import { onAppReady } from "../lib/appState";
+import { getMotionTokens, prefersReducedMotion } from "../lib/motion";
 import "../styles/Footer.css";
 
 const rootRef = ref(null);
@@ -77,35 +79,38 @@ const socialLinks = [
 ];
 
 let footerTween = null;
+let stopReadyListener = null;
 
 onMounted(() => {
-  const reducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
-  if (reducedMotion || !rootRef.value) return;
+  stopReadyListener = onAppReady(() => {
+    if (prefersReducedMotion() || !rootRef.value) return;
+    const { ease } = getMotionTokens();
 
-  const content = rootRef.value.querySelector(".footer-content");
-  if (!content) return;
+    const content = rootRef.value.querySelector(".footer-content");
+    if (!content) return;
 
-  footerTween = gsap.fromTo(
-    content,
-    { y: 60, opacity: 0 },
-    {
-      y: 0,
-      opacity: 1,
-      duration: 1,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: rootRef.value,
-        start: "top 90%",
-        toggleActions: "play none none reverse",
-        fastScrollEnd: true,
-      },
-    }
-  );
+    footerTween = gsap.fromTo(
+      content,
+      { y: 60, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 1,
+        ease: ease.out,
+        scrollTrigger: {
+          trigger: rootRef.value,
+          start: "top 90%",
+          toggleActions: "play none none reverse",
+          fastScrollEnd: true,
+        },
+      }
+    );
+  });
 });
 
 onUnmounted(() => {
+  stopReadyListener?.();
+  stopReadyListener = null;
   footerTween?.scrollTrigger?.kill();
   footerTween?.kill?.();
 });

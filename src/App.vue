@@ -39,6 +39,10 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from "vue";
 import { gsap, ScrollTrigger } from "./lib/gsap";
+import { onAppReady } from "./lib/appState";
+import { startLaunchSequence } from "./lib/launchSequence";
+import { startScrollHandshake } from "./lib/scrollHandshake";
+import { getMotionTokens, prefersReducedMotion } from "./lib/motion";
 import { runIdle } from "./utils/idle";
 import BackToTop from "./components/BackToTop.vue";
 import Footer from "./components/Footer.vue";
@@ -57,6 +61,9 @@ let resizeTimeout = null;
 let sectionObserver = null;
 let scrollTween = null;
 let restoreScrollBehavior = null;
+let stopLaunchSequence = null;
+let stopScrollHandshake = null;
+let stopScrollHandshakeReadyListener = null;
 
 function setScrollBehaviorAuto() {
   const html = document.documentElement;
@@ -92,9 +99,8 @@ function handleNavClick(sectionId) {
   const targetY = target.getBoundingClientRect().top + window.pageYOffset;
   const y = targetY - (sectionId === "hero" ? 0 : navbarHeight);
 
-  const reducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
+  const reducedMotion = prefersReducedMotion();
+  const { ease } = getMotionTokens();
 
   restoreScrollBehavior?.();
   restoreScrollBehavior = null;
@@ -125,7 +131,7 @@ function handleNavClick(sectionId) {
   scrollTween = gsap.to(state, {
     y,
     duration: 1.2,
-    ease: "power2.inOut",
+    ease: ease.inOut,
     onUpdate: () => {
       root.scrollTop = state.y;
     },
@@ -149,6 +155,11 @@ onMounted(() => {
   document.documentElement.scrollTop = 0;
   document.body.scrollTop = 0;
   restore();
+
+  stopLaunchSequence = startLaunchSequence();
+  stopScrollHandshakeReadyListener = onAppReady(() => {
+    stopScrollHandshake = startScrollHandshake();
+  });
 
   const sectionIds = [
     "hero",
@@ -190,5 +201,11 @@ onUnmounted(() => {
   restoreScrollBehavior = null;
   scrollTween?.kill?.();
   scrollTween = null;
+  stopLaunchSequence?.();
+  stopLaunchSequence = null;
+  stopScrollHandshakeReadyListener?.();
+  stopScrollHandshakeReadyListener = null;
+  stopScrollHandshake?.();
+  stopScrollHandshake = null;
 });
 </script>

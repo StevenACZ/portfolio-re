@@ -1,21 +1,27 @@
 /* ===== Navbar ===== */
 .navbar {
+  --nav-bg-alpha: 0.2;
+  --nav-blur: 10px;
+  --nav-border-alpha: 0.05;
+
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-  background: rgba(10, 10, 10, 0.2);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  transition: var(--transition);
-  will-change: background-color, backdrop-filter, border-color;
+  background: rgba(10, 10, 10, var(--nav-bg-alpha));
+  backdrop-filter: blur(var(--nav-blur));
+  border-bottom: 1px solid rgba(255, 255, 255, var(--nav-border-alpha));
+  transition:
+    transform var(--motion-dur-micro, 0.35s) var(--motion-ease-out, ease-out),
+    opacity var(--motion-dur-micro, 0.35s) var(--motion-ease-out, ease-out);
+  will-change: transform, opacity;
 }
 
 .navbar.scrolled {
-  background: rgba(10, 10, 10, 0.7);
-  backdrop-filter: blur(20px);
-  border-bottom-color: rgba(255, 255, 255, 0.1);
+  --nav-bg-alpha: 0.7;
+  --nav-blur: 20px;
+  --nav-border-alpha: 0.1;
 }
 
 .navbar-container {
