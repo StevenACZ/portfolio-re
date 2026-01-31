@@ -55,6 +55,17 @@ import { projects } from "./data/projects";
 const activeSection = ref("hero");
 let resizeTimeout = null;
 let sectionObserver = null;
+let scrollTween = null;
+let restoreScrollBehavior = null;
+
+function setScrollBehaviorAuto() {
+  const html = document.documentElement;
+  const previous = html.style.scrollBehavior;
+  html.style.scrollBehavior = "auto";
+  return () => {
+    html.style.scrollBehavior = previous;
+  };
+}
 
 function refreshScrollTriggerSoon() {
   runIdle(() => ScrollTrigger.refresh(), { timeout: 200 });
@@ -81,13 +92,46 @@ function handleNavClick(sectionId) {
   const targetY = target.getBoundingClientRect().top + window.pageYOffset;
   const y = targetY - (sectionId === "hero" ? 0 : navbarHeight);
 
-  gsap.to(window, {
+  const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+
+  restoreScrollBehavior?.();
+  restoreScrollBehavior = null;
+
+  scrollTween?.kill?.();
+  scrollTween = null;
+
+  if (reducedMotion) {
+    const restore = setScrollBehaviorAuto();
+    window.scrollTo(0, y);
+    restore();
+    refreshScrollTriggerSoon();
+    return;
+  }
+
+  restoreScrollBehavior = setScrollBehaviorAuto();
+
+  const root = document.scrollingElement || document.documentElement;
+  const state = { y: root.scrollTop || 0 };
+
+  function cleanup() {
+    scrollTween = null;
+    restoreScrollBehavior?.();
+    restoreScrollBehavior = null;
+    refreshScrollTriggerSoon();
+  }
+
+  scrollTween = gsap.to(state, {
+    y,
     duration: 1.2,
-    scrollTo: { y, autoKill: false },
     ease: "power2.inOut",
-    onComplete: () => {
-      refreshScrollTriggerSoon();
+    onUpdate: () => {
+      root.scrollTop = state.y;
     },
+    onComplete: cleanup,
+    onInterrupt: cleanup,
+    overwrite: true,
   });
 }
 
@@ -100,9 +144,11 @@ function handleResize() {
 
 onMounted(() => {
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+  const restore = setScrollBehaviorAuto();
   window.scrollTo(0, 0);
   document.documentElement.scrollTop = 0;
   document.body.scrollTop = 0;
+  restore();
 
   const sectionIds = [
     "hero",
@@ -140,5 +186,9 @@ onUnmounted(() => {
   sectionObserver = null;
   window.removeEventListener("resize", handleResize);
   if (resizeTimeout) window.clearTimeout(resizeTimeout);
+  restoreScrollBehavior?.();
+  restoreScrollBehavior = null;
+  scrollTween?.kill?.();
+  scrollTween = null;
 });
 </script>
