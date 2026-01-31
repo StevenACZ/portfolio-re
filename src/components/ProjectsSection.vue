@@ -37,139 +37,8 @@ const props = defineProps({
 const sectionRef = ref(null);
 let trigger = null;
 let cancelIdle = null;
-
-function animateTitlePhase(header, section, phaseLocalProgress, totalProjects) {
-  const navbarHeight =
-    parseInt(
-      getComputedStyle(document.documentElement).getPropertyValue(
-        "--navbar-height"
-      )
-    ) || 80;
-  const buffer = 150;
-  const titleMaxDistance = window.innerHeight / 2 + navbarHeight + buffer;
-  const opacity = Math.max(0, 1 - phaseLocalProgress * 1.8);
-
-  gsap.to(header, {
-    opacity,
-    y: -titleMaxDistance * phaseLocalProgress,
-    duration: 0.2,
-    ease: "power2.out",
-  });
-
-  header.classList.toggle("hidden", opacity < 0.1);
-
-  for (let index = 0; index < totalProjects; index++) {
-    const card = section.querySelector(`[data-project="${index}"]`);
-    if (!card) continue;
-    const currentY = gsap.getProperty(card, "y");
-    gsap.to(card, {
-      opacity: 0,
-      y: currentY,
-      duration: 0.25,
-      ease: "power2.out",
-      overwrite: "auto",
-      immediateRender: false,
-    });
-    card.classList.add("hidden");
-  }
-}
-
-function animateCurrentProject(card, index, totalProjects, phaseLocalProgress) {
-  const isLastProject = index === totalProjects - 1;
-
-  if (isLastProject) {
-    const easedProgress =
-      phaseLocalProgress <= 0.5
-        ? gsap.utils.mapRange(0, 0.5, 0, 1, phaseLocalProgress)
-        : 1;
-
-    gsap.to(card, {
-      opacity: easedProgress,
-      y: 0,
-      duration: 0.3,
-      ease: "power3.out",
-    });
-
-    card.classList.toggle("hidden", easedProgress <= 0.1);
-    return;
-  }
-
-  let easedOpacity = 1;
-  let yPosition = 0;
-
-  if (phaseLocalProgress <= 0.3) {
-    easedOpacity = gsap.utils.mapRange(0, 0.3, 0, 1, phaseLocalProgress);
-    yPosition = 0;
-  } else if (phaseLocalProgress <= 0.7) {
-    easedOpacity = 1;
-    yPosition = 0;
-  } else {
-    const exitProgress = gsap.utils.mapRange(0.8, 1, 0, 1, phaseLocalProgress);
-    easedOpacity = Math.max(0, 1 - exitProgress);
-
-    const navbarHeight =
-      parseInt(
-        getComputedStyle(document.documentElement).getPropertyValue(
-          "--navbar-height"
-        )
-      ) || 80;
-    const buffer = 20;
-    const maxDistance = window.innerHeight / 2 + navbarHeight + buffer;
-    yPosition = -maxDistance * exitProgress;
-  }
-
-  gsap.to(card, {
-    opacity: easedOpacity,
-    y: yPosition,
-    duration: 0.25,
-    ease: "power2.out",
-    overwrite: "auto",
-    immediateRender: false,
-  });
-
-  card.classList.toggle("hidden", easedOpacity <= 0.05);
-}
-
-function animateProjectPhases(
-  header,
-  section,
-  currentPhase,
-  phaseLocalProgress,
-  totalProjects
-) {
-  gsap.to(header, {
-    opacity: 0,
-    y: -30,
-    duration: 0.25,
-    ease: "power2.out",
-    overwrite: "auto",
-    immediateRender: false,
-  });
-  header.classList.add("hidden");
-
-  const projectIndex = currentPhase - 1;
-
-  for (let index = 0; index < totalProjects; index++) {
-    const card = section.querySelector(`[data-project="${index}"]`);
-    if (!card) continue;
-
-    if (index === projectIndex) {
-      animateCurrentProject(card, index, totalProjects, phaseLocalProgress);
-      continue;
-    }
-
-    const currentY = gsap.getProperty(card, "y");
-    gsap.to(card, {
-      opacity: 0,
-      y: currentY,
-      duration: 0.25,
-      ease: "power2.out",
-      overwrite: "auto",
-      immediateRender: false,
-    });
-    card.classList.add("hidden");
-  }
-}
+let headerEl = null;
+let cardEls = [];
 
 function initPinnedScroll() {
   if (!props.projects.length) return;
@@ -181,19 +50,69 @@ function initPinnedScroll() {
   ).matches;
   if (reducedMotion) return;
 
-  const header = section.querySelector(".projects-header");
-  if (!header) return;
+  headerEl = section.querySelector(".projects-header");
+  if (!headerEl) return;
 
-  gsap.set(header, { opacity: 1, y: 0 });
+  cardEls = props.projects
+    .map((_, index) => section.querySelector(`[data-project="${index}"]`))
+    .filter(Boolean);
 
-  props.projects.forEach((_, index) => {
-    const card = section.querySelector(`[data-project="${index}"]`);
-    if (!card) return;
+  const getNavbarHeight = () =>
+    parseInt(
+      getComputedStyle(document.documentElement).getPropertyValue(
+        "--navbar-height"
+      )
+    ) || 80;
+
+  const headerOpacityTo = gsap.quickTo(headerEl, "opacity", {
+    duration: 0.2,
+    ease: "power2.out",
+    overwrite: "auto",
+  });
+  const headerYTo = gsap.quickTo(headerEl, "y", {
+    duration: 0.2,
+    ease: "power2.out",
+    overwrite: "auto",
+  });
+
+  const cardOpacityTo = cardEls.map((card) =>
+    gsap.quickTo(card, "opacity", {
+      duration: 0.25,
+      ease: "power2.out",
+      overwrite: "auto",
+    })
+  );
+  const cardYTo = cardEls.map((card) =>
+    gsap.quickTo(card, "y", {
+      duration: 0.25,
+      ease: "power2.out",
+      overwrite: "auto",
+    })
+  );
+
+  gsap.set(headerEl, { opacity: 1, y: 0 });
+  cardEls.forEach((card) => {
     gsap.set(card, { opacity: 0, y: 0 });
     card.classList.add("hidden");
   });
 
   const totalPhases = 1 + props.projects.length;
+  let navbarHeight = getNavbarHeight();
+  let visibleIndex = null;
+
+  const setVisibleIndex = (nextIndex) => {
+    if (visibleIndex === nextIndex) return;
+    visibleIndex = nextIndex;
+
+    cardEls.forEach((card, index) => {
+      const isVisible = nextIndex === index;
+      card.classList.toggle("hidden", !isVisible);
+      if (!isVisible) {
+        cardOpacityTo[index](0);
+        cardYTo[index](0);
+      }
+    });
+  };
 
   trigger = ScrollTrigger.create({
     trigger: section,
@@ -206,10 +125,16 @@ function initPinnedScroll() {
     refreshPriority: -1,
     fastScrollEnd: true,
     invalidateOnRefresh: true,
+    onRefresh: () => {
+      navbarHeight = getNavbarHeight();
+    },
     onUpdate: (self) => {
       const progress = self.progress;
       const phaseProgress = progress * totalPhases;
-      const currentPhase = Math.floor(phaseProgress);
+      const currentPhase = Math.min(
+        totalPhases - 1,
+        Math.floor(phaseProgress)
+      );
       let phaseLocalProgress = phaseProgress - currentPhase;
 
       if (phaseLocalProgress > 0.2 && phaseLocalProgress < 0.8) {
@@ -219,21 +144,53 @@ function initPinnedScroll() {
       }
 
       if (currentPhase === 0) {
-        animateTitlePhase(
-          header,
-          section,
-          phaseLocalProgress,
-          props.projects.length
-        );
-      } else if (currentPhase >= 1 && currentPhase <= props.projects.length) {
-        animateProjectPhases(
-          header,
-          section,
-          currentPhase,
-          phaseLocalProgress,
-          props.projects.length
-        );
+        setVisibleIndex(null);
+
+        const titleMaxDistance = window.innerHeight / 2 + navbarHeight + 150;
+        const headerOpacity = Math.max(0, 1 - phaseLocalProgress * 1.8);
+
+        headerOpacityTo(headerOpacity);
+        headerYTo(-titleMaxDistance * phaseLocalProgress);
+        headerEl.classList.toggle("hidden", headerOpacity < 0.1);
+        return;
       }
+
+      const projectIndex = currentPhase - 1;
+      setVisibleIndex(projectIndex);
+
+      headerOpacityTo(0);
+      headerYTo(-30);
+      headerEl.classList.add("hidden");
+
+      const isLastProject = projectIndex === cardEls.length - 1;
+      let opacity = 1;
+      let y = 0;
+
+      if (isLastProject) {
+        opacity =
+          phaseLocalProgress <= 0.5
+            ? gsap.utils.mapRange(0, 0.5, 0, 1, phaseLocalProgress)
+            : 1;
+      } else if (phaseLocalProgress <= 0.3) {
+        opacity = gsap.utils.mapRange(0, 0.3, 0, 1, phaseLocalProgress);
+      } else if (phaseLocalProgress > 0.7) {
+        const exitProgress = Math.min(
+          1,
+          Math.max(0, gsap.utils.mapRange(0.8, 1, 0, 1, phaseLocalProgress))
+        );
+        opacity = Math.max(0, 1 - exitProgress);
+
+        const maxDistance = window.innerHeight / 2 + navbarHeight + 20;
+        y = -maxDistance * exitProgress;
+      }
+
+      const activeIndex = Math.min(
+        cardEls.length - 1,
+        Math.max(0, projectIndex)
+      );
+      cardOpacityTo[activeIndex](opacity);
+      cardYTo[activeIndex](y);
+      cardEls[activeIndex]?.classList.toggle("hidden", opacity <= 0.05);
     },
   });
 }
@@ -248,6 +205,8 @@ useIntersectionOnce(
 
 onUnmounted(() => {
   cancelIdle?.();
+  if (headerEl) gsap.killTweensOf(headerEl);
+  if (cardEls.length) gsap.killTweensOf(cardEls);
   trigger?.kill();
   trigger = null;
 });
