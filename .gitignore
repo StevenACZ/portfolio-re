@@ -41,6 +41,7 @@ CLAUDE.md
 
 # Local tooling
 .chunkhound/
+.chunkhound.json
 
 # Logs
 logs

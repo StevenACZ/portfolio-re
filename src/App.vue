@@ -39,6 +39,7 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from "vue";
 import { gsap, ScrollTrigger } from "./lib/gsap";
+import { runIdle } from "./utils/idle";
 import BackToTop from "./components/BackToTop.vue";
 import Footer from "./components/Footer.vue";
 import HeroSection from "./components/HeroSection.vue";
@@ -52,8 +53,23 @@ import { experiences } from "./data/experiences";
 import { projects } from "./data/projects";
 
 const activeSection = ref("hero");
-let sectionTriggers = [];
 let resizeTimeout = null;
+let sectionObserver = null;
+let scrollTween = null;
+let restoreScrollBehavior = null;
+
+function setScrollBehaviorAuto() {
+  const html = document.documentElement;
+  const previous = html.style.scrollBehavior;
+  html.style.scrollBehavior = "auto";
+  return () => {
+    html.style.scrollBehavior = previous;
+  };
+}
+
+function refreshScrollTriggerSoon() {
+  runIdle(() => ScrollTrigger.refresh(), { timeout: 200 });
+}
 
 function getNavbarHeight() {
   const nav = document.querySelector(".navbar");
@@ -76,72 +92,103 @@ function handleNavClick(sectionId) {
   const targetY = target.getBoundingClientRect().top + window.pageYOffset;
   const y = targetY - (sectionId === "hero" ? 0 : navbarHeight);
 
-  gsap.to(window, {
+  const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+
+  restoreScrollBehavior?.();
+  restoreScrollBehavior = null;
+
+  scrollTween?.kill?.();
+  scrollTween = null;
+
+  if (reducedMotion) {
+    const restore = setScrollBehaviorAuto();
+    window.scrollTo(0, y);
+    restore();
+    refreshScrollTriggerSoon();
+    return;
+  }
+
+  restoreScrollBehavior = setScrollBehaviorAuto();
+
+  const root = document.scrollingElement || document.documentElement;
+  const state = { y: root.scrollTop || 0 };
+
+  function cleanup() {
+    scrollTween = null;
+    restoreScrollBehavior?.();
+    restoreScrollBehavior = null;
+    refreshScrollTriggerSoon();
+  }
+
+  scrollTween = gsap.to(state, {
+    y,
     duration: 1.2,
-    scrollTo: { y, autoKill: false },
     ease: "power2.inOut",
-    onComplete: () => {
-      if (window.requestIdleCallback) {
-        window.requestIdleCallback(() => ScrollTrigger.refresh(), {
-          timeout: 200,
-        });
-      } else {
-        window.setTimeout(() => ScrollTrigger.refresh(), 16);
-      }
+    onUpdate: () => {
+      root.scrollTop = state.y;
     },
+    onComplete: cleanup,
+    onInterrupt: cleanup,
+    overwrite: true,
   });
 }
 
 function handleResize() {
   if (resizeTimeout) window.clearTimeout(resizeTimeout);
   resizeTimeout = window.setTimeout(() => {
-    if (window.requestIdleCallback) {
-      window.requestIdleCallback(() => ScrollTrigger.refresh(), {
-        timeout: 200,
-      });
-    } else {
-      window.setTimeout(() => ScrollTrigger.refresh(), 16);
-    }
+    refreshScrollTriggerSoon();
   }, 100);
 }
 
 onMounted(() => {
   if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+  const restore = setScrollBehaviorAuto();
   window.scrollTo(0, 0);
   document.documentElement.scrollTop = 0;
   document.body.scrollTop = 0;
+  restore();
 
-  const sections = [
-    { id: "hero", name: "hero" },
-    { id: "skills", name: "skills" },
-    { id: "projects", name: "projects" },
-    { id: "macos-apps", name: "macos-apps" },
-    { id: "timeline", name: "timeline" },
-    { id: "footer", name: "footer" },
+  const sectionIds = [
+    "hero",
+    "skills",
+    "projects",
+    "macos-apps",
+    "timeline",
+    "footer",
   ];
 
-  sectionTriggers = sections
-    .map((section) => {
-      const el = document.getElementById(section.id);
-      if (!el) return null;
+  if (typeof IntersectionObserver !== "undefined") {
+    sectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          if (!entry.target?.id) return;
+          activeSection.value = entry.target.id;
+        });
+      },
+      { rootMargin: "-20% 0px -79% 0px", threshold: 0 }
+    );
 
-      return ScrollTrigger.create({
-        trigger: el,
-        start: "top 20%",
-        end: "bottom 20%",
-        onEnter: () => (activeSection.value = section.name),
-        onEnterBack: () => (activeSection.value = section.name),
-      });
-    })
-    .filter(Boolean);
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      sectionObserver.observe(el);
+    });
+  }
 
   window.addEventListener("resize", handleResize, { passive: true });
 });
 
 onUnmounted(() => {
-  sectionTriggers.forEach((st) => st.kill());
-  sectionTriggers = [];
+  sectionObserver?.disconnect();
+  sectionObserver = null;
   window.removeEventListener("resize", handleResize);
   if (resizeTimeout) window.clearTimeout(resizeTimeout);
+  restoreScrollBehavior?.();
+  restoreScrollBehavior = null;
+  scrollTween?.kill?.();
+  scrollTween = null;
 });
 </script>

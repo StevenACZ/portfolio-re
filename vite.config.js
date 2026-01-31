@@ -23,13 +23,14 @@ export default defineConfig({
   plugins: [
     ignoreNuxtRequests(),
     vue(),
-    visualizer({
-      filename: "dist/stats.html",
-      open: false,
-      gzipSize: true,
-      brotliSize: true,
-    }),
-  ],
+    process.env.ANALYZE === "true" &&
+      visualizer({
+        filename: "dist/stats.html",
+        open: false,
+        gzipSize: true,
+        brotliSize: true,
+      }),
+  ].filter(Boolean),
   server: {
     port: 3000,
     open: true,
