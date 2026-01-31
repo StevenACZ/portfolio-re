@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useEffect, useState } from "react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export const useScrollSpy = (sections) => {
-  const [activeSection, setActiveSection] = useState('hero');
+  const [activeSection, setActiveSection] = useState("hero");
 
   useEffect(() => {
     if (!sections || sections.length === 0) return;
@@ -11,8 +11,8 @@ export const useScrollSpy = (sections) => {
     const scrollTriggers = sections.map((section) => {
       return ScrollTrigger.create({
         trigger: section.ref.current,
-        start: 'top 20%',
-        end: 'bottom 20%',
+        start: "top 20%",
+        end: "bottom 20%",
         onEnter: () => setActiveSection(section.name),
         onEnterBack: () => setActiveSection(section.name),
       });

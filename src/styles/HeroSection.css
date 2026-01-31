@@ -73,7 +73,8 @@
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: heroFadeInUp 0.8s ease-out 0.2s forwards,
+  animation:
+    heroFadeInUp 0.8s ease-out 0.2s forwards,
     gradientShift 4s ease-in-out infinite;
   opacity: 0;
   transform: translateY(30px);

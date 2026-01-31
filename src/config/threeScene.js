@@ -91,8 +91,7 @@ export const PARTICLE_SIZE_CONFIG = {
  * Determine performance level based on device capabilities
  */
 export function getPerformanceLevel(isMobile) {
-  const isLowEnd =
-    navigator.hardwareConcurrency < 4 || window.innerWidth < 768;
+  const isLowEnd = navigator.hardwareConcurrency < 4 || window.innerWidth < 768;
   const hasLowMemory = navigator.deviceMemory && navigator.deviceMemory < 4;
   const isSlowConnection =
     navigator.connection &&

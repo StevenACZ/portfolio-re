@@ -1,22 +1,22 @@
-import { useState, useEffect } from 'react';
-import { useInView } from 'react-intersection-observer';
+import { useState, useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 
-const LazyImage = ({ 
-  src, 
-  alt, 
-  className = '', 
+const LazyImage = ({
+  src,
+  alt,
+  className = "",
   placeholder = null,
   threshold = 0.1,
-  skeletonHeight = '200px',
-  fadeInDuration = 300
+  skeletonHeight = "200px",
+  fadeInDuration = 300,
 }) => {
-  const [ref, inView] = useInView({ 
-    threshold, 
+  const [ref, inView] = useInView({
+    threshold,
     triggerOnce: true,
-    rootMargin: '50px' // Start loading 50px before entering viewport
+    rootMargin: "50px", // Start loading 50px before entering viewport
   });
-  
-  const [imageSrc, setImageSrc] = useState('');
+
+  const [imageSrc, setImageSrc] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
 
@@ -36,14 +36,14 @@ const LazyImage = ({
   };
 
   return (
-    <div 
-      ref={ref} 
+    <div
+      ref={ref}
       className={`lazy-image-container ${className}`}
       style={{ minHeight: skeletonHeight }}
     >
       {/* Skeleton placeholder */}
       {!imageSrc && !hasError && (
-        <div 
+        <div
           className="image-skeleton"
           style={{ height: skeletonHeight }}
           role="img"
@@ -64,14 +64,16 @@ const LazyImage = ({
 
       {/* Error state */}
       {hasError && (
-        <div 
+        <div
           className="image-error"
           style={{ height: skeletonHeight }}
           role="img"
           aria-describedby="image-error-text"
         >
           <div className="error-content">
-            <span className="error-icon" aria-hidden="true">📷</span>
+            <span className="error-icon" aria-hidden="true">
+              📷
+            </span>
             <p id="image-error-text">Image not available</p>
           </div>
         </div>
@@ -84,10 +86,10 @@ const LazyImage = ({
           alt={alt}
           onLoad={handleImageLoad}
           onError={handleImageError}
-          className={`lazy-image ${isLoaded ? 'loaded' : 'loading'}`}
+          className={`lazy-image ${isLoaded ? "loaded" : "loading"}`}
           style={{
             transition: `opacity ${fadeInDuration}ms ease-in-out`,
-            opacity: isLoaded ? 1 : 0
+            opacity: isLoaded ? 1 : 0,
           }}
           loading="lazy" // Native lazy loading as fallback
         />

@@ -113,7 +113,8 @@
 .macos-app-card:hover {
   transform: translateY(-8px);
   border-color: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5),
+  box-shadow:
+    0 20px 40px -10px rgba(0, 0, 0, 0.5),
     0 0 60px -20px rgba(100, 100, 100, 0.15);
 }
 
@@ -225,12 +226,16 @@
   border-radius: 12px;
   text-decoration: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 4px 15px rgba(255, 255, 255, 0.15),
+    0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .macos-apps-link:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2), 0 2px 8px rgba(0, 0, 0, 0.15);
+  box-shadow:
+    0 8px 25px rgba(255, 255, 255, 0.2),
+    0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .macos-apps-link:active {

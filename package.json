@@ -7,7 +7,12 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "lint:fix": "eslint . --ext js,jsx --report-unused-disable-directives --fix",
+    "test": "vitest",
+    "test:run": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "@dr.pogodin/react-helmet": "^3.0.2",
@@ -28,10 +33,12 @@
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.1",
     "eslint": "^8.45.0",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
     "jsdom": "^26.1.0",
+    "prettier": "^3.7.4",
     "rollup-plugin-visualizer": "^6.0.3",
     "terser": "^5.43.1",
     "vite": "^7.1.3",

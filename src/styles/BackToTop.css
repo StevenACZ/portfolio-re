@@ -21,7 +21,9 @@
   visibility: hidden;
   transform: translateY(20px) scale(0.9);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .back-to-top.visible {
@@ -32,7 +34,8 @@
 
 .back-to-top:hover {
   background: rgba(59, 130, 246, 0.2);
-  box-shadow: 0 8px 30px rgba(59, 130, 246, 0.3),
+  box-shadow:
+    0 8px 30px rgba(59, 130, 246, 0.3),
     0 0 0 1px rgba(59, 130, 246, 0.3);
   transform: translateY(-4px) scale(1.05);
 }

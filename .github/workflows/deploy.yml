@@ -1,0 +1,69 @@
+name: Deploy Portfolio (SSH)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: "deploy-portfolio"
+      cancel-in-progress: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.4"
+
+      - name: Install
+        run: bun install --frozen-lockfile
+
+      - name: Format Check
+        run: bun run format:check
+
+      - name: Lint
+        run: bun run lint
+
+      - name: Unit Tests
+        run: bun run test:run
+
+      - name: Build
+        run: bun run build
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          port="${{ secrets.SSH_PORT || '22' }}"
+          ssh-keyscan -H -p "$port" "${{ secrets.HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy to Oracle VM via rsync
+        run: |
+          port="${{ secrets.SSH_PORT || '22' }}"
+          target="/home/ubuntu/applications/portfolio/"
+
+          ssh -i ~/.ssh/deploy_key -p "$port" "${{ secrets.USERNAME }}@${{ secrets.HOST }}" "mkdir -p $target"
+
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/deploy_key -p $port" \
+            dist/ \
+            "${{ secrets.USERNAME }}@${{ secrets.HOST }}:$target"
+
+      - name: Verify deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            set -e
+            test -f /home/ubuntu/applications/portfolio/index.html
+            ls -la /home/ubuntu/applications/portfolio | head -n 50

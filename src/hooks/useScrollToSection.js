@@ -1,5 +1,5 @@
-import { useCallback } from 'react';
-import { gsap } from 'gsap';
+import { useCallback } from "react";
+import { gsap } from "gsap";
 
 export const useScrollToSection = (heroRef, navbarRef) => {
   const scrollToSection = useCallback(
@@ -10,7 +10,7 @@ export const useScrollToSection = (heroRef, navbarRef) => {
           ? navbarRef.current.offsetHeight
           : parseInt(
               getComputedStyle(document.documentElement).getPropertyValue(
-                '--navbar-height'
+                "--navbar-height"
               )
             ) || 80;
 
@@ -26,7 +26,7 @@ export const useScrollToSection = (heroRef, navbarRef) => {
               y: targetY - (sectionRef === heroRef ? 0 : navbarHeight),
               autoKill: false,
             },
-            ease: 'power2.inOut',
+            ease: "power2.inOut",
             onComplete: () => {
               // Yield to main thread after scroll complete
               if (window.requestIdleCallback) {
@@ -41,7 +41,7 @@ export const useScrollToSection = (heroRef, navbarRef) => {
           });
         } else {
           // eslint-disable-next-line no-console
-          console.warn('GSAP ScrollTo no disponible, usando scroll nativo');
+          console.warn("GSAP ScrollTo no disponible, usando scroll nativo");
 
           // Fallback scroll nativo con cálculo preciso
           const finalTargetY =
@@ -49,7 +49,7 @@ export const useScrollToSection = (heroRef, navbarRef) => {
 
           window.scrollTo({
             top: finalTargetY,
-            behavior: 'smooth',
+            behavior: "smooth",
           });
         }
       }

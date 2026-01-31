@@ -1,9 +1,9 @@
-import { useRef } from 'react';
-import { MapPin } from 'lucide-react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useGSAP } from '@gsap/react';
-import '../styles/Timeline.css';
+import { useRef } from "react";
+import { MapPin } from "lucide-react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+import "../styles/Timeline.css";
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -14,7 +14,9 @@ const TimelineSection = ({ experiences, timelineRef }) => {
   // useGSAP hook for timeline animations
   useGSAP(
     () => {
-      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
 
       if (reducedMotion) {
         return;
@@ -23,22 +25,23 @@ const TimelineSection = ({ experiences, timelineRef }) => {
       // Wait for elements to be rendered
       const timer = setTimeout(() => {
         // Force initial state for timeline line
-        const timelineLine = containerRef.current?.querySelector('.timeline-line');
+        const timelineLine =
+          containerRef.current?.querySelector(".timeline-line");
         if (timelineLine) {
           gsap.set(timelineLine, {
             scaleY: 0,
-            transformOrigin: 'top center',
-            visibility: 'visible',
+            transformOrigin: "top center",
+            visibility: "visible",
           });
 
           // Timeline line draw animation - scroll-linked
           gsap.to(timelineLine, {
             scaleY: 1,
-            ease: 'none',
+            ease: "none",
             scrollTrigger: {
               trigger: containerRef.current,
-              start: 'top 80%',
-              end: 'bottom 100%', // Complete the animation when timeline section fully exits viewport
+              start: "top 80%",
+              end: "bottom 100%", // Complete the animation when timeline section fully exits viewport
               scrub: 1.5,
               markers: false, // Set to true for debugging
             },
@@ -46,13 +49,14 @@ const TimelineSection = ({ experiences, timelineRef }) => {
         }
 
         // Force initial state for timeline items
-        const timelineItems = containerRef.current?.querySelectorAll('.timeline-item');
+        const timelineItems =
+          containerRef.current?.querySelectorAll(".timeline-item");
         if (timelineItems && timelineItems.length > 0) {
           timelineItems.forEach((item) => {
             gsap.set(item, {
               y: 50,
               opacity: 0,
-              visibility: 'visible',
+              visibility: "visible",
             });
 
             // Individual animation for each timeline item
@@ -60,11 +64,11 @@ const TimelineSection = ({ experiences, timelineRef }) => {
               y: 0,
               opacity: 1,
               duration: 0.8,
-              ease: 'power2.out',
+              ease: "power2.out",
               scrollTrigger: {
                 trigger: item,
-                start: 'top 85%',
-                toggleActions: 'play none none reverse',
+                start: "top 85%",
+                toggleActions: "play none none reverse",
                 fastScrollEnd: true,
               },
             });
@@ -88,7 +92,7 @@ const TimelineSection = ({ experiences, timelineRef }) => {
           {experiences.map((exp, index) => (
             <div
               key={exp.id}
-              className={`timeline-item ${index % 2 === 0 ? 'left' : 'right'}`}
+              className={`timeline-item ${index % 2 === 0 ? "left" : "right"}`}
             >
               <div className="timeline-dot"></div>
               <div className="timeline-card">

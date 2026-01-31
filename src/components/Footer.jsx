@@ -1,26 +1,26 @@
-import { Github, Linkedin, Mail } from 'lucide-react';
-import '../styles/Footer.css';
+import { Github, Linkedin, Mail } from "lucide-react";
+import "../styles/Footer.css";
 
 const Footer = ({ footerRef }) => {
   const currentYear = new Date().getFullYear();
 
   const socialLinks = [
     {
-      href: 'mailto:scoaila@proton.me',
+      href: "mailto:scoaila@proton.me",
       icon: Mail,
-      label: 'scoaila@proton.me',
+      label: "scoaila@proton.me",
       isEmail: true,
     },
     {
-      href: 'https://www.linkedin.com/in/stevenacz/',
+      href: "https://www.linkedin.com/in/stevenacz/",
       icon: Linkedin,
-      label: 'LinkedIn',
+      label: "LinkedIn",
       isExternal: true,
     },
     {
-      href: 'https://github.com/StevenACZ',
+      href: "https://github.com/StevenACZ",
       icon: Github,
-      label: 'GitHub',
+      label: "GitHub",
       isExternal: true,
     },
   ];
@@ -36,7 +36,7 @@ const Footer = ({ footerRef }) => {
               opportunities.
             </p>
           </div>
-          <nav 
+          <nav
             className="footer-links"
             role="navigation"
             aria-label="Social media and contact links"
@@ -48,12 +48,12 @@ const Footer = ({ footerRef }) => {
                   key={index}
                   href={link.href}
                   className="footer-link"
-                  target={link.isExternal ? '_blank' : undefined}
-                  rel={link.isExternal ? 'noopener noreferrer' : undefined}
-                  aria-label={`Contact via ${link.label}${link.isExternal ? ' (opens in new tab)' : ''}`}
+                  target={link.isExternal ? "_blank" : undefined}
+                  rel={link.isExternal ? "noopener noreferrer" : undefined}
+                  aria-label={`Contact via ${link.label}${link.isExternal ? " (opens in new tab)" : ""}`}
                 >
-                  <IconComponent 
-                    size={20} 
+                  <IconComponent
+                    size={20}
                     aria-hidden="true"
                     focusable="false"
                   />
@@ -64,7 +64,7 @@ const Footer = ({ footerRef }) => {
           </nav>
         </div>
         <div className="footer-bottom">
-          <p 
+          <p
             role="contentinfo"
             aria-label={`Copyright ${currentYear} Steven Coaila Zaa`}
           >

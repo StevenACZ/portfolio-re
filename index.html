@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -10,20 +10,49 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- Critical font weights with display swap for better Core Web Vitals -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      as="style"
+      onload="
+        this.onload = null;
+        this.rel = 'stylesheet';
+      "
+    />
     <!-- Full font loading with swap for better UX -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"></noscript>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      media="print"
+      onload="this.media = 'all'"
+    />
+    <noscript
+      ><link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+    /></noscript>
 
     <!-- Critical Resource Preloading for Core Web Vitals -->
     <!-- Preload hero images for LCP optimization -->
-    <link rel="preload" href="/peso-tracker.webp" as="image" fetchpriority="high" type="image/webp">
-    <link rel="preload" href="/buen-mouse.webp" as="image" fetchpriority="low" type="image/webp">
+    <link
+      rel="preload"
+      href="/peso-tracker.webp"
+      as="image"
+      fetchpriority="high"
+      type="image/webp"
+    />
+    <link
+      rel="preload"
+      href="/buen-mouse.webp"
+      as="image"
+      fetchpriority="low"
+      type="image/webp"
+    />
     <!-- Preload favicon for better perceived performance -->
-    <link rel="preload" href="/favicon.ico" as="image" type="image/x-icon">
+    <link rel="preload" href="/favicon.ico" as="image" type="image/x-icon" />
     <!-- DNS prefetch for external domains -->
-    <link rel="dns-prefetch" href="//fonts.googleapis.com">
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
 
     <!-- SEO Meta Tags -->
     <meta
@@ -58,7 +87,10 @@
       content="Full Stack Developer specializing in React, Swift, and modern web/mobile development. Explore my portfolio of innovative projects."
     />
     <meta property="og:image" content="https://stevenacz.com/og-image.webp" />
-    <meta property="og:image:alt" content="Steven Coaila Zaa Portfolio - Full Stack Developer" />
+    <meta
+      property="og:image:alt"
+      content="Steven Coaila Zaa Portfolio - Full Stack Developer"
+    />
     <meta property="og:image:width" content="1920" />
     <meta property="og:image:height" content="1080" />
     <meta property="og:locale" content="en_US" />
@@ -67,8 +99,14 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://stevenacz.com" />
-    <meta name="twitter:title" content="Steven Coaila Zaa - Full Stack Developer" />
-    <meta name="twitter:description" content="Full Stack Developer specializing in React, Swift, and modern web/mobile development. Explore my portfolio of innovative projects." />
+    <meta
+      name="twitter:title"
+      content="Steven Coaila Zaa - Full Stack Developer"
+    />
+    <meta
+      name="twitter:description"
+      content="Full Stack Developer specializing in React, Swift, and modern web/mobile development. Explore my portfolio of innovative projects."
+    />
     <meta name="twitter:image" content="https://stevenacz.com/og-image.webp" />
 
     <!-- Additional Meta Tags -->
@@ -79,16 +117,19 @@
       content="black-translucent"
     />
     <meta name="format-detection" content="telephone=no" />
-    
+
     <!-- Modern Security & Performance Meta Tags -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff" />
     <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <!-- Content Security Policy - Allow required external resources -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://cloudflareinsights.com;" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://cloudflareinsights.com;"
+    />
     <meta name="color-scheme" content="dark light" />
     <meta name="supported-color-schemes" content="dark light" />
-    
+
     <!-- Web App Manifest -->
     <link rel="manifest" href="/manifest.json" />
     <meta name="apple-mobile-web-app-title" content="Steven ACZ Portfolio" />
@@ -136,7 +177,7 @@
                 "name": "JavaScript"
               },
               {
-                "@type": "Thing", 
+                "@type": "Thing",
                 "name": "TypeScript"
               },
               {
@@ -227,7 +268,7 @@
               },
               {
                 "@type": "SoftwareApplication",
-                "@id": "https://stevenacz.com/#buenmouse", 
+                "@id": "https://stevenacz.com/#buenmouse",
                 "name": "BuenMouse",
                 "description": "Productivity application for macOS that enhances mouse/trackpad functionality through system event interception",
                 "url": "https://github.com/StevenACZ/BuenMouse",

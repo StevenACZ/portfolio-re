@@ -125,7 +125,8 @@
   background: rgba(255, 255, 255, 0.08);
   border-color: var(--skill-color, rgba(255, 255, 255, 0.2));
   transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3),
+  box-shadow:
+    0 8px 25px rgba(0, 0, 0, 0.3),
     0 0 20px color-mix(in srgb, var(--skill-color) 20%, transparent);
 }
 

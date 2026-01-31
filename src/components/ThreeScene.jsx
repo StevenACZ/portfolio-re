@@ -40,10 +40,7 @@ export const ThreeScene = ({ canvasRef, onLoaded }) => {
   }, []);
 
   // Get particle configuration based on device
-  const particleConfig = useMemo(
-    () => getParticleConfig(isMobile),
-    [isMobile]
-  );
+  const particleConfig = useMemo(() => getParticleConfig(isMobile), [isMobile]);
 
   // Initialize Three.js scene
   useEffect(() => {
@@ -70,7 +67,9 @@ export const ThreeScene = ({ canvasRef, onLoaded }) => {
       antialias: !isMobile,
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+    renderer.setPixelRatio(
+      Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2)
+    );
     rendererRef.current = renderer;
 
     // Particle system setup
@@ -124,14 +123,20 @@ export const ThreeScene = ({ canvasRef, onLoaded }) => {
       const orbitConfig = isMobile ? ORBIT_CONFIG.mobile : ORBIT_CONFIG.desktop;
 
       const processBatch = () => {
-        const endIndex = Math.min(currentIndex + batchSize, particleConfig.count);
+        const endIndex = Math.min(
+          currentIndex + batchSize,
+          particleConfig.count
+        );
 
         for (let i = currentIndex; i < endIndex; i++) {
           // Size: planets (large) or moons (small)
           const isPlanet = Math.random() < PARTICLE_SIZE_CONFIG.planetChance;
           const scale = isPlanet
-            ? Math.random() * particleConfig.size + PARTICLE_SIZE_CONFIG.planetMinScale
-            : Math.random() * (particleConfig.size * PARTICLE_SIZE_CONFIG.moonSizeMultiplier) +
+            ? Math.random() * particleConfig.size +
+              PARTICLE_SIZE_CONFIG.planetMinScale
+            : Math.random() *
+                (particleConfig.size *
+                  PARTICLE_SIZE_CONFIG.moonSizeMultiplier) +
               PARTICLE_SIZE_CONFIG.moonMinScale;
 
           const sphereGeometry = baseGeometry.clone();
@@ -157,8 +162,7 @@ export const ThreeScene = ({ canvasRef, onLoaded }) => {
           // Orbital properties
           sphere.userData = {
             orbitRadius: radius,
-            orbitSpeed:
-              (Math.random() * 0.002 + 0.0005) * particleConfig.speed,
+            orbitSpeed: (Math.random() * 0.002 + 0.0005) * particleConfig.speed,
             orbitAngle: finalAngle,
             originalPosition: sphere.position.clone(),
             baseScale: scale,
@@ -205,7 +209,8 @@ export const ThreeScene = ({ canvasRef, onLoaded }) => {
 
           // Orbital motion
           userData.currentAngle =
-            (userData.currentAngle || userData.orbitAngle) + userData.orbitSpeed;
+            (userData.currentAngle || userData.orbitAngle) +
+            userData.orbitSpeed;
 
           const baseX = Math.cos(userData.currentAngle) * userData.orbitRadius;
           const baseY =

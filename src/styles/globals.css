@@ -11,15 +11,15 @@
   --card-bg: #111111;
   --gradient-primary: linear-gradient(135deg, var(--accent-color), #8b5cf6);
 
-  --font-family: 'Inter', sans-serif;
+  --font-family: "Inter", sans-serif;
   --transition: all 0.3s ease-out;
   --transition-fast: all 0.2s ease-out;
   --transition-slow: all 0.4s ease-out;
   --border-radius: 12px;
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
-    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   --navbar-height: 80px;
 
   /* ===== Animation Variables ===== */
@@ -29,14 +29,14 @@
   --animation-duration-hero: 1s;
   --animation-duration-hero-long: 1.2s;
   --animation-duration-hero-text: 0.8s;
-  
+
   --animation-easing-power2: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --animation-easing-power3: cubic-bezier(0.215, 0.61, 0.355, 1);
   --animation-easing-back: cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  
+
   --animation-delay-stagger: 0.1s;
   --animation-delay-hero: 0.5s;
-  
+
   --animation-distance-small: 30px;
   --animation-distance-medium: 50px;
   --animation-distance-large: 60px;
@@ -75,7 +75,7 @@ body {
 }
 
 .loading::after {
-  content: '';
+  content: "";
   width: 20px;
   height: 20px;
   margin-left: 10px;

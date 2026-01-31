@@ -92,7 +92,13 @@ export function useProjectsScroll(sectionRef, projects) {
 }
 
 // Helper: Animate title phase (phase 0)
-function animateTitlePhase(header, section, projects, phaseLocalProgress, gsap) {
+function animateTitlePhase(
+  header,
+  section,
+  projects,
+  phaseLocalProgress,
+  gsap
+) {
   const navbarHeight =
     parseInt(
       getComputedStyle(document.documentElement).getPropertyValue(

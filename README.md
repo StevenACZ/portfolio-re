@@ -19,15 +19,15 @@ A modern, interactive portfolio featuring 3D graphics, smooth animations, and a 
 
 ## ✨ Features
 
-| Feature | Description |
-|---------|-------------|
+| Feature                    | Description                                                            |
+| -------------------------- | ---------------------------------------------------------------------- |
 | 🎮 **3D Interactive Hero** | WebGL particle system with 150+ animated spheres and mouse interaction |
-| ⚡ **Smooth Animations** | GSAP-powered animations with ScrollTrigger integration |
-| 📱 **Fully Responsive** | Mobile-first design with touch interactions |
-| 🎯 **Apple-Style Scroll** | Magnetic scroll zones for project presentation |
-| ♿ **Accessible** | WCAG 2.1 AA compliant with reduced motion support |
-| 🔍 **SEO Optimized** | JSON-LD structured data, meta tags, and Open Graph |
-| ⚡ **Blazing Fast** | ~115kb gzipped initial load with lazy loading |
+| ⚡ **Smooth Animations**   | GSAP-powered animations with ScrollTrigger integration                 |
+| 📱 **Fully Responsive**    | Mobile-first design with touch interactions                            |
+| 🎯 **Apple-Style Scroll**  | Magnetic scroll zones for project presentation                         |
+| ♿ **Accessible**          | WCAG 2.1 AA compliant with reduced motion support                      |
+| 🔍 **SEO Optimized**       | JSON-LD structured data, meta tags, and Open Graph                     |
+| ⚡ **Blazing Fast**        | ~115kb gzipped initial load with lazy loading                          |
 
 <br />
 
@@ -63,7 +63,7 @@ A modern, interactive portfolio featuring 3D graphics, smooth animations, and a 
 ### Prerequisites
 
 - Node.js 18+
-- npm or yarn
+- Bun
 
 ### Installation
 
@@ -75,22 +75,23 @@ git clone https://github.com/StevenACZ/portfolio.git
 cd portfolio
 
 # Install dependencies
-npm install
+bun install
 
 # Start development server
-npm run dev
+bun run dev
 ```
 
 The app will be available at `http://localhost:3000`
 
 ### Available Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Create production build |
-| `npm run preview` | Preview production build |
-| `npm run lint` | Run ESLint checks |
+| Command           | Description              |
+| ----------------- | ------------------------ |
+| `bun run dev`     | Start development server |
+| `bun run build`   | Create production build  |
+| `bun run preview` | Preview production build |
+| `bun run format`  | Format with Prettier     |
+| `bun run lint`    | Run ESLint checks        |
 
 <br />
 
@@ -130,6 +131,7 @@ src/
 <td width="33%" align="center">
 
 ### PesoTracker
+
 **macOS Weight Tracking App**
 
 ![Swift](https://img.shields.io/badge/Swift-FA7343?style=flat-square&logo=swift&logoColor=white)
@@ -139,6 +141,7 @@ src/
 <td width="33%" align="center">
 
 ### BuenMouse
+
 **macOS Productivity Tool**
 
 ![Swift](https://img.shields.io/badge/Swift-FA7343?style=flat-square&logo=swift&logoColor=white)
@@ -148,6 +151,7 @@ src/
 <td width="33%" align="center">
 
 ### WW2 MAP Films
+
 **Interactive Historical Map**
 
 ![Nuxt](https://img.shields.io/badge/Nuxt-00DC82?style=flat-square&logo=nuxtdotjs&logoColor=white)
@@ -165,10 +169,10 @@ Build and deploy to any static hosting service:
 
 ```bash
 # Create production build
-npm run build
+bun run build
 
 # Preview before deploying
-npm run preview
+bun run preview
 ```
 
 The `dist/` folder is ready for deployment to:

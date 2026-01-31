@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -14,11 +14,11 @@ class ErrorBoundary extends React.Component {
   componentDidCatch(error, errorInfo) {
     // Log to error reporting service in production
     // eslint-disable-next-line no-console
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
+    console.error("ErrorBoundary caught an error:", error, errorInfo);
+
     this.setState({
       error: error,
-      errorInfo: errorInfo
+      errorInfo: errorInfo,
     });
   }
 
@@ -31,9 +31,7 @@ class ErrorBoundary extends React.Component {
             <div className="error-message">
               <div className="error-icon">⚠️</div>
               <h3>3D Graphics Error</h3>
-              <p>
-                Unable to load 3D graphics. This might be due to:
-              </p>
+              <p>Unable to load 3D graphics. This might be due to:</p>
               <ul>
                 <li>WebGL not being supported by your browser</li>
                 <li>Hardware limitations</li>
