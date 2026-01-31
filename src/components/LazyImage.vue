@@ -29,11 +29,11 @@
       class="image-error"
       :style="{ height: skeletonHeight }"
       role="img"
-      aria-describedby="image-error-text"
+      :aria-describedby="errorId"
     >
       <div class="error-content">
         <span class="error-icon" aria-hidden="true">📷</span>
-        <p id="image-error-text">Image not available</p>
+        <p :id="errorId">Image not available</p>
       </div>
     </div>
 
@@ -48,6 +48,8 @@
         opacity: isLoaded ? 1 : 0,
       }"
       loading="lazy"
+      decoding="async"
+      fetchpriority="low"
       @load="handleImageLoad"
       @error="handleImageError"
     />
@@ -70,7 +72,10 @@ const containerRef = ref(null);
 const imageSrc = ref("");
 const isLoaded = ref(false);
 const hasError = ref(false);
+const errorId = `image-error-${Math.random().toString(36).slice(2, 9)}`;
+
 let observer = null;
+let hasIntersected = false;
 
 function startLoading() {
   if (!props.src || imageSrc.value) return;
@@ -92,16 +97,25 @@ watch(
     imageSrc.value = "";
     isLoaded.value = false;
     hasError.value = false;
-    startLoading();
+    if (hasIntersected || typeof IntersectionObserver === "undefined") {
+      startLoading();
+    }
   }
 );
 
 onMounted(() => {
   if (!containerRef.value) return;
 
+  if (typeof IntersectionObserver === "undefined") {
+    hasIntersected = true;
+    startLoading();
+    return;
+  }
+
   observer = new IntersectionObserver(
     (entries) => {
       if (entries.some((e) => e.isIntersecting)) {
+        hasIntersected = true;
         startLoading();
         observer?.disconnect();
         observer = null;

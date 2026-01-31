@@ -75,7 +75,7 @@
   -webkit-text-fill-color: transparent;
   animation:
     heroFadeInUp 0.8s ease-out 0.2s forwards,
-    gradientShift 4s ease-in-out infinite;
+    heroGradientShift 4s ease-in-out infinite;
   opacity: 0;
   transform: translateY(30px);
 }
@@ -104,14 +104,14 @@
 .hero-title .typed-cursor {
   color: var(--accent-color);
   font-weight: 300;
-  animation: blink 1s infinite;
+  animation: heroCursorBlink 1s infinite;
 }
 
 .hero-title .typed-cursor--blink {
-  animation: blink 1s infinite;
+  animation: heroCursorBlink 1s infinite;
 }
 
-@keyframes blink {
+@keyframes heroCursorBlink {
   0%,
   50% {
     opacity: 1;
@@ -227,7 +227,7 @@
   }
 }
 
-@keyframes gradientShift {
+@keyframes heroGradientShift {
   0%,
   100% {
     background-position: 0% 50%;

@@ -112,6 +112,24 @@ const show3D = ref(false);
 
 let cancelIdle = null;
 
+function shouldEnable3D() {
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+  if (prefersReducedMotion) return false;
+
+  const connection =
+    navigator.connection ||
+    navigator.mozConnection ||
+    navigator.webkitConnection;
+  if (connection?.saveData) return false;
+
+  const effectiveType = connection?.effectiveType;
+  if (effectiveType === "slow-2g" || effectiveType === "2g") return false;
+
+  return true;
+}
+
 function scrollToProjects() {
   const projectsSection = document.getElementById("projects");
   const prefersReducedMotion = window.matchMedia(
@@ -123,10 +141,7 @@ function scrollToProjects() {
 }
 
 onMounted(() => {
-  const prefersReducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
-  if (prefersReducedMotion) return;
+  if (!shouldEnable3D()) return;
 
   cancelIdle = runIdle(
     () => {

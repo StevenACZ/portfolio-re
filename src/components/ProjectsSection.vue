@@ -16,6 +16,7 @@
           :key="project.id"
           :project="project"
           :index="index"
+          :total="projects.length"
         />
       </div>
     </template>

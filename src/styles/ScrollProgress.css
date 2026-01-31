@@ -23,14 +23,14 @@
     #f97316 100%
   );
   background-size: 200% 100%;
-  animation: gradientShift 3s ease infinite;
+  animation: scrollProgressGradientShift 3s ease infinite;
   transition: width 0.1s ease-out;
   box-shadow:
     0 0 10px rgba(139, 92, 246, 0.5),
     0 0 20px rgba(139, 92, 246, 0.3);
 }
 
-@keyframes gradientShift {
+@keyframes scrollProgressGradientShift {
   0%,
   100% {
     background-position: 0% 50%;
