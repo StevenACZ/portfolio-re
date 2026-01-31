@@ -42,29 +42,17 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref } from "vue";
+import { computed } from "vue";
+import { useScrollProgress } from "../composables/useScrollProgress";
 import "../styles/BackToTop.css";
 
-const isVisible = ref(false);
-const scrollProgress = ref(0);
-
-function updateState() {
-  const scrollTop = window.scrollY;
-  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-  scrollProgress.value = (scrollTop / docHeight) * 100;
-  isVisible.value = scrollTop > 400;
-}
+const { progress: scrollProgress, scrollY } = useScrollProgress();
+const isVisible = computed(() => scrollY.value > 400);
 
 function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+  window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
 }
-
-onMounted(() => {
-  updateState();
-  window.addEventListener("scroll", updateState, { passive: true });
-});
-
-onUnmounted(() => {
-  window.removeEventListener("scroll", updateState);
-});
 </script>
