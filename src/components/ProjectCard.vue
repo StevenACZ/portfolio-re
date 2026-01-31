@@ -11,7 +11,7 @@
       <div class="project-info">
         <div
           class="project-number"
-          :aria-label="`Project ${index + 1} of ${index + 1}`"
+          :aria-label="`Project ${index + 1} of ${total}`"
         >
           {{ String(index + 1).padStart(2, "0") }}
         </div>
@@ -134,6 +134,7 @@ import LazyImage from "./LazyImage.vue";
 const props = defineProps({
   project: { type: Object, required: true },
   index: { type: Number, required: true },
+  total: { type: Number, required: true },
 });
 
 const overlayActive = ref(false);
