@@ -53,8 +53,8 @@ import { experiences } from "./data/experiences";
 import { projects } from "./data/projects";
 
 const activeSection = ref("hero");
-let sectionTriggers = [];
 let resizeTimeout = null;
+let sectionObserver = null;
 
 function refreshScrollTriggerSoon() {
   runIdle(() => ScrollTrigger.refresh(), { timeout: 200 });
@@ -104,36 +104,40 @@ onMounted(() => {
   document.documentElement.scrollTop = 0;
   document.body.scrollTop = 0;
 
-  const sections = [
-    { id: "hero", name: "hero" },
-    { id: "skills", name: "skills" },
-    { id: "projects", name: "projects" },
-    { id: "macos-apps", name: "macos-apps" },
-    { id: "timeline", name: "timeline" },
-    { id: "footer", name: "footer" },
+  const sectionIds = [
+    "hero",
+    "skills",
+    "projects",
+    "macos-apps",
+    "timeline",
+    "footer",
   ];
 
-  sectionTriggers = sections
-    .map((section) => {
-      const el = document.getElementById(section.id);
-      if (!el) return null;
+  if (typeof IntersectionObserver !== "undefined") {
+    sectionObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          if (!entry.target?.id) return;
+          activeSection.value = entry.target.id;
+        });
+      },
+      { rootMargin: "-20% 0px -79% 0px", threshold: 0 }
+    );
 
-      return ScrollTrigger.create({
-        trigger: el,
-        start: "top 20%",
-        end: "bottom 20%",
-        onEnter: () => (activeSection.value = section.name),
-        onEnterBack: () => (activeSection.value = section.name),
-      });
-    })
-    .filter(Boolean);
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      sectionObserver.observe(el);
+    });
+  }
 
   window.addEventListener("resize", handleResize, { passive: true });
 });
 
 onUnmounted(() => {
-  sectionTriggers.forEach((st) => st.kill());
-  sectionTriggers = [];
+  sectionObserver?.disconnect();
+  sectionObserver = null;
   window.removeEventListener("resize", handleResize);
   if (resizeTimeout) window.clearTimeout(resizeTimeout);
 });
