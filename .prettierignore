@@ -6,6 +6,7 @@ dist/
 
 # Local tooling
 .chunkhound/
+.chunkhound.json
 
 # Package manager
 package-lock.json
