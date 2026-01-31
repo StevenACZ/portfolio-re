@@ -1,11 +1,28 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import vue from "@vitejs/plugin-vue";
 import { visualizer } from "rollup-plugin-visualizer";
+
+function ignoreNuxtRequests() {
+  return {
+    name: "ignore-nuxt-requests",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if (req.url?.startsWith("/_nuxt/")) {
+          res.statusCode = 404;
+          res.end("Not found");
+          return;
+        }
+        next();
+      });
+    },
+  };
+}
 
 export default defineConfig({
   base: process.env.DEPLOY_BASE || "/",
   plugins: [
-    react(),
+    ignoreNuxtRequests(),
+    vue(),
     visualizer({
       filename: "dist/stats.html",
       open: false,
@@ -43,12 +60,12 @@ export default defineConfig({
       },
       output: {
         manualChunks: (id) => {
-          // React and React-DOM
+          // Vue
           if (
-            id.includes("node_modules/react/") ||
-            id.includes("node_modules/react-dom/")
+            id.includes("node_modules/vue/") ||
+            id.includes("node_modules/@vue/")
           ) {
-            return "react-vendor";
+            return "vue-vendor";
           }
           // Three.js - separate chunk for tree-shaking
           if (id.includes("node_modules/three/")) {
@@ -63,14 +80,10 @@ export default defineConfig({
           }
           // UI libraries
           if (
-            id.includes("node_modules/lucide-react/") ||
-            id.includes("node_modules/typewriter-effect/")
+            id.includes("node_modules/lucide-vue-next/") ||
+            id.includes("node_modules/typed.js/")
           ) {
             return "ui-vendor";
-          }
-          // Helmet
-          if (id.includes("node_modules/@dr.pogodin/react-helmet/")) {
-            return "helmet-vendor";
           }
           // Large vendor libraries
           if (id.includes("node_modules/")) {

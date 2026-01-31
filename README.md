@@ -37,10 +37,10 @@ A modern, interactive portfolio featuring 3D graphics, smooth animations, and a 
 
 ### Core
 
-![React](https://img.shields.io/badge/React-19.2.1-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![Vue](https://img.shields.io/badge/Vue-3.5.26-42B883?style=for-the-badge&logo=vuedotjs&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-7.1.3-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES2024-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![CSS3](https://img.shields.io/badge/CSS3-Modules-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-Modern-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 
 ### 3D & Animation
 
@@ -50,8 +50,7 @@ A modern, interactive portfolio featuring 3D graphics, smooth animations, and a 
 
 ### UI & Performance
 
-![Lucide](https://img.shields.io/badge/Lucide-Icons-F56565?style=for-the-badge)
-![React Helmet](https://img.shields.io/badge/Helmet-SEO-61DAFB?style=for-the-badge)
+![Lucide](https://img.shields.io/badge/Lucide-Vue-F56565?style=for-the-badge)
 ![Intersection Observer](https://img.shields.io/badge/Lazy%20Loading-Optimized-4CAF50?style=for-the-badge)
 
 </div>
@@ -99,24 +98,23 @@ The app will be available at `http://localhost:3000`
 
 ```
 src/
-├── 📂 components/          # React components
-│   ├── 📂 icons/           # SVG tech icons (21 icons)
-│   ├── HeroSection.jsx     # 3D hero with particle system
-│   ├── Navbar.jsx          # Desktop navigation
-│   ├── MobileNav.jsx       # Mobile hamburger menu
-│   ├── SkillsSection.jsx   # Tech stack with filters
-│   ├── ProjectsSection.jsx # Project showcase
+├── App.vue                 # Root app layout
+├── main.js                 # Vue entry point
+├── 📂 components/          # Vue components
+│   ├── 📂 icons/           # SVG tech icons
+│   ├── HeroSection.vue     # 3D hero with particle system
+│   ├── Navbar.vue          # Desktop navigation
+│   ├── MobileNav.vue       # Mobile hamburger menu
+│   ├── SkillsSection.vue   # Tech stack with filters
+│   ├── ProjectsSection.vue # Project showcase
 │   └── ...                 # Other UI components
-├── 📂 hooks/               # Custom React hooks
-│   ├── useHeroAnimations   # GSAP hero animations
-│   ├── useProjectsScroll   # Magnetic scroll zones
-│   └── useScrollSpy        # Active section detection
 ├── 📂 config/              # Configuration files
 │   └── threeScene.js       # 3D particle system config
 ├── 📂 data/                # Content data
 │   ├── projects.js         # Portfolio projects
 │   ├── skills.js           # Tech skills & categories
 │   └── experiences.js      # Work experience
+├── 📂 lib/                 # Shared libraries (GSAP setup)
 └── 📂 styles/              # CSS stylesheets
     ├── globals.css         # CSS variables & base
     └── animations.css      # Animation classes
@@ -165,7 +163,25 @@ src/
 
 ## 🌐 Deployment
 
-Build and deploy to any static hosting service:
+### GitHub Actions (SSH Deploy)
+
+On every push to `main`, GitHub Actions will:
+
+1. Install dependencies with Bun
+2. Run `format:check`, `lint`, `test:run`
+3. Build the app (`dist/`)
+4. Deploy via SSH + rsync to your server
+
+Required GitHub Secrets:
+
+- `HOST`
+- `USERNAME`
+- `SSH_KEY`
+- `SSH_PORT` (optional, defaults to `22`)
+
+Workflow: `.github/workflows/deploy.yml`
+
+### Manual build (any static host)
 
 ```bash
 # Create production build
@@ -175,11 +191,7 @@ bun run build
 bun run preview
 ```
 
-The `dist/` folder is ready for deployment to:
-
-![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
-![Netlify](https://img.shields.io/badge/Netlify-00C7B7?style=flat-square&logo=netlify&logoColor=white)
-![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-222222?style=flat-square&logo=github&logoColor=white)
+The `dist/` folder is ready for deployment to any static hosting provider.
 
 <br />
 
