@@ -40,6 +40,7 @@ import "../styles/SkillsSection.css";
 const sectionRef = ref(null);
 const chipsContainerRef = ref(null);
 const activeCategory = ref("all");
+const hasEntered = ref(false);
 
 const filteredSkills = computed(() => {
   if (activeCategory.value === "all") return skillsData;
@@ -49,10 +50,16 @@ const filteredSkills = computed(() => {
 let headerTrigger = null;
 
 function animateChips() {
+  const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+  if (reducedMotion) return;
+
   const container = chipsContainerRef.value;
   if (!container) return;
 
   const chips = container.querySelectorAll(".skill-chip");
+  if (!chips.length) return;
   gsap.fromTo(
     chips,
     { scale: 0.8, opacity: 0 },
@@ -89,14 +96,17 @@ onMounted(() => {
         trigger: sectionRef.value,
         start: "top 80%",
         once: true,
+        onEnter: () => {
+          hasEntered.value = true;
+          animateChips();
+        },
       },
     }
   );
-
-  animateChips();
 });
 
 watch(activeCategory, async () => {
+  if (!hasEntered.value) return;
   await nextTick();
   animateChips();
 });

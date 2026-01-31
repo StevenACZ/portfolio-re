@@ -12,6 +12,12 @@
   will-change: background-color, backdrop-filter, border-color;
 }
 
+.navbar.scrolled {
+  background: rgba(10, 10, 10, 0.7);
+  backdrop-filter: blur(20px);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
 .navbar-container {
   max-width: 1200px;
   margin: 0 auto;

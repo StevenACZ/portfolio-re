@@ -79,7 +79,7 @@
 
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
-import { gsap } from "../lib/gsap";
+import { ScrollTrigger } from "../lib/gsap";
 import { navItems } from "../data/navigation";
 import MobileNav from "./MobileNav.vue";
 import WorkDropdown from "./WorkDropdown.vue";
@@ -124,29 +124,23 @@ watch(isMenuOpen, (open) => {
   }
 });
 
-let navbarTween = null;
+let navbarScrollTrigger = null;
 
 onMounted(() => {
   if (!navRef.value) return;
 
-  navbarTween = gsap.to(navRef.value, {
-    backgroundColor: "rgba(10, 10, 10, 0.7)",
-    backdropFilter: "blur(20px)",
-    borderBottomColor: "rgba(255, 255, 255, 0.1)",
-    scrollTrigger: {
-      trigger: "body",
-      start: "top -50px",
-      end: "bottom bottom",
-      toggleActions: "play none none reverse",
-      scrub: 1,
-    },
+  navbarScrollTrigger = ScrollTrigger.create({
+    trigger: document.body,
+    start: "top -50px",
+    end: "bottom bottom",
+    toggleClass: { targets: navRef.value, className: "scrolled" },
   });
 });
 
 onUnmounted(() => {
   document.removeEventListener("keydown", handleEscape);
   document.body.style.overflow = "";
-  navbarTween?.scrollTrigger?.kill();
-  navbarTween?.kill?.();
+  navbarScrollTrigger?.kill();
+  navbarScrollTrigger = null;
 });
 </script>
