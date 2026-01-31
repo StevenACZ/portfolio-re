@@ -7,6 +7,7 @@ export const PERFORMANCE_CONFIGS = {
     segments: 8,
     rings: 6,
     updateRate: 3,
+    targetFps: 30,
   },
   low: {
     count: 50,
@@ -16,6 +17,7 @@ export const PERFORMANCE_CONFIGS = {
     segments: 12,
     rings: 8,
     updateRate: 2,
+    targetFps: 30,
   },
   medium: {
     count: 120,
@@ -25,6 +27,7 @@ export const PERFORMANCE_CONFIGS = {
     segments: 16,
     rings: 12,
     updateRate: 1,
+    targetFps: 45,
   },
   high: {
     count: 300,
@@ -34,5 +37,6 @@ export const PERFORMANCE_CONFIGS = {
     segments: 20,
     rings: 16,
     updateRate: 1,
+    targetFps: 60,
   },
 };
