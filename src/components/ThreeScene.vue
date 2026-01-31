@@ -42,6 +42,12 @@ const mouse = { x: 0, y: 0 };
 let cleanup = null;
 
 function setup(canvasEl) {
+  let isDisposed = false;
+  let isRunning = false;
+  let isInView = true;
+  let batchTimerId = null;
+  let intersectionObserver = null;
+
   const isMobile =
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       navigator.userAgent
@@ -112,6 +118,7 @@ function setup(canvasEl) {
     const orbitConfig = isMobile ? ORBIT_CONFIG.mobile : ORBIT_CONFIG.desktop;
 
     const processBatch = () => {
+      if (isDisposed) return;
       const endIndex = Math.min(currentIndex + batchSize, particleConfig.count);
 
       for (let i = currentIndex; i < endIndex; i++) {
@@ -123,11 +130,9 @@ function setup(canvasEl) {
               (particleConfig.size * PARTICLE_SIZE_CONFIG.moonSizeMultiplier) +
             PARTICLE_SIZE_CONFIG.moonMinScale;
 
-        const sphereGeometry = baseGeometry.clone();
-        sphereGeometry.scale(scale, scale, scale);
-
         const sphereMaterial = i % 2 === 0 ? purpleMaterial : blueMaterial;
-        const sphere = new Mesh(sphereGeometry, sphereMaterial.clone());
+        const sphere = new Mesh(baseGeometry, sphereMaterial);
+        sphere.scale.setScalar(scale);
 
         const radius =
           Math.random() * orbitConfig.maxRadius + orbitConfig.minRadius;
@@ -145,8 +150,6 @@ function setup(canvasEl) {
           orbitRadius: radius,
           orbitSpeed: (Math.random() * 0.002 + 0.0005) * particleConfig.speed,
           orbitAngle: finalAngle,
-          originalPosition: sphere.position.clone(),
-          baseScale: scale,
         };
 
         particleGroup.add(sphere);
@@ -156,7 +159,7 @@ function setup(canvasEl) {
       currentIndex = endIndex;
 
       if (currentIndex < particleConfig.count) {
-        window.setTimeout(processBatch, 0);
+        batchTimerId = window.setTimeout(processBatch, 0);
       }
     };
 
@@ -167,17 +170,24 @@ function setup(canvasEl) {
   scene.add(particleGroup);
   particles = particlesArray;
 
-  function handleMouseMove(event) {
+  function handlePointerMove(event) {
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   }
 
   let frameCount = 0;
-  function animate() {
-    frameId = requestAnimationFrame(animate);
+  const mouseInfluenceSq =
+    particleConfig.mouseInfluence * particleConfig.mouseInfluence;
+
+  function tick() {
+    if (!isRunning) return;
+    frameId = requestAnimationFrame(tick);
     frameCount++;
 
     if (particles && frameCount % particleConfig.updateRate === 0) {
+      const mouseX = mouse.x * 15;
+      const mouseY = mouse.y * 15;
+
       particles.forEach((particle) => {
         const userData = particle.userData;
 
@@ -190,16 +200,15 @@ function setup(canvasEl) {
           userData.orbitRadius *
           ORBIT_CONFIG.yFlatten;
 
-        const mouseX = mouse.x * 15;
-        const mouseY = mouse.y * 15;
         const dx = particle.position.x - mouseX;
         const dy = particle.position.y - mouseY;
-        const distance2D = Math.sqrt(dx * dx + dy * dy);
+        const distanceSq = dx * dx + dy * dy;
 
         let finalX = baseX;
         let finalY = baseY;
 
-        if (distance2D < particleConfig.mouseInfluence) {
+        if (distanceSq < mouseInfluenceSq) {
+          const distance2D = Math.sqrt(distanceSq) || 1;
           const disperseForce =
             (particleConfig.mouseInfluence - distance2D) /
             particleConfig.mouseInfluence;
@@ -209,15 +218,30 @@ function setup(canvasEl) {
 
         particle.position.x = finalX;
         particle.position.y = finalY;
-        particle.rotation.x += 0.01;
-        particle.rotation.y += 0.01;
       });
     }
 
     renderer.render(scene, camera);
   }
 
-  animate();
+  function start() {
+    if (isRunning) return;
+    isRunning = true;
+    frameId = requestAnimationFrame(tick);
+  }
+
+  function stop() {
+    if (!isRunning) return;
+    isRunning = false;
+    if (frameId) cancelAnimationFrame(frameId);
+    frameId = null;
+  }
+
+  function syncRunningState() {
+    const shouldRun = isInView && document.visibilityState === "visible";
+    if (shouldRun) start();
+    else stop();
+  }
 
   function handleResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -225,26 +249,68 @@ function setup(canvasEl) {
     renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
-  window.addEventListener("mousemove", handleMouseMove);
+  window.addEventListener("pointermove", handlePointerMove, { passive: true });
   window.addEventListener("resize", handleResize);
 
   window.setTimeout(() => emit("loaded"), 100);
 
+  if (typeof IntersectionObserver !== "undefined") {
+    intersectionObserver = new IntersectionObserver(
+      (entries) => {
+        isInView = entries.some((e) => e.isIntersecting);
+        syncRunningState();
+      },
+      { threshold: 0.01 }
+    );
+    intersectionObserver.observe(canvasEl);
+  }
+
+  document.addEventListener("visibilitychange", syncRunningState, {
+    passive: true,
+  });
+  syncRunningState();
+
   return () => {
-    window.removeEventListener("mousemove", handleMouseMove);
+    isDisposed = true;
+    if (batchTimerId) window.clearTimeout(batchTimerId);
+    batchTimerId = null;
+
+    intersectionObserver?.disconnect();
+    intersectionObserver = null;
+
+    document.removeEventListener("visibilitychange", syncRunningState);
+
+    window.removeEventListener("pointermove", handlePointerMove);
     window.removeEventListener("resize", handleResize);
 
-    if (frameId) cancelAnimationFrame(frameId);
+    stop();
 
     if (scene) {
+      const disposedGeometries = new Set();
+      const disposedMaterials = new Set();
+
       scene.traverse((object) => {
-        object.geometry?.dispose?.();
-        if (object.material) {
-          if (Array.isArray(object.material)) {
-            object.material.forEach((m) => m.dispose());
-          } else {
-            object.material.dispose?.();
-          }
+        const geometry = object.geometry;
+        if (geometry && !disposedGeometries.has(geometry)) {
+          geometry.dispose?.();
+          disposedGeometries.add(geometry);
+        }
+
+        const material = object.material;
+        if (!material) return;
+
+        if (Array.isArray(material)) {
+          material.forEach((m) => {
+            if (!m || disposedMaterials.has(m)) return;
+            m.dispose?.();
+            disposedMaterials.add(m);
+          });
+          return;
+        }
+
+        if (!disposedMaterials.has(material)) {
+          material.dispose?.();
+          disposedMaterials.add(material);
         }
       });
       scene.clear();
@@ -255,7 +321,6 @@ function setup(canvasEl) {
     renderer = null;
     camera = null;
     particles = null;
-    frameId = null;
   };
 }
 
