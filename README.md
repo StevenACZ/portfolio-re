@@ -11,7 +11,7 @@ A modern, interactive portfolio featuring 3D graphics, smooth animations, and a 
 
 <br />
 
-[View Demo](https://stevenacz.com) · [Report Bug](https://github.com/StevenACZ/portfolio/issues) · [Request Feature](https://github.com/StevenACZ/portfolio/issues)
+[View Demo](https://stevenacz.com) · [Report Bug](https://github.com/StevenACZ/portfolio-re/issues) · [Request Feature](https://github.com/StevenACZ/portfolio-re/issues)
 
 </div>
 
@@ -23,6 +23,7 @@ A modern, interactive portfolio featuring 3D graphics, smooth animations, and a 
 | -------------------------- | ---------------------------------------------------------------------- |
 | 🎮 **3D Interactive Hero** | WebGL particle system with 150+ animated spheres and mouse interaction |
 | ⚡ **Smooth Animations**   | GSAP-powered animations with ScrollTrigger integration                 |
+| 🎬 **Cinematic Launch**    | Connected intro (Boot → Enter → Ready) with interrupt support          |
 | 📱 **Fully Responsive**    | Mobile-first design with touch interactions                            |
 | 🎯 **Apple-Style Scroll**  | Magnetic scroll zones for project presentation                         |
 | ♿ **Accessible**          | WCAG 2.1 AA compliant with reduced motion support                      |
@@ -46,7 +47,6 @@ A modern, interactive portfolio featuring 3D graphics, smooth animations, and a 
 
 ![Three.js](https://img.shields.io/badge/Three.js-0.179-000000?style=for-the-badge&logo=threedotjs&logoColor=white)
 ![GSAP](https://img.shields.io/badge/GSAP-3.13-88CE02?style=for-the-badge&logo=greensock&logoColor=black)
-![Typed.js](https://img.shields.io/badge/Typed.js-2.1.0-FF6B6B?style=for-the-badge)
 
 ### UI & Performance
 
@@ -68,10 +68,10 @@ A modern, interactive portfolio featuring 3D graphics, smooth animations, and a 
 
 ```bash
 # Clone the repository
-git clone https://github.com/StevenACZ/portfolio.git
+git clone https://github.com/StevenACZ/portfolio-re.git
 
 # Navigate to project directory
-cd portfolio
+cd portfolio-re
 
 # Install dependencies
 bun install
@@ -80,7 +80,7 @@ bun install
 bun run dev
 ```
 
-The app will be available at `http://localhost:3000`
+Vite will print the local URL (typically `http://localhost:5173`).
 
 ### Available Scripts
 
@@ -114,11 +114,56 @@ src/
 │   ├── projects.js         # Portfolio projects
 │   ├── skills.js           # Tech skills & categories
 │   └── experiences.js      # Work experience
-├── 📂 lib/                 # Shared libraries (GSAP setup)
+├── 📂 lib/                 # Shared libraries (motion + 3D)
+│   ├── appState.js          # Global app state + ready event helpers
+│   ├── gsap.js              # GSAP + ScrollTrigger setup
+│   ├── launchSequence.js    # Boot → Enter → Ready intro timeline
+│   ├── scrollHandshake.js   # First-scroll hero/nav handshake
+│   └── motion.js            # Motion tokens + prefers-reduced-motion
 └── 📂 styles/              # CSS stylesheets
     ├── globals.css         # CSS variables & base
+    ├── motion.css          # Motion tokens + app state styling
     └── animations.css      # Animation classes
 ```
+
+<br />
+
+## 🎬 Motion System
+
+This project uses a simple state-driven motion system to keep animations connected, predictable, and performant.
+
+### App state
+
+The root `<html>` tracks the current phase:
+
+- `data-app-state="boot"`: calm initial state (no layout jumps)
+- `data-app-state="enter"`: intro timeline plays
+- `data-app-state="ready"`: ScrollTrigger-heavy work is safe to initialize
+
+Entry point: `src/main.js` and `src/App.vue`
+
+### Tokens
+
+Motion tokens live in `src/styles/motion.css`:
+
+- 2 global easings (CSS + GSAP token strings)
+- durations, distances, blur (text-only), opacity/scale
+
+### Launch sequence
+
+`src/lib/launchSequence.js` runs a single connected GSAP timeline:
+
+- waits 2 rAF (styles applied)
+- animates `Navbar → Hero text → CTAs`
+- interruptible: any scroll/gesture/keydown fast-finishes to `ready`
+- crossfades Three.js (`canvas` in, fallback out) when the scene emits `three:loaded`
+
+### Reduced motion
+
+When `prefers-reduced-motion: reduce` is active:
+
+- intro is near-instant
+- text blur + scroll-driven motion are disabled
 
 <br />
 
