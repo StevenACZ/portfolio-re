@@ -36,6 +36,8 @@
 import { onMounted, onUnmounted, ref } from "vue";
 import { MapPin } from "lucide-vue-next";
 import { gsap } from "../lib/gsap";
+import { onAppReady } from "../lib/appState";
+import { getMotionTokens, prefersReducedMotion } from "../lib/motion";
 import "../styles/Timeline.css";
 
 defineProps({
@@ -46,61 +48,64 @@ const sectionRef = ref(null);
 const containerRef = ref(null);
 const animations = [];
 let timerId = null;
+let stopReadyListener = null;
 
 onMounted(() => {
-  const reducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
-  if (reducedMotion) return;
+  stopReadyListener = onAppReady(() => {
+    if (prefersReducedMotion()) return;
+    const { ease } = getMotionTokens();
 
-  timerId = window.setTimeout(() => {
-    const container = containerRef.value;
-    if (!container) return;
+    timerId = window.setTimeout(() => {
+      const container = containerRef.value;
+      if (!container) return;
 
-    const timelineLine = container.querySelector(".timeline-line");
-    if (timelineLine) {
-      gsap.set(timelineLine, {
-        scaleY: 0,
-        transformOrigin: "top center",
-        visibility: "visible",
+      const timelineLine = container.querySelector(".timeline-line");
+      if (timelineLine) {
+        gsap.set(timelineLine, {
+          scaleY: 0,
+          transformOrigin: "top center",
+          visibility: "visible",
+        });
+
+        animations.push(
+          gsap.to(timelineLine, {
+            scaleY: 1,
+            ease: "none",
+            scrollTrigger: {
+              trigger: container,
+              start: "top 80%",
+              end: "bottom 100%",
+              scrub: 1.5,
+            },
+          })
+        );
+      }
+
+      const timelineItems = container.querySelectorAll(".timeline-item");
+      timelineItems.forEach((item) => {
+        gsap.set(item, { y: 50, opacity: 0, visibility: "visible" });
+        animations.push(
+          gsap.to(item, {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            ease: ease.out,
+            scrollTrigger: {
+              trigger: item,
+              start: "top 85%",
+              toggleActions: "play none none reverse",
+              fastScrollEnd: true,
+            },
+          })
+        );
       });
-
-      animations.push(
-        gsap.to(timelineLine, {
-          scaleY: 1,
-          ease: "none",
-          scrollTrigger: {
-            trigger: container,
-            start: "top 80%",
-            end: "bottom 100%",
-            scrub: 1.5,
-          },
-        })
-      );
-    }
-
-    const timelineItems = container.querySelectorAll(".timeline-item");
-    timelineItems.forEach((item) => {
-      gsap.set(item, { y: 50, opacity: 0, visibility: "visible" });
-      animations.push(
-        gsap.to(item, {
-          y: 0,
-          opacity: 1,
-          duration: 0.8,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: item,
-            start: "top 85%",
-            toggleActions: "play none none reverse",
-            fastScrollEnd: true,
-          },
-        })
-      );
-    });
-  }, 100);
+    }, 100);
+  });
 });
 
 onUnmounted(() => {
+  stopReadyListener?.();
+  stopReadyListener = null;
   if (timerId) window.clearTimeout(timerId);
   animations.forEach((a) => {
     a?.scrollTrigger?.kill();

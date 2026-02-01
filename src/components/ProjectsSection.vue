@@ -26,6 +26,8 @@
 <script setup>
 import { onUnmounted, ref } from "vue";
 import { gsap, ScrollTrigger } from "../lib/gsap";
+import { onAppReady } from "../lib/appState";
+import { getMotionTokens, prefersReducedMotion } from "../lib/motion";
 import { useIntersectionOnce } from "../composables/useIntersectionOnce";
 import { runIdle } from "../utils/idle";
 import ProjectCard from "./ProjectCard.vue";
@@ -40,16 +42,15 @@ let trigger = null;
 let cancelIdle = null;
 let headerEl = null;
 let cardEls = [];
+let stopReadyListener = null;
 
 function initPinnedScroll() {
   if (!props.projects.length) return;
   const section = sectionRef.value;
   if (!section) return;
 
-  const reducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
-  if (reducedMotion) return;
+  if (prefersReducedMotion()) return;
+  const { ease } = getMotionTokens();
 
   headerEl = section.querySelector(".projects-header");
   if (!headerEl) return;
@@ -67,26 +68,26 @@ function initPinnedScroll() {
 
   const headerOpacityTo = gsap.quickTo(headerEl, "opacity", {
     duration: 0.2,
-    ease: "power2.out",
+    ease: ease.out,
     overwrite: "auto",
   });
   const headerYTo = gsap.quickTo(headerEl, "y", {
     duration: 0.2,
-    ease: "power2.out",
+    ease: ease.out,
     overwrite: "auto",
   });
 
   const cardOpacityTo = cardEls.map((card) =>
     gsap.quickTo(card, "opacity", {
       duration: 0.25,
-      ease: "power2.out",
+      ease: ease.out,
       overwrite: "auto",
     })
   );
   const cardYTo = cardEls.map((card) =>
     gsap.quickTo(card, "y", {
       duration: 0.25,
-      ease: "power2.out",
+      ease: ease.out,
       overwrite: "auto",
     })
   );
@@ -196,12 +197,16 @@ function initPinnedScroll() {
 useIntersectionOnce(
   sectionRef,
   () => {
-    cancelIdle = runIdle(() => initPinnedScroll(), { timeout: 500 });
+    stopReadyListener = onAppReady(() => {
+      cancelIdle = runIdle(() => initPinnedScroll(), { timeout: 500 });
+    });
   },
   { rootMargin: "800px 0px", threshold: 0.01 }
 );
 
 onUnmounted(() => {
+  stopReadyListener?.();
+  stopReadyListener = null;
   cancelIdle?.();
   if (headerEl) gsap.killTweensOf(headerEl);
   if (cardEls.length) gsap.killTweensOf(cardEls);

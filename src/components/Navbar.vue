@@ -80,6 +80,8 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { ScrollTrigger } from "../lib/gsap";
+import { onAppReady } from "../lib/appState";
+import { prefersReducedMotion } from "../lib/motion";
 import { navItems } from "../data/navigation";
 import MobileNav from "./MobileNav.vue";
 import WorkDropdown from "./WorkDropdown.vue";
@@ -125,21 +127,30 @@ watch(isMenuOpen, (open) => {
 });
 
 let navbarScrollTrigger = null;
+let stopReadyListener = null;
 
 onMounted(() => {
-  if (!navRef.value) return;
+  stopReadyListener = onAppReady(() => {
+    if (!navRef.value) return;
 
-  navbarScrollTrigger = ScrollTrigger.create({
-    trigger: document.body,
-    start: "top -50px",
-    end: "bottom bottom",
-    toggleClass: { targets: navRef.value, className: "scrolled" },
+    // The scroll handshake owns navbar density for normal motion.
+    // Reduced motion keeps an instant toggle for readability.
+    if (!prefersReducedMotion()) return;
+
+    navbarScrollTrigger = ScrollTrigger.create({
+      trigger: document.body,
+      start: "top -50px",
+      end: "bottom bottom",
+      toggleClass: { targets: navRef.value, className: "scrolled" },
+    });
   });
 });
 
 onUnmounted(() => {
   document.removeEventListener("keydown", handleEscape);
   document.body.style.overflow = "";
+  stopReadyListener?.();
+  stopReadyListener = null;
   navbarScrollTrigger?.kill();
   navbarScrollTrigger = null;
 });

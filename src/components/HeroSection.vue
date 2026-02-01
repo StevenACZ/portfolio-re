@@ -5,37 +5,9 @@
     aria-label="Introduction and hero section"
     :style="{ aspectRatio: '16/9' }"
   >
-    <canvas
-      ref="canvasRef"
-      class="hero-canvas"
-      aria-hidden="true"
-      :style="{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        zIndex: 1,
-        opacity: isLoaded ? 1 : 0,
-        transition: 'opacity 0.5s ease-in-out',
-      }"
-    />
+    <canvas ref="canvasRef" class="hero-canvas" aria-hidden="true" />
 
-    <div
-      class="hero-fallback-bg"
-      :style="{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        background:
-          'linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #16213e 100%)',
-        opacity: isLoaded ? 0 : 1,
-        transition: 'opacity 0.5s ease-in-out',
-        zIndex: 0,
-      }"
-    />
+    <div class="hero-fallback-bg" />
 
     <div class="hero-content" :style="{ zIndex: 2 }">
       <div class="hero-text">
@@ -46,14 +18,9 @@
         >
           Steven Coaila Zaa
         </h2>
-        <div
-          class="hero-subtitle"
-          role="text"
-          aria-live="polite"
-          aria-label="Dynamic title showing different specializations"
-        >
-          <Typewriter class="hero-title" />
-        </div>
+        <p class="hero-subtitle" aria-label="Full Stack Developer">
+          <span class="hero-title">Full Stack Developer</span>
+        </p>
         <p
           class="hero-description"
           aria-label="Professional summary and approach"
@@ -88,7 +55,7 @@
     <ErrorBoundary v-if="show3D">
       <Suspense>
         <template #default>
-          <ThreeScene :canvas="canvasRef" @loaded="isLoaded = true" />
+          <ThreeScene :canvas="canvasRef" @loaded="handleThreeLoaded" />
         </template>
         <template #fallback></template>
       </Suspense>
@@ -101,13 +68,11 @@ import { defineAsyncComponent, onMounted, onUnmounted, ref } from "vue";
 import { ArrowRight, Mail } from "lucide-vue-next";
 import { runIdle } from "../utils/idle";
 import ErrorBoundary from "./ErrorBoundary.vue";
-import Typewriter from "./Typewriter.vue";
 import "../styles/HeroSection.css";
 
 const ThreeScene = defineAsyncComponent(() => import("./ThreeScene.vue"));
 
 const canvasRef = ref(null);
-const isLoaded = ref(false);
 const show3D = ref(false);
 
 let cancelIdle = null;
@@ -138,6 +103,11 @@ function scrollToProjects() {
   projectsSection?.scrollIntoView({
     behavior: prefersReducedMotion ? "auto" : "smooth",
   });
+}
+
+function handleThreeLoaded() {
+  document.documentElement.dataset.threeLoaded = "true";
+  window.dispatchEvent(new Event("three:loaded"));
 }
 
 onMounted(() => {

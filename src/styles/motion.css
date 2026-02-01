@@ -1,0 +1,86 @@
+/* ===== Motion System Tokens + App States ===== */
+:root {
+  /* Only two global easings (CSS + GSAP) */
+  --motion-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-ease-inout: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* GSAP reads these string tokens (not used directly by CSS) */
+  --motion-ease-out-gsap: expo.out;
+  --motion-ease-inout-gsap: power2.inOut;
+
+  /* Durations */
+  --motion-dur-intro: 1.05s;
+  --motion-dur-enter: 0.7s;
+  --motion-dur-micro: 0.35s;
+  --motion-dur-stagger: 0.06s;
+
+  /* Distances / transforms */
+  --motion-opacity-boot: 0.92;
+  --motion-dist-boot-y: 14px;
+  --motion-dist-nav-y: -10px;
+  --motion-dist-cta-y: 12px;
+  --motion-scale-boot: 0.99;
+  --motion-scale-cta: 0.985;
+  --motion-blur-boot: 4px;
+}
+
+/* Boot + Enter: calm initial state without killing LCP */
+html[data-app-state="boot"] .navbar,
+html[data-app-state="enter"] .navbar {
+  opacity: var(--motion-opacity-boot);
+  transform: translateY(var(--motion-dist-nav-y));
+  will-change: transform, opacity;
+}
+
+html[data-app-state="boot"] .hero-greeting,
+html[data-app-state="enter"] .hero-greeting,
+html[data-app-state="boot"] .hero-name,
+html[data-app-state="enter"] .hero-name,
+html[data-app-state="boot"] .hero-subtitle,
+html[data-app-state="enter"] .hero-subtitle,
+html[data-app-state="boot"] .hero-description,
+html[data-app-state="enter"] .hero-description {
+  opacity: var(--motion-opacity-boot);
+  transform: translateY(var(--motion-dist-boot-y))
+    scale(var(--motion-scale-boot));
+  filter: blur(var(--motion-blur-boot));
+  will-change: transform, opacity, filter;
+}
+
+html[data-app-state="boot"] .hero-cta-container,
+html[data-app-state="enter"] .hero-cta-container {
+  opacity: 0;
+  transform: translateY(var(--motion-dist-cta-y)) scale(var(--motion-scale-cta));
+  will-change: transform, opacity;
+}
+
+/* Three.js crossfade targets (GSAP owns opacity when ready) */
+.hero-canvas {
+  opacity: 0;
+}
+
+.hero-fallback-bg {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  html[data-app-state] .navbar,
+  html[data-app-state] .hero-greeting,
+  html[data-app-state] .hero-name,
+  html[data-app-state] .hero-subtitle,
+  html[data-app-state] .hero-description,
+  html[data-app-state] .hero-cta-container {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    will-change: auto !important;
+  }
+
+  .scroll-indicator {
+    animation: none !important;
+  }
+}

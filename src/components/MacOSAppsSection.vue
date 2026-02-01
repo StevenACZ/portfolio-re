@@ -91,83 +91,88 @@
 import { onMounted, onUnmounted, ref } from "vue";
 import { Apple, ExternalLink, Github } from "lucide-vue-next";
 import { gsap } from "../lib/gsap";
+import { onAppReady } from "../lib/appState";
+import { getMotionTokens, prefersReducedMotion } from "../lib/motion";
 import { macosApps } from "../data/macosApps";
 import "../styles/MacOSAppsSection.css";
 
 const sectionRef = ref(null);
 const animations = [];
+let stopReadyListener = null;
 
 onMounted(() => {
-  const section = sectionRef.value;
-  if (!section) return;
+  stopReadyListener = onAppReady(() => {
+    const section = sectionRef.value;
+    if (!section) return;
 
-  const reducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-  ).matches;
-  if (reducedMotion) return;
+    if (prefersReducedMotion()) return;
+    const { ease } = getMotionTokens();
 
-  const header = section.querySelector(".macos-apps-header");
-  const cards = section.querySelectorAll(".macos-app-card");
-  const cta = section.querySelector(".macos-apps-cta");
+    const header = section.querySelector(".macos-apps-header");
+    const cards = section.querySelectorAll(".macos-app-card");
+    const cta = section.querySelector(".macos-apps-cta");
 
-  animations.push(
-    gsap.fromTo(
-      header,
-      { opacity: 0, y: 40 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.8,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: section,
-          start: "top 80%",
-          toggleActions: "play none none reverse",
-        },
-      }
-    )
-  );
+    animations.push(
+      gsap.fromTo(
+        header,
+        { opacity: 0, y: 40 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: ease.out,
+          scrollTrigger: {
+            trigger: section,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      )
+    );
 
-  animations.push(
-    gsap.fromTo(
-      cards,
-      { opacity: 0, y: 30, scale: 0.95 },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: section,
-          start: "top 70%",
-          toggleActions: "play none none reverse",
-        },
-      }
-    )
-  );
+    animations.push(
+      gsap.fromTo(
+        cards,
+        { opacity: 0, y: 30, scale: 0.95 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: ease.out,
+          scrollTrigger: {
+            trigger: section,
+            start: "top 70%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      )
+    );
 
-  animations.push(
-    gsap.fromTo(
-      cta,
-      { opacity: 0, y: 20 },
-      {
-        opacity: 1,
-        y: 0,
-        duration: 0.6,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: section,
-          start: "top 60%",
-          toggleActions: "play none none reverse",
-        },
-      }
-    )
-  );
+    animations.push(
+      gsap.fromTo(
+        cta,
+        { opacity: 0, y: 20 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.6,
+          ease: ease.out,
+          scrollTrigger: {
+            trigger: section,
+            start: "top 60%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      )
+    );
+  });
 });
 
 onUnmounted(() => {
+  stopReadyListener?.();
+  stopReadyListener = null;
   animations.forEach((a) => {
     a?.scrollTrigger?.kill();
     a?.kill?.();
